@@ -15,6 +15,12 @@ dependencies {
 
     // ojdbc8 dependency
     implementation files('lib/ojdbc8.jar')
+
+    // Jetty dependencies
+    mplementation 'org.eclipse.jetty:jetty-server:9.4.44.v20210927'
+    implementation 'org.eclipse.jetty:jetty-webapp:9.4.44.v20210927'
+    implementation 'org.eclipse.jetty.websocket:websocket-server:9.4.44.v20210927'
+    implementation 'javax.websocket:javax.websocket-api:1.1'
 }
 
 sourceCompatibility = '1.8'
