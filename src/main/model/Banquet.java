@@ -1,4 +1,4 @@
-package main.com.bms.model;
+package main.model;
 // Class representing a Banquet
 public class Banquet {
     private int BIN; // Banquet Identification Number

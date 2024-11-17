@@ -1,4 +1,4 @@
-package main.com.bms.exceptions;
+package main.exceptions;
 
 // Exception class for authentication errors
 public class AuthenticationException extends Exception {

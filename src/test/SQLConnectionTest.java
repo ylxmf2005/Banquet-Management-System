@@ -1,9 +1,9 @@
-package test.com;
-import main.com.bms.connection.QueryResult;
-import main.com.bms.connection.SQLConnection;
-
+package test;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import main.connection.QueryResult;
+import main.connection.SQLConnection;
 public class SQLConnectionTest {
     public static void main(String[] args) {
         SQLConnection dbConn = null;

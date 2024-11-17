@@ -1,4 +1,4 @@
-package main.com.bms.model;
+package main.model;
 
 // Class representing an Attendee Account
 public class AttendeeAccount {

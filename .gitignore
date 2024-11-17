@@ -57,3 +57,4 @@ build/
 
 # Others
 .DS_Store
+*.java~

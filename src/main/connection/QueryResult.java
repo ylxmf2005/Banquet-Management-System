@@ -1,4 +1,4 @@
-package main.com.bms.connection;
+package main.connection;
 import java.sql.*;
 
 public class QueryResult implements AutoCloseable {

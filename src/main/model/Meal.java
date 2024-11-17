@@ -1,4 +1,4 @@
-package main.com.bms.model;
+package main.model;
 // Class representing a Meal associated with a Banquet
 public class Meal {
     private int banquetBIN;

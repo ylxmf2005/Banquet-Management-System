@@ -1,8 +1,8 @@
-package main.com.bms.service;
+package main.service;
 import java.sql.SQLException;
 import java.util.List;
-import main.com.bms.exceptions.*;
-import main.com.bms.model.*;
+import main.exceptions.*;
+import main.model.*;
 // Backend service interface containing all the required abstract methods
 public interface BMSBackendService {
 
