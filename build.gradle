@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // WebSocket API dependency
+    implementation 'javax.websocket:javax.websocket-api:1.1'
+
+    // Gson dependency
+    implementation 'com.google.code.gson:gson:2.8.8'
+
+    // ojdbc8 dependency
+    implementation files('lib/ojdbc8.jar')
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'

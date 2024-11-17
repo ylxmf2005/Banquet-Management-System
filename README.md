@@ -1,14 +1,13 @@
 Warning: 
-This project is in the early stages of development. The functionality is incomplete and subject to change at any time.
-The README is currently for developers' reference only.
+This project is in the early stages of development. The functionality is incomplete and the source is subject to change at any time. The README is currently for developers' reference only.
 
 ### Env
 IDE: intelliJ IDEA
-Build Tool: Maven
+Build Tool: Gradle
 
 ### How to Setup
-Make sure you have maven installed.
-`mvn clean install`
+Make sure you have Gradle installed.
+`gradle build`
 
 ### Model
 Author: Sunghak Heo
