@@ -1,7 +1,10 @@
+package test.com;
+import main.com.bms.connection.QueryResult;
+import main.com.bms.connection.SQLConnection;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-public class Main {
+public class SQLConnectionTest {
     public static void main(String[] args) {
         SQLConnection dbConn = null;
         try {
