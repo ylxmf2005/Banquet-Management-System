@@ -1,11 +1,30 @@
-### SQL Connection Part
+Warning: 
+This project is in the early stages of development. The functionality is incomplete and subject to change at any time.
+The README is currently for developers' reference only.
+
+### Env
 IDE: intelliJ IDEA
-Make sure ojdbc8.jar (Oracle JDBC driver) is added to your project libary.
+Build Tool: Maven
 
-You can see demo usage in test/SQLConnectionTest.java. You can execute fixed SQL or parameterized SQL (to avoid SQL injection and enhance flexibility) through SQLConnection. 
+### How to Setup
+Make sure you have maven installed.
+`mvn clean install`
 
-I have also provided another version: SQLConnection_deprecated, which returns List<Map<String, Object>>. 
+### Model
+Author: Sunghak Heo
 
-Since the Oracle database provided by the PolyU can only be accessed on the campus network, I have set up my own Oracle server. The server login are already provided in the code, you can use directly.
+### SQLConnection
+Author: Ethan Lee
 
-If you need any guidance or modifications, please feel free to contact me / just modify it to your need.
+Execute fixed SQL or parameterized SQL (to avoid SQL injection and enhance flexibility) through SQLConnection.
+Another version: SQLConnectionDeprecated, returns QureyResult for query, now abandoned.
+
+Since the Oracle database provided by the PolyU can only be accessed on the campus network, I have set up my own Oracle server. The server login are already provided in the code, which can be used directly.
+
+### BMSMain
+
+### BMSServer
+Author: Ethan Lee
+
+### Frontend
+Author: Ethan Lee

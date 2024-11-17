@@ -58,3 +58,4 @@ build/
 # Others
 .DS_Store
 *.java~
+private/

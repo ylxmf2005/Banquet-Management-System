@@ -3,8 +3,7 @@ import java.sql.SQLException;
 import java.util.List;
 import main.exceptions.*;
 import main.model.*;
-// Backend service interface containing all the required abstract methods
-public interface BMSBackendService {
+public interface BMSMainInterface {
 
     // Administrator Functions
 

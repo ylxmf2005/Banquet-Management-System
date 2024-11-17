@@ -1,10 +1,10 @@
-package test;
+package test.connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import main.connection.QueryResult;
 import main.connection.SQLConnection;
-public class SQLConnectionTest {
+public class SQLConnectionDeprecatedTest {
     public static void main(String[] args) {
         SQLConnection dbConn = null;
         try {
