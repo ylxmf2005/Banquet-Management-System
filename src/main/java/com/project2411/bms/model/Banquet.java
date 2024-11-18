@@ -2,10 +2,10 @@ package com.project2411.bms.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-// Class representing a Banquet
 public class Banquet {
-    private int BIN; // Banquet Identification Number
+    private int BIN; 
     private String name;
     private String date;
     private String time;
@@ -17,9 +17,6 @@ public class Banquet {
     private int quota;
     private List<Meal> meals;
 
-    public Banquet() {
-        
-    }
     public Banquet(String name, String date, String time, String address, String location,
                    String contactFirstName, String contactLastName, String available, int quota) {
         this.name = name;
@@ -33,6 +30,29 @@ public class Banquet {
         this.quota = quota;
         meals = new ArrayList<>();
     }
+
+    public Banquet(int BIN, String name, String date, String time, String address, String location, String contactFirstName, String contactLastName, String available, int quota) {
+        this(name, date, time, address, location, contactFirstName, contactLastName, available, quota);
+        this.BIN = BIN;
+    }
+
+    public Banquet(Map<String, Object> row) {
+        this(
+            (String) row.get("Name"),
+            (String) row.get("Date"),
+            (String) row.get("Time"),
+            (String) row.get("Address"),
+            (String) row.get("Location"),
+            (String) row.get("FirstName"),
+            (String) row.get("LastName"),
+            (String) row.get("Available"),
+            ((Number) row.get("Quota")).intValue()
+        );
+        if (row.get("BIN") != null) {
+            this.BIN = ((Number) row.get("BIN")).intValue();
+        }
+    }
+
     public void setMeals(Meal meal) {
         if (meals.size() == 4) {
             throw new IllegalArgumentException("Meals for this banquet is fully set.");
@@ -40,7 +60,7 @@ public class Banquet {
         meals.add(meal);
     }
     
-    /*Getters*/
+    // Getters
     public int getBIN() {
         return BIN;
     }
@@ -74,37 +94,14 @@ public class Banquet {
     public List<Meal> getMeals() {
         return meals;
     }
+
+    public Object[] getParams() {
+        return new Object[] { name, date, time, address, location, contactFirstName, contactLastName, available, quota };
+    }
     
-    /*Setters*/
+    // Setters
     public void setBIN(int BIN) {
         this.BIN = BIN;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public void setDate(String date) {
-        this.date = date;
-    }
-    public void setTime(String time) {
-        this.time = time;
-    }
-    public void setAddress(String address) {
-        this.address = address;
-    }
-    public void setLocation(String location) {
-        this.location = location;
-    }
-    public void setContactFirstName(String contactFirstName) {
-        this.contactFirstName = contactFirstName;
-    }
-    public void setContactLastName(String contactLastName) {
-        this.contactLastName = contactLastName;
-    }
-    public void setAvailable(String available) {
-        this.available = available;
-    }
-    public void setQuota(int quota) {
-        this.quota = quota;
     }
     public void setMeals(List<Meal> meals) {
         this.meals = meals;

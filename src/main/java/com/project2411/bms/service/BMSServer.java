@@ -38,15 +38,19 @@ public class BMSServer {
         try {
             switch (action) {
                 case "createBanquet":
-                    Banquet banquet = parseBanquetFromData(data);
                     try {
-                        Banquet createdBanquet = bmsMain.createBanquet(banquet);
+                        Banquet createdBanquet = bmsMain.createBanquet(new Banquet(data));
                         response.put("status", "success");
                         response.put("banquet", createdBanquet);
                     } catch (Exception e) {
                         response.put("status", "error");
                         response.put("message", e.getMessage());
                     }
+                    break;
+                
+                case "updateBanquet":
+                    boolean updateResult = bmsMain.updateBanquet(new Banquet(data));
+                    response.put("status", updateResult ? "success" : "failure");
                     break;
 
                 // Add other cases for different actions
@@ -79,21 +83,7 @@ public class BMSServer {
         System.err.println("WebSocket error in session " + session.getId() + ": " + throwable.getMessage());
     }
 
-    // Helper method to parse a Banquet object from the data map
-    private Banquet parseBanquetFromData(Map<String, Object> data) {
-        Banquet banquet = new Banquet();
-        banquet.setBIN(data.get("BIN") != null ? ((Number) data.get("BIN")).intValue() : 0);
-        banquet.setName((String) data.get("Name"));
-        banquet.setDate((String) data.get("Date"));
-        banquet.setTime((String) data.get("Time"));
-        banquet.setAddress((String) data.get("Address"));
-        banquet.setLocation((String) data.get("Location"));
-        banquet.setContactFirstName((String) data.get("FirstName"));
-        banquet.setContactLastName((String) data.get("LastName"));
-        banquet.setAvailable((String) data.get("Available"));
-        banquet.setQuota(data.get("Quota") != null ? ((Number) data.get("Quota")).intValue() : 0);
-        return banquet;
-    }
+    
 
     // Implement parsing methods for other entities as needed
 }

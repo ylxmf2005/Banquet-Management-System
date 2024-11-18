@@ -22,7 +22,9 @@ Another version: SQLConnectionDeprecated, returns QureyResult for query, now aba
 
 Since the Oracle database provided by the PolyU can only be accessed on the campus network, I have set up my own Oracle server. The server login are already provided in the code, which can be used directly.
 
-### BMSMain
+### DAO
+Author: Ethan Lee
+
 
 ### BMSServer
 Author: Ethan Lee

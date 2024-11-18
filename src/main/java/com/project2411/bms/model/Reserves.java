@@ -1,6 +1,5 @@
 package com.project2411.bms.model;
 import java.sql.Timestamp;
-// Class representing a Reservation (Registration)
 public class Reserves {
     private String attendeeEmail;
     private int banquetBIN;
@@ -10,7 +9,6 @@ public class Reserves {
     private String mealChoice;
     private String remarks;
 
-    // Constructors, getters, and setters omitted
     public Reserves(String attendeeEmail, int banquetBIN, int seatNo, Timestamp regTime,
                     String drinkChoice, String mealChoice, String remarks) {
         this.attendeeEmail = attendeeEmail;
@@ -22,7 +20,7 @@ public class Reserves {
         this.remarks = remarks;
     }
 
-    /*Check if an account is valid or not*/
+    // Check if an account is valid or not
     public boolean isValidAccount(AttendeeAccount account) {
         return (isValidEmail(account.getEmail()) && isValidNumber(account.getMobileNo())
                 && isValidName(account.getFirstName(), account.getLastName()));
@@ -42,7 +40,8 @@ public class Reserves {
         String nameRegex = "^[A-Za-z]+$";
         return firstName.matches(nameRegex) && lastName.matches(nameRegex);
     }
-    /*Getters*/
+
+    // Getters
     public String getAttendeeEmail() {
         return attendeeEmail;
     }
@@ -63,5 +62,8 @@ public class Reserves {
     }
     public String getRemarks() {
         return remarks;
+    }
+    public Object[] getParams() {
+        return new Object[] { seatNo, regTime, drinkChoice, mealChoice, remarks, attendeeEmail, banquetBIN };
     }
 }

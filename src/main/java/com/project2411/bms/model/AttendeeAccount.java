@@ -1,6 +1,6 @@
 package com.project2411.bms.model;
+import java.util.Map;
 
-// Class representing an Attendee Account
 public class AttendeeAccount {
     private String email; // Account ID
     private String firstName;
@@ -11,7 +11,6 @@ public class AttendeeAccount {
     private String mobileNo;
     private String organization; // Affiliated Organization
 
-    // Constructors, getters, and setters omitted
     public AttendeeAccount(String email, String firstName, String lastName, String address, String type,
                            String password, String mobileNo, String organization) {
         this.email = email;
@@ -24,7 +23,20 @@ public class AttendeeAccount {
         this.organization = organization;
     }
 
-    /*Getters*/
+    public AttendeeAccount(Map<String, Object> row) {
+        this(
+            (String) row.get("Email"),
+            (String) row.get("FirstName"),
+            (String) row.get("LastName"),
+            (String) row.get("Address"),
+            (String) row.get("Type"),
+            (String) row.get("Password"),
+            (String) row.get("MobileNo"),
+            (String) row.get("Organization")
+        );
+    }
+
+    // Getters
     public String getEmail() {
         return email;
     }
@@ -48,5 +60,8 @@ public class AttendeeAccount {
     }
     public String getOrganization() {
         return organization;
+    }
+    public Object[] getParams() {
+        return new Object[] { email, firstName, lastName, address, type, password, mobileNo, organization };
     }
 }

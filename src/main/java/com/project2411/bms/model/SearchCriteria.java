@@ -1,4 +1,4 @@
-package main.java.com.project2411.bms.model;
+package com.project2411.bms.model;
 
 // Class representing the criteria for searching registrations
 public class SearchCriteria {
@@ -6,7 +6,6 @@ public class SearchCriteria {
     private String banquetNamePart;
     private String attendeeType;
 
-    // Constructors, getters, and setters omitted
     public SearchCriteria(String date, String banquetNamePart, String attendeeType) {
         this.date = date;
         this.banquetNamePart = banquetNamePart;
