@@ -1,8 +1,18 @@
-package main.service;
+package com.project2411.bms.service;
 import java.sql.SQLException;
 import java.util.List;
-import main.exceptions.*;
-import main.model.*;
+
+import com.project2411.bms.exceptions.AuthenticationException;
+import com.project2411.bms.exceptions.RegistrationException;
+import com.project2411.bms.exceptions.ValidationException;
+import com.project2411.bms.model.AttendeeAccount;
+import com.project2411.bms.model.Banquet;
+import com.project2411.bms.model.Meal;
+import com.project2411.bms.model.RegistrationResult;
+import com.project2411.bms.model.ReportData;
+import com.project2411.bms.model.Reserves;
+import com.project2411.bms.model.SearchCriteria;
+
 public interface BMSMainInterface {
 
     // Administrator Functions

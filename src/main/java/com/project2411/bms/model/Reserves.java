@@ -1,4 +1,4 @@
-package main.model;
+package com.project2411.bms.model;
 import java.sql.Timestamp;
 // Class representing a Reservation (Registration)
 public class Reserves {

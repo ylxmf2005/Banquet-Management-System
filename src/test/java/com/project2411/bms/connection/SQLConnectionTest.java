@@ -1,10 +1,9 @@
-package test.connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+package com.project2411.bms.connection;
+import java.util.List;
+import java.util.Map;
 
-import main.connection.QueryResult;
-import main.connection.SQLConnection;
-public class SQLConnectionDeprecatedTest {
+public class SQLConnectionTest {
+
     public static void main(String[] args) {
         SQLConnection dbConn = null;
         try {
@@ -29,7 +28,7 @@ public class SQLConnectionDeprecatedTest {
             try {
                 dbConn.executeUpdate(sql);
                 System.out.println("Table created successfully.");
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 System.err.println("Error occurred while creating the table.");
                 e.printStackTrace();
             }
@@ -42,7 +41,6 @@ public class SQLConnectionDeprecatedTest {
                     """;
 
             int rowsInserted = dbConn.executeUpdate(sql);
-            // For INSERT, UPDATE, DELETE statements, the return int is the number of rows affected
             System.out.println("Inserted " + rowsInserted + " record(s).");
 
             // 3. Insert data using executePreparedUpdate(String sql, Object[] params) (with parameters)
@@ -68,34 +66,27 @@ public class SQLConnectionDeprecatedTest {
             // 4. Select data using executeQuery(String sql) (without parameters)
             System.out.println("\n4. Selecting data (without parameters):");
             String selectSql = "SELECT Email, FirstName, LastName FROM AttendeeAccount";
-            try (QueryResult queryResult = dbConn.executeQuery(selectSql)) {
-                ResultSet rs = queryResult.getResultSet();
-                while (rs != null && rs.next()) {
-                    String email = rs.getString("Email");
-                    String firstName = rs.getString("FirstName");
-                    String lastName = rs.getString("LastName");
-                    System.out.println("Email: " + email + ", Name: " + firstName + " " + lastName);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            List<Map<String, Object>> results = dbConn.executeQuery(selectSql);
+            for (Map<String, Object> row : results) {
+                String email = (String) row.get("EMAIL");
+                String firstName = (String) row.get("FIRSTNAME");
+                String lastName = (String) row.get("LASTNAME");
+                System.out.println("Email: " + email + ", Name: " + firstName + " " + lastName);
             }
 
             // 5. Select data using executePreparedQuery(String sql, Object[] params) (with parameters)
             System.out.println("\n5. Selecting data (with parameters):");
             String selectPreparedSql = "SELECT Email, FirstName, LastName FROM AttendeeAccount WHERE Email = ?";
             Object[] selectParams = { "example2@example.com" };
-            try (QueryResult queryResult = dbConn.executePreparedQuery(selectPreparedSql, selectParams)) {
-                ResultSet rsPrepared = queryResult.getResultSet();
-                if (rsPrepared != null && rsPrepared.next()) {
-                    String email = rsPrepared.getString("Email");
-                    String firstName = rsPrepared.getString("FirstName");
-                    String lastName = rsPrepared.getString("LastName");
-                    System.out.println("Email: " + email + ", Name: " + firstName + " " + lastName);
-                } else {
-                    System.out.println("No records found.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            results = dbConn.executePreparedQuery(selectPreparedSql, selectParams);
+            if (results.size() > 0) {
+                Map<String, Object> row = results.get(0);
+                String email = (String) row.get("EMAIL");
+                String firstName = (String) row.get("FIRSTNAME");
+                String lastName = (String) row.get("LASTNAME");
+                System.out.println("Email: " + email + ", Name: " + firstName + " " + lastName);
+            } else {
+                System.out.println("No records found.");
             }
 
             // 6. Update data using executeUpdate(String sql) (without parameters)
@@ -130,16 +121,13 @@ public class SQLConnectionDeprecatedTest {
             try {
                 dbConn.executeUpdate(dropTableSql);
                 System.out.println("Table 'AttendeeAccount' dropped successfully.");
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 System.err.println("Error occurred while dropping the table.");
                 e.printStackTrace();
             }
 
-        } catch (ClassNotFoundException e) {
-            System.err.println("Oracle JDBC driver not found.");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.err.println("An SQL exception occurred.");
+        } catch (Exception e) {
+            System.err.println("An exception occurred.");
             e.printStackTrace();
         } finally {
             // Close the database connection

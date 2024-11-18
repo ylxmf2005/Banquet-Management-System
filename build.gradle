@@ -1,5 +1,9 @@
 plugins {
-    id 'java'
+    id 'application'
+}
+
+application {
+    mainClass = 'com.project2411.bms.service.WebSocketServer'
 }
 
 repositories {
@@ -7,21 +11,20 @@ repositories {
 }
 
 dependencies {
-    // WebSocket API dependency
-    implementation 'javax.websocket:javax.websocket-api:1.1'
+    // Use Jakarta WebSocket API instead of javax
+    implementation 'jakarta.websocket:jakarta.websocket-api:2.1.1'
 
     // Gson dependency
-    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
     // ojdbc8 dependency
     implementation files('lib/ojdbc8.jar')
 
-    // Jetty dependencies
-    mplementation 'org.eclipse.jetty:jetty-server:9.4.44.v20210927'
-    implementation 'org.eclipse.jetty:jetty-webapp:9.4.44.v20210927'
-    implementation 'org.eclipse.jetty.websocket:websocket-server:9.4.44.v20210927'
-    implementation 'javax.websocket:javax.websocket-api:1.1'
+    // Jetty dependencies (specify explicit versions)
+    implementation 'org.eclipse.jetty:jetty-server:11.0.15'
+    implementation 'org.eclipse.jetty:jetty-webapp:11.0.15'
+    implementation 'org.eclipse.jetty.websocket:websocket-jakarta-server:11.0.15'
 }
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '21'
+targetCompatibility = '21'

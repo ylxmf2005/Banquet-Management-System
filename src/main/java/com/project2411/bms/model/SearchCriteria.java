@@ -1,4 +1,4 @@
-package main.model;
+package com.project2411.bms.model;
 
 // Class representing the criteria for searching registrations
 public class SearchCriteria {

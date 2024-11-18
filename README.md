@@ -3,11 +3,13 @@ This project is in the early stages of development. The functionality is incompl
 
 ### Env
 IDE: intelliJ IDEA
+
 Build Tool: Gradle
 
 ### How to Setup
 Make sure you have Gradle installed.
-`gradle build`
+`gradle clean build`
+`gradle run`
 
 ### Model
 Author: Sunghak Heo

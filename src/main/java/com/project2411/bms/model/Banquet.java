@@ -1,4 +1,4 @@
-package main.model;
+package com.project2411.bms.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +17,11 @@ public class Banquet {
     private int quota;
     private List<Meal> meals;
 
-    // Constructors, getters, and setters omitted.
-    public Banquet(int BIN, String name, String date, String time, String address, String location,
+    public Banquet() {
+        
+    }
+    public Banquet(String name, String date, String time, String address, String location,
                    String contactFirstName, String contactLastName, String available, int quota) {
-        this.BIN = BIN;
         this.name = name;
         this.date = date;
         this.time = time;
@@ -72,5 +73,57 @@ public class Banquet {
     }
     public List<Meal> getMeals() {
         return meals;
+    }
+    
+    /*Setters*/
+    public void setBIN(int BIN) {
+        this.BIN = BIN;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setDate(String date) {
+        this.date = date;
+    }
+    public void setTime(String time) {
+        this.time = time;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    public void setContactFirstName(String contactFirstName) {
+        this.contactFirstName = contactFirstName;
+    }
+    public void setContactLastName(String contactLastName) {
+        this.contactLastName = contactLastName;
+    }
+    public void setAvailable(String available) {
+        this.available = available;
+    }
+    public void setQuota(int quota) {
+        this.quota = quota;
+    }
+    public void setMeals(List<Meal> meals) {
+        this.meals = meals;
+    }
+
+    @Override
+    public String toString() {
+        return "Banquet{" +
+                "BIN=" + BIN +
+                ", name='" + name + '\'' +
+                ", date='" + date + '\'' +
+                ", time='" + time + '\'' +
+                ", address='" + address + '\'' +
+                ", location='" + location + '\'' +
+                ", contactFirstName='" + contactFirstName + '\'' +
+                ", contactLastName='" + contactLastName + '\'' +
+                ", available='" + available + '\'' +
+                ", quota=" + quota +
+                ", meals=" + meals +
+                '}';
     }
 }

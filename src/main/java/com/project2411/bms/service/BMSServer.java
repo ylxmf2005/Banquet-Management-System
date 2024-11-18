@@ -1,12 +1,19 @@
-package main.service;
+package com.project2411.bms.service;
 
-import java.util.*;
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gson.Gson;
-import main.service.BMSMain;
-import main.service.*;
-import main.models.*;
+import com.project2411.bms.model.Banquet;
+
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
+
 
 // WebSocket server endpoint at "/websocket"
 @ServerEndpoint("/websocket")
@@ -33,7 +40,7 @@ public class BMSServer {
                 case "createBanquet":
                     Banquet banquet = parseBanquetFromData(data);
                     try {
-                        Banquet createdBanquet = backendService.createBanquet(banquet);
+                        Banquet createdBanquet = bmsMain.createBanquet(banquet);
                         response.put("status", "success");
                         response.put("banquet", createdBanquet);
                     } catch (Exception e) {

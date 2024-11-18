@@ -1,4 +1,4 @@
-package main.model;
+package com.project2411.bms.model;
 
 // Class representing the result of a Registration attempt
 public class RegistrationResult {
