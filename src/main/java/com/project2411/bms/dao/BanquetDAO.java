@@ -27,7 +27,19 @@ public class BanquetDAO {
     private int insertBanquet(Banquet banquet) throws SQLException {
         String sql = "INSERT INTO Banquet (BIN, Name, Date, Time, Address, Location, FirstName, LastName, Available, Quota) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        int rowsAffected = sqlConnection.executePreparedUpdate(sql, banquet.getParams());
+        Object[] params = new Object[] {
+            banquet.getBIN(),
+            banquet.getName(),
+            banquet.getDate(),
+            banquet.getTime(),
+            banquet.getAddress(),
+            banquet.getLocation(),
+            banquet.getContactFirstName(),
+            banquet.getContactLastName(),
+            banquet.getAvailable(),
+            banquet.getQuota()
+        };
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected;
     }
 
@@ -44,7 +56,19 @@ public class BanquetDAO {
 
     public boolean updateBanquet(Banquet banquet) throws SQLException {
         String sql = "UPDATE Banquet SET Name=?, Date=?, Time=?, Address=?, Location=?, FirstName=?, LastName=?, Available=?, Quota=? WHERE BIN=?";
-        int rowsAffected = sqlConnection.executePreparedUpdate(sql, banquet.getParams());
+        Object[] params = new Object[] {
+            banquet.getName(),
+            banquet.getDate(),
+            banquet.getTime(),
+            banquet.getAddress(),
+            banquet.getLocation(),
+            banquet.getContactFirstName(),
+            banquet.getContactLastName(),
+            banquet.getAvailable(),
+            banquet.getQuota(),
+            banquet.getBIN()
+        };
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
 

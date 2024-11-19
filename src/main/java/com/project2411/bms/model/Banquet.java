@@ -94,10 +94,6 @@ public class Banquet {
     public List<Meal> getMeals() {
         return meals;
     }
-
-    public Object[] getParams() {
-        return new Object[] { name, date, time, address, location, contactFirstName, contactLastName, available, quota };
-    }
     
     // Setters
     public void setBIN(int BIN) {

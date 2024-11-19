@@ -30,7 +30,16 @@ public class AttendeeAccountDao {
 
     public boolean updateAttendeeRegistrationData(String email, Reserves registrationData) throws SQLException {
         String sql = "UPDATE Reserves SET SeatNo=?, RegTime=?, DrinkChoice=?, MealChoice=?, Remarks=? WHERE AttendeeEmail=? AND BanquetBIN=?";
-        int rowsAffected = sqlConnection.executePreparedUpdate(sql, registrationData.getParams());
+        Object[] params = new Object[] {
+            registrationData.getSeatNo(),
+            registrationData.getRegTime(),
+            registrationData.getDrinkChoice(),
+            registrationData.getMealChoice(),
+            registrationData.getRemarks(),
+            email,
+            registrationData.getBanquetBIN()
+        };
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
 }

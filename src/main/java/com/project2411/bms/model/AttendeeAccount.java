@@ -61,7 +61,4 @@ public class AttendeeAccount {
     public String getOrganization() {
         return organization;
     }
-    public Object[] getParams() {
-        return new Object[] { email, firstName, lastName, address, type, password, mobileNo, organization };
-    }
 }
