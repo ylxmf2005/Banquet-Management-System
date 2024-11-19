@@ -17,11 +17,24 @@ public class DbInitDao {
     }
 
     public void initDb() {
+        initDb(false);
+    }
+
+    public void initDb(Boolean clearIfExists) {
         try {
-            if (!tableExists("AttendeeAccount"))createAttendeeAccountTable();
+            // Drop existing tables if clearIfExists is true
+            if (clearIfExists) {
+                if (tableExists("Reserves")) dropTable("Reserves");
+                if (tableExists("Meal")) dropTable("Meal");
+                if (tableExists("Banquet")) dropTable("Banquet");
+                if (tableExists("AttendeeAccount")) dropTable("AttendeeAccount");
+            }
+
+            // Create tables if they do not exist
+            if (!tableExists("AttendeeAccount")) createAttendeeAccountTable();
             if (!tableExists("Banquet")) createBanquetTable();
             if (!tableExists("Meal")) createMealTable();
-            if (!tableExists("Reserves"))createReservesTable();
+            if (!tableExists("Reserves")) createReservesTable();
 
             System.out.println("Database initialization completed.");
         } catch (SQLException e) {
@@ -29,6 +42,13 @@ public class DbInitDao {
             e.printStackTrace();
         }
     }
+
+    private void dropTable(String tableName) throws SQLException {
+        String sql = "DROP TABLE " + tableName + " CASCADE CONSTRAINTS";
+        sqlConnection.executeUpdate(sql);
+        System.out.println("Table " + tableName + " dropped.");
+    }
+
     private boolean tableExists(String tableName) throws SQLException {
         String sql = "SELECT table_name FROM user_tables WHERE table_name = ?";
         Object[] params = new Object[]{tableName.toUpperCase()};
