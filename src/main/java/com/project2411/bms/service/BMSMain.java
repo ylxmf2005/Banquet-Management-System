@@ -54,5 +54,7 @@ public class BMSMain {
     public boolean updateAttendeeRegistrationData(String email, Reserves registrationData) throws SQLException {
         return attendeeAccountDao.updateAttendeeRegistrationData(email, registrationData);
     }
-
+    boolean updateAttendeeProfile(AttendeeAccount attendee) throws ValidationException, SQLException {
+        return attendeeAccountDao.updateAttendeeProfile(attendee);
+    }
 }
