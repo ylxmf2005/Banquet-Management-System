@@ -42,4 +42,20 @@ public class AttendeeAccountDao {
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
+    
+    boolean updateAttendeeProfile(AttendeeAccount attendee) throws ValidationException, SQLException {
+        String sql = "UPDATE AttendeeAccount SET FirstName=?, LastName=?, Address=?, Type=?, Password=?, Type=?, Password=?, MobileNo=?, Organization=? WHERE AttendeeEmail=?";
+        Object[] params = new Object[] {
+                attendee.getFirstName(),
+                attendee.getLastName(),
+                attendee.getAddress(),
+                attendee.getType(),
+                attendee.getPassword(),
+                attendee.getMobileNo(),
+                attendee.getOrganization(),
+                attendee.getEmail()
+        };
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
+        return rowsAffected > 0;
+    }
 }
