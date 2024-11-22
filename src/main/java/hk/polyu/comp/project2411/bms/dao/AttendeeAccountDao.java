@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
+import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Reserves;
-import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 
 public class AttendeeAccountDao {
     private SQLConnection sqlConnection;
@@ -16,7 +16,7 @@ public class AttendeeAccountDao {
     }
 
     public AttendeeAccount getAttendeeByEmail(String email) throws SQLException {
-        String sql = "SELECT * FROM AttendeeAccount WHERE Email = ?";
+        String sql = "SELECT * FROM Account WHERE Email = ? AND Role = 'user'";
         Object[] params = new Object[] { email };
 
         List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
@@ -30,7 +30,7 @@ public class AttendeeAccountDao {
     }
 
     public boolean updateAttendeeRegistrationData(String email, Reserves registrationData) throws SQLException {
-        String sql = "UPDATE Reserves SET SeatNo=?, RegTime=?, DrinkChoice=?, MealChoice=?, Remarks=? WHERE AttendeeEmail=? AND BanquetBIN=?";
+        String sql = "UPDATE Reserves SET SeatNo=?, RegTime=?, DrinkChoice=?, MealChoice=?, Remarks=? WHERE Email=? AND BanquetBIN=?";
         Object[] params = new Object[] {
             registrationData.getSeatNo(),
             registrationData.getRegTime(),
@@ -45,8 +45,9 @@ public class AttendeeAccountDao {
     }
 
     public boolean updateAttendeeProfile(AttendeeAccount attendee) throws ValidationException, SQLException {
-        String sql = "UPDATE AttendeeAccount SET FirstName=?, LastName=?, Address=?, Type=?, Password=?, Type=?, Password=?, MobileNo=?, Organization=? WHERE AttendeeEmail=?";
+        String sql = "UPDATE Account SET Email = ?, FirstName=?, LastName=?, Address=?, Type=?, Password=?, MobileNo=?, Organization=? WHERE Email=? AND Role='user'";
         Object[] params = new Object[] {
+                attendee.getEmail(),
                 attendee.getFirstName(),
                 attendee.getLastName(),
                 attendee.getAddress(),
@@ -54,7 +55,7 @@ public class AttendeeAccountDao {
                 attendee.getPassword(),
                 attendee.getMobileNo(),
                 attendee.getOrganization(),
-                attendee.getEmail()
+                attendee.getOriginalEmail(),
         };
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;

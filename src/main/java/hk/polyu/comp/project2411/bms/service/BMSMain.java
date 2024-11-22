@@ -77,6 +77,10 @@ public class BMSMain {
         return attendeeAccountDao.updateAttendeeProfile(attendee);
     }
 
+    public List<Banquet> getAllBanquets() throws SQLException {
+        return banquetDao.getAllBanquets();
+    }
+    
     public List<Banquet> getAvailableBanquets() throws SQLException {
         return banquetDao.getAvailableBanquets();
     }

@@ -12,8 +12,9 @@ public class AdminAccount implements Account {
     }
 
     public AdminAccount(Map<String, Object> row) {
-        this.email = (String) row.get("EMAIL");
-        this.password = (String) row.get("PASSWORD");
+        Map<String, Object> lowerCaseRow = Utils.getLowerCasedMap(row);
+        this.email = (String) lowerCaseRow.get("email");
+        this.password = (String) lowerCaseRow.get("passowrd");
     }
 
     public String getEmail() {

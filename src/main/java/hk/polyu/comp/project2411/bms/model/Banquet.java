@@ -34,21 +34,23 @@ public class Banquet {
         this(name, dateTime, address, location, contactFirstName, contactLastName, available, quota);
         this.BIN = BIN;
     }
-
+    
     public Banquet(Map<String, Object> row) {
-        this(
-            (String) row.get("NAME"),
-            Timestamp.valueOf((String) row.get("DATETIME")),
-            (String) row.get("ADDRESS"),
-            (String) row.get("LOCATION"),
-            (String) row.get("FIRSTNAME"),
-            (String) row.get("LASTNAME"),
-            (String) row.get("AVAILABLE"),
-            ((Number) row.get("QUOTA")).intValue()
-        );
-        if (row.get("BIN") != null) {
-            this.BIN = ((Number) row.get("BIN")).intValue();
+        Map <String, Object> lowerCaseRow = Utils.getLowerCasedMap(row);
+        
+        this.name = (String) lowerCaseRow.get("name");
+        this.dateTime = Utils.parseTimestamp(lowerCaseRow.get  ("datetime"));
+        this.address = (String) lowerCaseRow.get("address");
+        this.location = (String) lowerCaseRow.get("location");
+        this.contactFirstName = (String) lowerCaseRow.get("contactfirstname");
+        this.contactLastName = (String) lowerCaseRow.get("contactlastname");
+        this.available = (String) lowerCaseRow.get("available");
+        this.quota = ((Number) lowerCaseRow.get("quota")).intValue();
+
+        if (lowerCaseRow.get("bin") != null) {
+            this.BIN = ((Number) lowerCaseRow.get("bin")).intValue();
         }
+
     }
 
     public void setMeals(Meal meal) {

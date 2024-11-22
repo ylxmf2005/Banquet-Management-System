@@ -37,6 +37,7 @@ public class DbInitDao {
             if (!tableExists("Account")) {
                 createAccountTable();
                 createDefaultAdminAccount();
+                createTestAttendeeAccount();
             }
 
             if (!tableExists("Reserves")) createReservesTable();
@@ -97,6 +98,13 @@ public class DbInitDao {
         System.out.println("Default admin account created.");
     }
 
+    private void createTestAttendeeAccount() throws SQLException {
+        String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
+                     "VALUES ('test@polyu.hk', 'user', 'San', 'Zhang', '114514', '2411project', 'PolyU HJ202', 'PolyU HJ202', 'Student', 'PolyU')";
+        sqlConnection.executeUpdate(sql);
+        System.out.println("Test attendee account created.");
+    }
+
     /**
      * Creates the Banquet table.
      *
@@ -109,14 +117,15 @@ public class DbInitDao {
                 "DateTime DATE , " +
                 "Address VARCHAR2(255), " +
                 "Location VARCHAR2(255), " +
-                "FirstName VARCHAR2(255), " +
-                "LastName VARCHAR2(255), " +
+                "ContactFirstName VARCHAR2(255), " +
+                "ContactLastName VARCHAR2(255), " +
                 "Available VARCHAR2(1), " +
                 "Quota NUMBER" +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Banquet created.");
     }
+
 
     /**
      * Creates the Meal table.

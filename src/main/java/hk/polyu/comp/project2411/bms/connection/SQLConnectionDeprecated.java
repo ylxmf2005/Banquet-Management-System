@@ -36,10 +36,10 @@ public class SQLConnectionDeprecated {
     }
 
     // Execute a SELECT statement and return a QueryResult
-    public QueryResult executeQuery(String sql) throws SQLException {
+    public QueryResultDeprecated executeQuery(String sql) throws SQLException {
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql);
-        return new QueryResult(rs, stmt);
+        return new QueryResultDeprecated(rs, stmt);
     }
 
     // Execute an INSERT, UPDATE, or DELETE statement and return the number of affected rows
@@ -52,13 +52,13 @@ public class SQLConnectionDeprecated {
     }
 
     // Execute a parameterized PreparedStatement query and return a QueryResult
-    public QueryResult executePreparedQuery(String sql, Object[] params) throws SQLException {
+    public QueryResultDeprecated executePreparedQuery(String sql, Object[] params) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement(sql);
         for (int i = 0; i < params.length; i++) {
             pstmt.setObject(i + 1, params[i]);
         }
         ResultSet rs = pstmt.executeQuery();
-        return new QueryResult(rs, pstmt);
+        return new QueryResultDeprecated(rs, pstmt);
     }
 
     // Execute a parameterized PreparedStatement update and return the number of affected rows

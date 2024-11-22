@@ -21,7 +21,7 @@ export default function Navbar() {
         <AppBar position="static">
             <Toolbar>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    BMS
+                    Banquet Management System
                 </Typography>
                 {auth?.user ? (
                     <>

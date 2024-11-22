@@ -1,25 +1,33 @@
 package hk.polyu.comp.project2411.bms.service;
 
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import hk.polyu.comp.project2411.bms.exceptions.AuthenticationException;
+import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.Account;
+import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Banquet;
+import hk.polyu.comp.project2411.bms.model.Meal;
+import hk.polyu.comp.project2411.bms.model.Reserves;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/")
 public class BMSRestController {
 
-    private BMSMain bmsMain = new BMSMain();
+    private static BMSMain bmsMain = new BMSMain();
     private static Gson gson = new Gson();
 
     @POST
@@ -60,7 +68,8 @@ public class BMSRestController {
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace(); 
+            // System.out.println("Error: " + e.getMessage());
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);
@@ -114,6 +123,133 @@ public class BMSRestController {
             response.put("message", "Authentication failed");
             String jsonResponse = gson.toJson(response);
             return Response.status(Response.Status.UNAUTHORIZED).entity(jsonResponse).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
+    @GET
+    @Path("/getAllBanquets")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllBanquets() {
+        System.out.println("Received request at /getAllBanquets");
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Banquet> banquets = bmsMain.getAllBanquets();
+            response.put("status", "success");
+            response.put("banquets", banquets);
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            //System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
+    @POST
+    @Path("/addMealToBanquet")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addMealToBanquet(String requestData) {
+        System.out.println("Received request at /addMealToBanquet: " + requestData);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            JsonObject jsonObject = gson.fromJson(requestData, JsonObject.class);
+            int banquetBIN = jsonObject.get("banquetBIN").getAsInt();
+            Meal meal = gson.fromJson(jsonObject.get("meal"), Meal.class);
+            boolean result = bmsMain.addMealToBanquet(banquetBIN, meal);
+            response.put("status", result ? "success" : "failure");
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
+    @GET
+    @Path("/getAttendeeByEmail")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAttendeeByEmail(@QueryParam("email") String email) {
+        System.out.println("Received request at /getAttendeeByEmail: " + email);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            AttendeeAccount attendee = bmsMain.getAttendeeByEmail(email);
+            response.put("status", "success");
+            response.put("attendee", attendee);
+            System.out.println("Attendee: " + attendee);
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
+    @POST
+    @Path("/updateAttendeeProfile")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateAttendeeProfile(String attendeeData) {
+        System.out.println("Received request at /updateAttendeeProfile: " + attendeeData);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            AttendeeAccount attendee = gson.fromJson(attendeeData, AttendeeAccount.class);
+            boolean result = bmsMain.updateAttendeeProfile(attendee);
+            response.put("status", result ? "success" : "failure");
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (ValidationException e) {
+            System.out.println("Validation error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.BAD_REQUEST).entity(jsonResponse).build();
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
+
+    @POST
+    @Path("/updateAttendeeRegistrationData")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateAttendeeRegistrationData(String requestData) {
+        System.out.println("Received request at /updateAttendeeRegistrationData: " + requestData);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            JsonObject jsonObject = gson.fromJson(requestData, JsonObject.class);
+            String email = jsonObject.get("email").getAsString();
+            Reserves registrationData = gson.fromJson(jsonObject.get("registrationData"), Reserves.class);
+            boolean result = bmsMain.updateAttendeeRegistrationData(email, registrationData);
+            response.put("status", result ? "success" : "failure");
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             response.put("status", "error");

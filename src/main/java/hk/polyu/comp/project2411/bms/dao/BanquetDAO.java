@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
+import hk.polyu.comp.project2411.bms.exceptions.RegistrationException;
 import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.Meal;
+import hk.polyu.comp.project2411.bms.model.RegistrationResult;
 
 public class BanquetDAO {
     private SQLConnection sqlConnection;
@@ -35,7 +37,7 @@ public class BanquetDAO {
         return 0;
     }
     private int insertBanquet(Banquet banquet) throws SQLException {
-        String sql = "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, FirstName, LastName, Available, Quota) " +
+        String sql = "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Object[] params = new Object[] {
             banquet.getBIN(),
@@ -64,7 +66,7 @@ public class BanquetDAO {
     }
 
     public boolean updateBanquet(Banquet banquet) throws SQLException {
-        String sql = "UPDATE Banquet SET Name=?, DateTime=?, Address=?, Location=?, FirstName=?, LastName=?, Available=?, Quota=? WHERE BIN=?";
+        String sql = "UPDATE Banquet SET Name=?, DateTime=?, Address=?, Location=?, ContactFirstName=?, ContactLastName=?, Available=?, Quota=? WHERE BIN=?";
         Object[] params = new Object[] {
             banquet.getName(),
             banquet.getDateTime(),
@@ -94,6 +96,20 @@ public class BanquetDAO {
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
+
+    public List<Banquet> getAllBanquets() throws SQLException {
+        String sql = "SELECT * FROM Banquet";
+        List<Map<String, Object>> result = sqlConnection.executeQuery(sql);
+        List<Banquet> banquets = new ArrayList<>();
+        if (!result.isEmpty()) {
+            for (Map<String, Object> row : result) {
+                banquets.add(new Banquet(row));
+            }
+        }
+        else return null;
+        return banquets;
+    }
+
     public List<Banquet> getAvailableBanquets() throws SQLException {
         String sql = "SELECT * FROM Banquet WHERE Available = Y";
 
@@ -103,7 +119,7 @@ public class BanquetDAO {
 
         if (!result.isEmpty()) {
             for (Map<String, Object> row : result) {
-                banquets.add((Banquet) row);
+                banquets.add(new Banquet(row));
             }
         }
         else return null;

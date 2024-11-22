@@ -2,6 +2,7 @@ package hk.polyu.comp.project2411.bms.model;
 import java.util.Map;
 
 public class AttendeeAccount implements  Account {
+    private String originalEmail;
     private String role = "user";
     private String email; // Account ID
     private String firstName;
@@ -25,16 +26,15 @@ public class AttendeeAccount implements  Account {
     }
 
     public AttendeeAccount(Map<String, Object> row) {
-        this(
-            (String) row.get("EMAIL"),
-            (String) row.get("FIRSTNAME"),
-            (String) row.get("LASTNAME"),
-            (String) row.get("ADDRESS"),
-            (String) row.get("TYPE"),
-            (String) row.get("PASSWORD"),
-            (String) row.get("MOBILENO"),
-            (String) row.get("ORGANIZATION")
-        );
+        Map <String, Object> lowerCaseRow = Utils.getLowerCasedMap(row);
+        this.email = (String) lowerCaseRow.get("email");
+        this.firstName = (String) lowerCaseRow.get("firstname");
+        this.lastName = (String) lowerCaseRow.get("lastname");
+        this.address = (String) lowerCaseRow.get("address");
+        this.type = (String) lowerCaseRow.get("type");
+        this.password = (String) lowerCaseRow.get("password");
+        this.mobileNo = (String) lowerCaseRow.get("mobileno");
+        this.organization = (String) lowerCaseRow.get("organization");
     }
 
     // Getters
@@ -64,5 +64,9 @@ public class AttendeeAccount implements  Account {
     }
     public String getOrganization() {
         return organization;
+    }
+
+    public String getOriginalEmail() {
+        return originalEmail;
     }
 }

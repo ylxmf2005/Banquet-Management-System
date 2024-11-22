@@ -3,11 +3,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class QueryResult implements AutoCloseable {
+public class QueryResultDeprecated implements AutoCloseable {
     private ResultSet resultSet;
     private Statement statement;
 
-    public QueryResult(ResultSet resultSet, Statement statement) {
+    public QueryResultDeprecated(ResultSet resultSet, Statement statement) {
         this.resultSet = resultSet;
         this.statement = statement;
     }

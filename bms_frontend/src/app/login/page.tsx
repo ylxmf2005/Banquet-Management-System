@@ -8,7 +8,7 @@ import {
     Button,
     TextField,
     Link as MuiLink,
-    Grid,
+    Stack,
     Box,
     Typography,
     Container,
@@ -87,18 +87,14 @@ export default function LoginPage() {
                     >
                         Login
                     </Button>
-                    <Grid container>
-                        <Grid item xs>
-                            <MuiLink href="/forgot-password" variant="body2">
-                                Forgot password?
-                            </MuiLink>
-                        </Grid>
-                        <Grid item>
-                            <MuiLink href="/register" variant="body2">
-                                Don't have an account? Sign Up
-                            </MuiLink>
-                        </Grid>
-                    </Grid>
+                    <Stack direction="row" justifyContent="space-between">
+                        <MuiLink href="/forgot-password" variant="body2">
+                            Forgot password?
+                        </MuiLink>
+                        <MuiLink href="/register" variant="body2">
+                            Don't have an account? Sign Up
+                        </MuiLink>
+                    </Stack>
                 </Box>
             </Box>
         </Container>
