@@ -27,14 +27,18 @@ public class DbInitDao {
             if (clearIfExists) {
                 if (tableExists("Banquet")) dropTable("Banquet");
                 if (tableExists("Meal")) dropTable("Meal");
-                if (tableExists("AttendeeAccount")) dropTable("AttendeeAccount");
+                if (tableExists("Account")) dropTable("Account");
                 if (tableExists("Reserves")) dropTable("Reserves");
             }
     
             // Create tables if they do not exist
             if (!tableExists("Banquet")) createBanquetTable();
             if (!tableExists("Meal")) createMealTable();
-            if (!tableExists("AttendeeAccount")) createAttendeeAccountTable();
+            if (!tableExists("Account")) {
+                createAccountTable();
+                createDefaultAdminAccount();
+            }
+
             if (!tableExists("Reserves")) createReservesTable();
     
             System.out.println("Database initialization completed.");
@@ -60,13 +64,14 @@ public class DbInitDao {
     }
 
     /**
-     * Creates the AttendeeAccount table.
+     * Creates the Account table.
      *
      * @throws SQLException If a database access error occurs.
      */
-    private void createAttendeeAccountTable() throws SQLException {
-        String sql = "CREATE TABLE AttendeeAccount (" +
+    private void createAccountTable() throws SQLException {
+        String sql = "CREATE TABLE Account (" +
                 "Email VARCHAR2(255) PRIMARY KEY, " +
+                "Role VARCHAR2(50), " +
                 "FirstName VARCHAR2(255), " +
                 "LastName VARCHAR2(255), " +
                 "MobileNo VARCHAR2(20), " +
@@ -77,7 +82,19 @@ public class DbInitDao {
                 "Organization VARCHAR2(255)" +
                 ")";
         sqlConnection.executeUpdate(sql);
-        System.out.println("Table AttendeeAccount created.");
+        System.out.println("Table Account created.");
+    }
+    
+    /**
+     * Creates the default admin account.
+     *
+     * @throws SQLException If a database access error occurs.
+     */
+
+    private void createDefaultAdminAccount() throws SQLException {
+        String sql = "INSERT INTO Account (Email, Role, Password) VALUES ('bmsadmin@polyu.hk', 'admin', '2411project')";
+        sqlConnection.executeUpdate(sql);
+        System.out.println("Default admin account created.");
     }
 
     /**
@@ -135,7 +152,7 @@ public class DbInitDao {
                 "MealChoice VARCHAR2(255), " +
                 "Remarks VARCHAR2(255), " +
                 "PRIMARY KEY (AttendeeEmail, BanquetBIN), " +
-                "FOREIGN KEY (AttendeeEmail) REFERENCES AttendeeAccount(Email), " +
+                "FOREIGN KEY (AttendeeEmail) REFERENCES Account(Email), " +
                 "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN)" +
                 ")";
         sqlConnection.executeUpdate(sql);

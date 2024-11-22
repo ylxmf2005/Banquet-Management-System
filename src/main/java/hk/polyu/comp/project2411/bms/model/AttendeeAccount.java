@@ -2,6 +2,7 @@ package hk.polyu.comp.project2411.bms.model;
 import java.util.Map;
 
 public class AttendeeAccount implements  Account {
+    private String role = "user";
     private String email; // Account ID
     private String firstName;
     private String lastName;
@@ -37,6 +38,9 @@ public class AttendeeAccount implements  Account {
     }
 
     // Getters
+    public String getRole() {
+        return role;
+    }
     public String getEmail() {
         return email;
     }

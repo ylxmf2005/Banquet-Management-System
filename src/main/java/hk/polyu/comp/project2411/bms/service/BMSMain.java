@@ -4,10 +4,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
+import hk.polyu.comp.project2411.bms.dao.AccountDao;
 import hk.polyu.comp.project2411.bms.dao.AttendeeAccountDao;
 import hk.polyu.comp.project2411.bms.dao.BanquetDAO;
 import hk.polyu.comp.project2411.bms.dao.DbInitDao;
+import hk.polyu.comp.project2411.bms.exceptions.AuthenticationException;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
+import hk.polyu.comp.project2411.bms.model.Account;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.Meal;
@@ -20,6 +23,7 @@ public class BMSMain {
     private DbInitDao dbInitDao;
     private BanquetDAO banquetDao;
     private AttendeeAccountDao attendeeAccountDao;
+    private AccountDao accountDao;
 
     public BMSMain() {
         this.sqlConnection = new SQLConnection();
@@ -28,6 +32,7 @@ public class BMSMain {
         this.attendeeAccountDao = new AttendeeAccountDao(sqlConnection);
         
         // Create the tables if not exists
+        initDatabase(true); // set to true for test because our database structure is not finalized
     }
 
     // Close the SQLConnection when done
@@ -37,6 +42,11 @@ public class BMSMain {
 
     public boolean initDatabase(boolean clearIfExists) {
         return dbInitDao.initDb(clearIfExists);
+    }
+
+    // Login Functions
+    public Account authenticateAccount(String email, String password) throws AuthenticationException, SQLException {
+        return accountDao.authenticateAccount(email, password);
     }
 
     // Administrator Functions
