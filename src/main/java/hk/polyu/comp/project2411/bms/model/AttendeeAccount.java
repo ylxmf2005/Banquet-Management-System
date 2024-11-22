@@ -1,7 +1,7 @@
 package hk.polyu.comp.project2411.bms.model;
 import java.util.Map;
 
-public class AttendeeAccount {
+public class AttendeeAccount implements  Account {
     private String email; // Account ID
     private String firstName;
     private String lastName;

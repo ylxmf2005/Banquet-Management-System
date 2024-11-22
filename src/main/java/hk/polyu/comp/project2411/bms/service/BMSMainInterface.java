@@ -5,6 +5,7 @@ import java.util.List;
 import hk.polyu.comp.project2411.bms.exceptions.AuthenticationException;
 import hk.polyu.comp.project2411.bms.exceptions.RegistrationException;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
+import hk.polyu.comp.project2411.bms.model.Account;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.Meal;
@@ -101,15 +102,15 @@ public interface BMSMainInterface {
     boolean registerAttendee(AttendeeAccount attendee) throws ValidationException, SQLException;
 
     /**
-     * Authenticates an attendee with email and password.
+     * Authenticates a user with email and password.
      *
-     * @param email    The email address of the attendee.
-     * @param password The password of the attendee.
-     * @return AttendeeAccount object if authentication is successful.
+     * @param email    The email address of the user.
+     * @param password The password of the user.
+     * @return AttendeeAccount object if the account is an attendee. AdminAccount object if the account is an administrator.
      * @throws AuthenticationException If authentication fails.
      * @throws SQLException            If a database access error occurs.
      */
-    AttendeeAccount authenticateAttendee(String email, String password) throws AuthenticationException, SQLException;
+    Account authenticateUser(String email, String password) throws AuthenticationException, SQLException;
 
     /**
      * Updates an attendee's personal information in their account profile.
