@@ -26,14 +26,14 @@ public class AttendeeAccount implements  Account {
 
     public AttendeeAccount(Map<String, Object> row) {
         this(
-            (String) row.get("Email"),
-            (String) row.get("FirstName"),
-            (String) row.get("LastName"),
-            (String) row.get("Address"),
-            (String) row.get("Type"),
-            (String) row.get("Password"),
-            (String) row.get("MobileNo"),
-            (String) row.get("Organization")
+            (String) row.get("EMAIL"),
+            (String) row.get("FIRSTNAME"),
+            (String) row.get("LASTNAME"),
+            (String) row.get("ADDRESS"),
+            (String) row.get("TYPE"),
+            (String) row.get("PASSWORD"),
+            (String) row.get("MOBILENO"),
+            (String) row.get("ORGANIZATION")
         );
     }
 

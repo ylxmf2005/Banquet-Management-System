@@ -12,8 +12,8 @@ public class AdminAccount implements Account {
     }
 
     public AdminAccount(Map<String, Object> row) {
-        this.email = (String) row.get("Email");
-        this.password = (String) row.get("Password");
+        this.email = (String) row.get("EMAIL");
+        this.password = (String) row.get("PASSWORD");
     }
 
     public String getEmail() {

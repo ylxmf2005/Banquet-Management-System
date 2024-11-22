@@ -4,16 +4,22 @@ This project is in the early stages of development. The functionality is incompl
 ## How to Setup
 
 ### Backend
-Make sure you have Gradle installed.
+Make sure you have Gradle installed, recommended version: 8.11
+
 `gradle clean build`
+
 `gradle run`
 
 ### FrontEnd
+Make sure you have Node.js installed, recommended version: v23.3.0
+
 `cd bms_frontend`
+
 `npm install`
+
 `npm run dev`
 
-## To-Do List
+## To Do List
 - Update README
 - Encrypted password storage
 

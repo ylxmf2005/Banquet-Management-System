@@ -27,6 +27,7 @@ public class BMSRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createDatabase(String clearIfExists) {
+        System.out.println("Received request at /initDatabase: " + clearIfExists);
         Map<String, Object> response = new HashMap<>();
         try {
             JsonObject jsonObject = gson.fromJson(clearIfExists, JsonObject.class);
@@ -36,6 +37,7 @@ public class BMSRestController {
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);
@@ -48,6 +50,7 @@ public class BMSRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createBanquet(String banquetData) {
+        System.out.println("Received request at /createBanquet: " + banquetData);
         Map<String, Object> response = new HashMap<>();
         try {
             Map<String, Object> data = gson.fromJson(banquetData, Map.class);
@@ -57,6 +60,7 @@ public class BMSRestController {
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);
@@ -69,6 +73,7 @@ public class BMSRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateBanquet(String banquetData) {
+        System.out.println("Received request at /updateBanquet: " + banquetData);
         Map<String, Object> response = new HashMap<>();
         try {
             Map<String, Object> data = gson.fromJson(banquetData, Map.class);
@@ -77,6 +82,7 @@ public class BMSRestController {
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);
@@ -90,6 +96,8 @@ public class BMSRestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response authenticateAccount(String accountData) {
+        System.out.println("Received request at /authenticateAccount: " + accountData);
+
         Map<String, Object> response = new HashMap<>();
         try {
             JsonObject jsonObject = gson.fromJson(accountData, JsonObject.class);
@@ -101,11 +109,13 @@ public class BMSRestController {
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (AuthenticationException e) {
+            System.out.println("Authentication failed: " + e.getMessage());
             response.put("status", "failure");
             response.put("message", "Authentication failed");
             String jsonResponse = gson.toJson(response);
             return Response.status(Response.Status.UNAUTHORIZED).entity(jsonResponse).build();
         } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);

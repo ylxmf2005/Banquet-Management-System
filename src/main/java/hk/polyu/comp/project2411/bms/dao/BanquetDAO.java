@@ -1,8 +1,8 @@
 package hk.polyu.comp.project2411.bms.dao;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.model.Banquet;
@@ -19,8 +19,8 @@ public class BanquetDAO {
         String getMaxBinSql = "SELECT MAX(BIN) AS MaxBIN FROM Banquet";
         List<Map<String, Object>> result = sqlConnection.executeQuery(getMaxBinSql);
         int newBIN = 1;
-        if (!result.isEmpty() && result.get(0).get("MaxBIN") != null) {
-            newBIN = ((Number) result.get(0).get("MaxBIN")).intValue() + 1;
+        if (!result.isEmpty() && result.get(0).get("MAXBIN") != null) {
+            newBIN = ((Number) result.get(0).get("MAXBIN")).intValue() + 1;
         }
         return newBIN;
     }

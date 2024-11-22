@@ -30,6 +30,7 @@ public class BMSMain {
         this.dbInitDao = new DbInitDao(sqlConnection);
         this.banquetDao = new BanquetDAO(sqlConnection);
         this.attendeeAccountDao = new AttendeeAccountDao(sqlConnection);
+        this.accountDao = new AccountDao(sqlConnection);
         
         // Create the tables if not exists
         initDatabase(true); // set to true for test because our database structure is not finalized

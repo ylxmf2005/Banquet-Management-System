@@ -37,14 +37,14 @@ public class Banquet {
 
     public Banquet(Map<String, Object> row) {
         this(
-            (String) row.get("Name"),
-            Timestamp.valueOf((String) row.get("DateTime")),
-            (String) row.get("Address"),
-            (String) row.get("Location"),
-            (String) row.get("FirstName"),
-            (String) row.get("LastName"),
-            (String) row.get("Available"),
-            ((Number) row.get("Quota")).intValue()
+            (String) row.get("NAME"),
+            Timestamp.valueOf((String) row.get("DATETIME")),
+            (String) row.get("ADDRESS"),
+            (String) row.get("LOCATION"),
+            (String) row.get("FIRSTNAME"),
+            (String) row.get("LASTNAME"),
+            (String) row.get("AVAILABLE"),
+            ((Number) row.get("QUOTA")).intValue()
         );
         if (row.get("BIN") != null) {
             this.BIN = ((Number) row.get("BIN")).intValue();
