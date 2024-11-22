@@ -100,4 +100,16 @@ public class BanquetDAO {
         else return null;
         return banquets;
     }
+    boolean updateRegistration(String attendeeEmail, int banquetBIN, String newDrinkChoice, String newMealChoice, String newRemarks) throws SQLException{
+        String sql = "UPDATE Reserves SET banquetBIN=?, newDrinkChoice=?, newMealChoice=?, newRemarks=? WHERE attendeeEmail=?";
+        Object[] params = new Object[] {
+                banquetBIN,
+                newDrinkChoice,
+                newMealChoice,
+                newRemarks,
+                attendeeEmail
+        };
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
+        return rowsAffected > 0;
+    }
 }
