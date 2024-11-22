@@ -86,4 +86,19 @@ public class BanquetDAO {
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
+    public List<Banquet> getAvailableBanquets() throws SQLException {
+        String sql = "SELECT * FROM Banquet WHERE Available = Y";
+
+        List<Map<String, Object>> result = sqlConnection.executeQuery(sql);
+
+        List<Banquet> banquets = new ArrayList<>();
+
+        if (!result.isEmpty()) {
+            for (Map<String, Object> row : result) {
+                banquets.add((Banquet) row);
+            }
+        }
+        else return null;
+        return banquets;
+    }
 }
