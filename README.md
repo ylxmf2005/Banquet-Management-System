@@ -1,6 +1,14 @@
 Warning: 
 This project is in the early stages of development. The functionality is incomplete and the source is subject to change at any time. The README is currently for developers' reference only and may not reflect the latest state of the repository.
 
+## Update History
+
+
+## To Do List
+- Update README
+- Encrypted password storage
+
+
 ## How to Setup
 
 ### Backend
@@ -18,10 +26,6 @@ Make sure you have Node.js installed, recommended version: v23.3.0
 `npm install`
 
 `npm run dev`
-
-## To Do List
-- Update README
-- Encrypted password storage
 
 ## Developer manual
 

@@ -105,7 +105,7 @@ public class BMSRestController {
             String password = jsonObject.get("password").getAsString();
             Account authenticatedAccount = bmsMain.authenticateAccount(email, password);
             response.put("status", "success");
-            response.put("account", authenticatedAccount);
+            response.put("user", authenticatedAccount);
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (AuthenticationException e) {

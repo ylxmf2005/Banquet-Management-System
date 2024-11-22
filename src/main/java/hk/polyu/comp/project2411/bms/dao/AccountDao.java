@@ -25,7 +25,7 @@ public class AccountDao {
 
         if (!results.isEmpty()) {
             Map<String, Object> row = results.get(0);
-            System.out.println(row);
+            // System.out.println(row);
             String storedPassword = (String) row.get("PASSWORD");
             if (storedPassword.equals(password)) {
                 String role = (String) row.get("ROLE");
