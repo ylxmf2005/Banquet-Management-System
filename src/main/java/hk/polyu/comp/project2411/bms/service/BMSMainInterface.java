@@ -135,6 +135,7 @@ public interface BMSMainInterface {
      *
      * @param attendeeEmail The email address of the attendee.
      * @param banquetBIN    The BIN of the banquet.
+     * @param seatNo        The seat number of the attendee.
      * @param drinkChoice   The attendee's choice of drink.
      * @param mealChoice    The attendee's choice of meal.
      * @param remarks       Any additional remarks (e.g., seating preference).
@@ -142,7 +143,7 @@ public interface BMSMainInterface {
      * @throws RegistrationException If registration fails (e.g., due to insufficient seats).
      * @throws SQLException          If a database access error occurs.
      */
-    RegistrationResult registerForBanquet(String attendeeEmail, int banquetBIN, String drinkChoice, String mealChoice, String remarks) throws RegistrationException, SQLException;
+    RegistrationResult registerForBanquet(String attendeeEmail, int banquetBIN, int seatNo, String drinkChoice, String mealChoice, String remarks) throws RegistrationException, SQLException;
 
     /**
      * Searches for banquets that the attendee has registered for, based on various criteria.
