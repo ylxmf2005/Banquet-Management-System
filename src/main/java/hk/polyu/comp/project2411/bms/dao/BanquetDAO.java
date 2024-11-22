@@ -2,6 +2,7 @@ package hk.polyu.comp.project2411.bms.dao;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.model.Banquet;
@@ -25,13 +26,12 @@ public class BanquetDAO {
     }
 
     private int insertBanquet(Banquet banquet) throws SQLException {
-        String sql = "INSERT INTO Banquet (BIN, Name, Date, Time, Address, Location, FirstName, LastName, Available, Quota) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, FirstName, LastName, Available, Quota) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Object[] params = new Object[] {
             banquet.getBIN(),
             banquet.getName(),
-            banquet.getDate(),
-            banquet.getTime(),
+            banquet.getDateTime(),
             banquet.getAddress(),
             banquet.getLocation(),
             banquet.getContactFirstName(),
@@ -55,11 +55,10 @@ public class BanquetDAO {
     }
 
     public boolean updateBanquet(Banquet banquet) throws SQLException {
-        String sql = "UPDATE Banquet SET Name=?, Date=?, Time=?, Address=?, Location=?, FirstName=?, LastName=?, Available=?, Quota=? WHERE BIN=?";
+        String sql = "UPDATE Banquet SET Name=?, DateTime=?, Address=?, Location=?, FirstName=?, LastName=?, Available=?, Quota=? WHERE BIN=?";
         Object[] params = new Object[] {
             banquet.getName(),
-            banquet.getDate(),
-            banquet.getTime(),
+            banquet.getDateTime(),
             banquet.getAddress(),
             banquet.getLocation(),
             banquet.getContactFirstName(),

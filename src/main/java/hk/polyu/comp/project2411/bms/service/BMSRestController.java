@@ -12,12 +12,34 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import com.google.gson.JsonObject;
 
 @Path("/")
 public class BMSRestController {
 
     private BMSMain bmsMain = new BMSMain();
     private static Gson gson = new Gson();
+
+    @POST
+    @Path("/initDatabase")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createDatabase(String clearIfExists) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            JsonObject jsonObject = gson.fromJson(clearIfExists, JsonObject.class);
+            boolean clearIfExist = jsonObject.get("clearIfExist").getAsBoolean();
+            boolean initResult = bmsMain.initDatabase(clearIfExist);
+            response.put("status", initResult ? "success" : "failure");
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
 
     @POST
     @Path("/createBanquet")

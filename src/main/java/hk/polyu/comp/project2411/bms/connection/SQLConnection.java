@@ -15,7 +15,7 @@ public class SQLConnection {
     private Connection conn = null;
     private String url = "jdbc:oracle:thin:@5.181.225.147:40511:XE";
     private String username = "system";
-    private String password = "project2411project";
+    private String password = "2411project";
 
     public SQLConnection() {
         try {

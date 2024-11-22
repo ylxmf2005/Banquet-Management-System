@@ -16,30 +16,33 @@ public class DbInitDao {
         this.sqlConnection = sqlConnection;
     }
 
-    public void initDb() {
-        initDb(false);
+    //TODO: (Optional) Add methods to initialize specified tables
+    public boolean initDb() {
+        return initDb(false);
     }
-
-    public void initDb(Boolean clearIfExists) {
+    
+    public boolean initDb(boolean clearIfExists) {
         try {
             // Drop existing tables if clearIfExists is true
             if (clearIfExists) {
-                if (tableExists("Reserves")) dropTable("Reserves");
-                if (tableExists("Meal")) dropTable("Meal");
                 if (tableExists("Banquet")) dropTable("Banquet");
+                if (tableExists("Meal")) dropTable("Meal");
                 if (tableExists("AttendeeAccount")) dropTable("AttendeeAccount");
+                if (tableExists("Reserves")) dropTable("Reserves");
             }
-
+    
             // Create tables if they do not exist
-            if (!tableExists("AttendeeAccount")) createAttendeeAccountTable();
             if (!tableExists("Banquet")) createBanquetTable();
             if (!tableExists("Meal")) createMealTable();
+            if (!tableExists("AttendeeAccount")) createAttendeeAccountTable();
             if (!tableExists("Reserves")) createReservesTable();
-
+    
             System.out.println("Database initialization completed.");
+            return true;
         } catch (SQLException e) {
             System.err.println("An SQL exception occurred during database initialization.");
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -86,8 +89,7 @@ public class DbInitDao {
         String sql = "CREATE TABLE Banquet (" +
                 "BIN NUMBER PRIMARY KEY, " +
                 "Name VARCHAR2(255), " +
-                "Date VARCHAR2(50), " +
-                "Time VARCHAR2(50), " +
+                "DateTime DATE , " +
                 "Address VARCHAR2(255), " +
                 "Location VARCHAR2(255), " +
                 "FirstName VARCHAR2(255), " +
@@ -96,19 +98,7 @@ public class DbInitDao {
                 "Quota NUMBER" +
                 ")";
         sqlConnection.executeUpdate(sql);
-
-        // Optionally create a sequence and trigger for auto-incrementing BIN
-        String createSequence = "CREATE SEQUENCE banquet_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE";
-        String createTrigger = "CREATE OR REPLACE TRIGGER banquet_trigger BEFORE INSERT ON Banquet " +
-                "FOR EACH ROW WHEN (new.BIN IS NULL) " +
-                "BEGIN " +
-                "SELECT banquet_seq.NEXTVAL INTO :new.BIN FROM dual; " +
-                "END;";
-
-        sqlConnection.executeUpdate(createSequence);
-        sqlConnection.executeUpdate(createTrigger);
-
-        System.out.println("Table Banquet created with sequence and trigger for BIN.");
+        System.out.println("Table Banquet created.");
     }
 
     /**

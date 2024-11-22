@@ -1,5 +1,6 @@
 package hk.polyu.comp.project2411.bms.model;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,8 +8,7 @@ import java.util.Map;
 public class Banquet {
     private int BIN; 
     private String name;
-    private String date;
-    private String time;
+    private Timestamp dateTime;
     private String address;
     private String location;
     private String contactFirstName;
@@ -17,11 +17,10 @@ public class Banquet {
     private int quota;
     private List<Meal> meals;
 
-    public Banquet(String name, String date, String time, String address, String location,
+    public Banquet(String name, Timestamp dateTime, String address, String location,
                    String contactFirstName, String contactLastName, String available, int quota) {
         this.name = name;
-        this.date = date;
-        this.time = time;
+        this.dateTime = dateTime;
         this.address = address;
         this.location = location;
         this.contactFirstName = contactFirstName;
@@ -31,16 +30,15 @@ public class Banquet {
         meals = new ArrayList<>();
     }
 
-    public Banquet(int BIN, String name, String date, String time, String address, String location, String contactFirstName, String contactLastName, String available, int quota) {
-        this(name, date, time, address, location, contactFirstName, contactLastName, available, quota);
+    public Banquet(int BIN, String name, Timestamp dateTime, String address, String location, String contactFirstName, String contactLastName, String available, int quota) {
+        this(name, dateTime, address, location, contactFirstName, contactLastName, available, quota);
         this.BIN = BIN;
     }
 
     public Banquet(Map<String, Object> row) {
         this(
             (String) row.get("Name"),
-            (String) row.get("Date"),
-            (String) row.get("Time"),
+            Timestamp.valueOf((String) row.get("DateTime")),
             (String) row.get("Address"),
             (String) row.get("Location"),
             (String) row.get("FirstName"),
@@ -67,12 +65,10 @@ public class Banquet {
     public String getName() {
         return name;
     }
-    public String getDate() {
-        return date;
+    public Timestamp getDateTime() {
+        return dateTime;
     }
-    public String getTime() {
-        return time;
-    }
+
     public String getAddress() {
         return address;
     }
@@ -108,8 +104,7 @@ public class Banquet {
         return "Banquet{" +
                 "BIN=" + BIN +
                 ", name='" + name + '\'' +
-                ", date='" + date + '\'' +
-                ", time='" + time + '\'' +
+                ", dateTime='" + dateTime.toString() + '\'' +
                 ", address='" + address + '\'' +
                 ", location='" + location + '\'' +
                 ", contactFirstName='" + contactFirstName + '\'' +

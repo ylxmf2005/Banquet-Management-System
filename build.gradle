@@ -3,7 +3,7 @@ plugins {
 }
 
 application {
-    mainClass = 'hk.polyu.comp.project2411.bms..service.RestAPIServer'
+    mainClass = 'hk.polyu.comp.project2411.bms.service.RestAPIServer'
 }
 
 repositories {
@@ -34,7 +34,12 @@ dependencies {
     // ASM
     implementation 'org.ow2.asm:asm:9.5'
 
-    
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+
+    // Jakarta Activation API
+    implementation 'jakarta.activation:jakarta.activation-api:2.0.1'
 }
 
 sourceCompatibility = '21'
