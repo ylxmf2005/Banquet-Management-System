@@ -24,7 +24,16 @@ public class BanquetDAO {
         }
         return newBIN;
     }
-
+    private int getRegisteredNumberForBanquet(Banquet banquet) throws SQLException {
+        /*Count number of people reserved for the banquet.*/
+        String sql = "SELECT COUNT(*) FROM Reserves WHERE BanquetBIN=?";
+        Object[] param = {banquet.getBIN()};
+        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, param);
+        if (!results.isEmpty()) {
+            return ((Number) results.get(0).get("Count")).intValue();
+        }
+        return 0;
+    }
     private int insertBanquet(Banquet banquet) throws SQLException {
         String sql = "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, FirstName, LastName, Available, Quota) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
