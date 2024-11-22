@@ -55,8 +55,11 @@ public class BMSMain {
         return attendeeAccountDao.updateAttendeeRegistrationData(email, registrationData);
     }
 
-    boolean updateAttendeeProfile(AttendeeAccount attendee) throws ValidationException, SQLException {
+    public boolean updateAttendeeProfile(AttendeeAccount attendee) throws ValidationException, SQLException {
         return attendeeAccountDao.updateAttendeeProfile(attendee);
     }
 
+    public List<Banquet> getAvailableBanquets() throws SQLException {
+        return banquetDao.getAvailableBanquets();
+    }
 }
