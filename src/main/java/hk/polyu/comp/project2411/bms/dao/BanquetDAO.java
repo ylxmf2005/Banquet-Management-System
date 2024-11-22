@@ -112,4 +112,21 @@ public class BanquetDAO {
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
+    RegistrationResult registerForBanquet(String attendeeEmail, int banquetBIN, int seatNo, String drinkChoice, String mealChoice, String remarks) throws RegistrationException, SQLException {
+        String sql = "INSERT INTO Reserves (AttendeeEmail, BanquetBIN, SeatNo, DrinkChoice, MealChoice, Remarks) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        Object[] params = new Object[] {
+                attendeeEmail,
+                banquetBIN,
+                seatNo,
+                drinkChoice,
+                mealChoice,
+                remarks
+        };
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
+        if (rowsAffected > 0) {
+            return new RegistrationResult(true, "You have successfully registered the banquet.");
+        }
+        else return new RegistrationResult(false, "You have not successfully registered the banquet.");
+    }
 }
