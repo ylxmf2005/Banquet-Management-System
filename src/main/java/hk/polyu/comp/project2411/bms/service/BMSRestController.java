@@ -26,7 +26,17 @@ import jakarta.ws.rs.core.Response;
 @Path("/")
 public class BMSRestController {
 
-    private static BMSMain bmsMain = new BMSMain();
+    private static BMSMain bmsMain;
+
+    static {
+        try {
+            bmsMain = new BMSMain();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+    
     private static Gson gson = new Gson();
 
     @POST

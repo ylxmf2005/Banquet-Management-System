@@ -16,7 +16,7 @@ public class RestAPIServer {
         Server server = new Server(2411);
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/api");
+        context.setContextPath("/");
         server.setHandler(context);
 
         // Register Jersey ServletContainer

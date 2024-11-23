@@ -22,6 +22,7 @@ import {
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import api from '../utils/api';
 
+// Interface for Meal object
 interface Meal {
     type: string;
     dishName: string;
@@ -29,6 +30,7 @@ interface Meal {
     specialCuisine: string;
 }
 
+// Interface for Banquet object
 interface Banquet {
     BIN: number;
     name: string;
@@ -59,15 +61,15 @@ export default function BanquetManagement() {
         available: 'Y',
         quota: 0,
         meals: [
-            { type: '', dishName: '', price: 0, specialCuisine: '' },
-            { type: '', dishName: '', price: 0, specialCuisine: '' },
-            { type: '', dishName: '', price: 0, specialCuisine: '' },
-            { type: '', dishName: '', price: 0, specialCuisine: '' },
+            { type: '', dishName: '', price: NaN, specialCuisine: '' },
+            { type: '', dishName: '', price: NaN, specialCuisine: '' },
+            { type: '', dishName: '', price: NaN, specialCuisine: '' },
+            { type: '', dishName: '', price: NaN, specialCuisine: '' },
         ],
     });
 
-    // State to hold validation errors
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    // State to hold validation errors, including meals errors
+    const [errors, setErrors] = useState<{ [key: string]: any }>({});
 
     // Snackbar state
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -75,10 +77,7 @@ export default function BanquetManagement() {
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
     // Function to handle closing of the snackbar
-    const handleSnackbarClose = (
-        event?: React.SyntheticEvent | Event,
-        reason?: string
-    ) => {
+    const handleSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
@@ -104,10 +103,10 @@ export default function BanquetManagement() {
                     banquet.meals && banquet.meals.length > 0
                         ? banquet.meals
                         : [
-                            { type: '', dishName: '', price: 0, specialCuisine: '' },
-                            { type: '', dishName: '', price: 0, specialCuisine: '' },
-                            { type: '', dishName: '', price: 0, specialCuisine: '' },
-                            { type: '', dishName: '', price: 0, specialCuisine: '' },
+                            { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                            { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                            { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                            { type: '', dishName: '', price: NaN, specialCuisine: '' },
                         ],
             }));
 
@@ -115,11 +114,8 @@ export default function BanquetManagement() {
 
             // After fetching data, calculate column widths
             calculateColumnWidths(fetchedBanquets);
-        } catch (error) {
-            console.log('Failed to fetch banquets', error);
-            setSnackbarMessage('Failed to fetch banquets');
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
+        } catch (error: any) {
+            handleApiError(error, 'fetching banquets');
         }
         setLoading(false);
     };
@@ -216,10 +212,10 @@ export default function BanquetManagement() {
             available: 'Y',
             quota: 0,
             meals: [
-                { type: '', dishName: '', price: 0, specialCuisine: '' },
-                { type: '', dishName: '', price: 0, specialCuisine: '' },
-                { type: '', dishName: '', price: 0, specialCuisine: '' },
-                { type: '', dishName: '', price: 0, specialCuisine: '' },
+                { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                { type: '', dishName: '', price: NaN, specialCuisine: '' },
             ],
         });
         setErrors({});
@@ -254,10 +250,10 @@ export default function BanquetManagement() {
                 banquet.meals && banquet.meals.length > 0
                     ? banquet.meals
                     : [
-                        { type: '', dishName: '', price: 0, specialCuisine: '' },
-                        { type: '', dishName: '', price: 0, specialCuisine: '' },
-                        { type: '', dishName: '', price: 0, specialCuisine: '' },
-                        { type: '', dishName: '', price: 0, specialCuisine: '' },
+                        { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                        { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                        { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                        { type: '', dishName: '', price: NaN, specialCuisine: '' },
                     ],
         });
         setErrors({});
@@ -265,26 +261,52 @@ export default function BanquetManagement() {
         setOpenDialog(true);
     };
 
+    // Function to handle API errors and display messages
+    const handleApiError = (error: any, action: string) => {
+        if (error.response && error.response.data && error.response.data.message) {
+            console.log(`Error ${action}:`, error.response.data.message);
+            setSnackbarMessage(`Error ${action}: ${error.response.data.message}`);
+        } else {
+            console.log(`Error ${action}:`, error.message);
+            setSnackbarMessage(`Error ${action}: ${error.message}`);
+        }
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+    };
+
+    // Function to handle API success and display messages
+    const handleApiSuccess = (message: string) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+    };
+
+    // Function to handle API responses and execute callbacks
+    const handleApiResponse = (
+        response: any,
+        successMessage: string,
+        action: string,
+        successCallback?: Function
+    ) => {
+        if (response.data.status === 'success') {
+            if (successCallback) successCallback();
+            handleApiSuccess(successMessage);
+        } else {
+            console.log(`Failed to ${action}:`, response.data.message);
+            setSnackbarMessage(`Failed to ${action}: ${response.data.message}`);
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+        }
+    };
+
     // Delete a banquet
     const handleDeleteBanquet = async (banquetBIN: number) => {
         try {
             const response = await api.post(`/deleteBanquet`, { banquetBIN });
-            if (response.data.status === 'success') {
-                fetchBanquets();
-                setSnackbarMessage('Banquet deleted successfully!');
-                setSnackbarSeverity('success');
-                setSnackbarOpen(true);
-            } else {
-                console.log('Failed to delete banquet:', response.data.message);
-                setSnackbarMessage('Failed to delete banquet: ' + response.data.message);
-                setSnackbarSeverity('error');
-                setSnackbarOpen(true);
-            }
-        } catch (error) {
-            console.log('Error deleting banquet:', error);
-            setSnackbarMessage('Error deleting banquet');
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
+            console.log('Delete banquet response:', response.data);
+            handleApiResponse(response, 'Banquet deleted successfully!', 'delete banquet', fetchBanquets);
+        } catch (error: any) {
+            handleApiError(error, 'deleting banquet');
         }
     };
 
@@ -303,10 +325,10 @@ export default function BanquetManagement() {
             available: 'Y',
             quota: 0,
             meals: [
-                { type: '', dishName: '', price: 0, specialCuisine: '' },
-                { type: '', dishName: '', price: 0, specialCuisine: '' },
-                { type: '', dishName: '', price: 0, specialCuisine: '' },
-                { type: '', dishName: '', price: 0, specialCuisine: '' },
+                { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                { type: '', dishName: '', price: NaN, specialCuisine: '' },
+                { type: '', dishName: '', price: NaN, specialCuisine: '' },
             ],
         });
     };
@@ -314,7 +336,7 @@ export default function BanquetManagement() {
     // Submit the create or update banquet request
     const handleDialogSubmit = async () => {
         // Validate required fields
-        let tempErrors: { [key: string]: string } = {};
+        let tempErrors: { [key: string]: any } = {};
         if (!selectedBanquet.name) tempErrors.name = 'Banquet Name is required';
         if (!selectedBanquet.dateTime) tempErrors.dateTime = 'Date & Time is required';
         if (!selectedBanquet.address) tempErrors.address = 'Address is required';
@@ -331,6 +353,22 @@ export default function BanquetManagement() {
         )
             tempErrors.quota = 'Quota is required and must be a number';
 
+        // Validate meals
+        const mealsErrors = selectedBanquet.meals.map((meal, index) => {
+            const mealErrors: { [key: string]: string } = {};
+            if (!meal.type) mealErrors.type = 'Meal Type is required';
+            if (!meal.dishName) mealErrors.dishName = 'Dish Name is required';
+            if (meal.price === null || meal.price === undefined || isNaN(meal.price))
+                mealErrors.price = 'Price is required and must be a number';
+            if (!meal.specialCuisine) mealErrors.specialCuisine = 'Special Cuisine is required';
+            return mealErrors;
+        });
+
+        // Check if there are any errors in meals
+        if (mealsErrors.some((mealError) => Object.keys(mealError).length > 0)) {
+            tempErrors.meals = mealsErrors;
+        }
+
         if (Object.keys(tempErrors).length > 0) {
             setErrors(tempErrors);
             return;
@@ -339,51 +377,39 @@ export default function BanquetManagement() {
         if (isEditing) {
             try {
                 const response = await api.post('/updateBanquet', selectedBanquet);
-                if (response.data.status === 'success') {
-                    fetchBanquets();
-                    handleDialogClose();
-                    setSnackbarMessage('Banquet updated successfully!');
-                    setSnackbarSeverity('success');
-                    setSnackbarOpen(true);
-                } else {
-                    console.log('Failed to update banquet:', response.data.message);
-                    setSnackbarMessage('Failed to update banquet: ' + response.data.message);
-                    setSnackbarSeverity('error');
-                    setSnackbarOpen(true);
-                }
-            } catch (error) {
-                console.log('Error updating banquet:', error);
-                setSnackbarMessage('Error updating banquet');
-                setSnackbarSeverity('error');
-                setSnackbarOpen(true);
+                handleApiResponse(
+                    response,
+                    'Banquet updated successfully!',
+                    'update banquet',
+                    () => {
+                        fetchBanquets();
+                        handleDialogClose();
+                    }
+                );
+            } catch (error: any) {
+                handleApiError(error, 'updating banquet');
             }
         } else {
             // Create banquet
             try {
                 const response = await api.post('/createBanquet', selectedBanquet);
-                if (response.data.status === 'success') {
-                    fetchBanquets();
-                    handleDialogClose();
-                    setSnackbarMessage('Banquet created successfully!');
-                    setSnackbarSeverity('success');
-                    setSnackbarOpen(true);
-                } else {
-                    console.log('Failed to create banquet:', response.data.message);
-                    setSnackbarMessage('Failed to create banquet: ' + response.data.message);
-                    setSnackbarSeverity('error');
-                    setSnackbarOpen(true);
-                }
-            } catch (error) {
-                console.log('Error creating banquet:', error);
-                setSnackbarMessage('Error creating banquet');
-                setSnackbarSeverity('error');
-                setSnackbarOpen(true);
+                handleApiResponse(
+                    response,
+                    'Banquet created successfully!',
+                    'create banquet',
+                    () => {
+                        fetchBanquets();
+                        handleDialogClose();
+                    }
+                );
+            } catch (error: any) {
+                handleApiError(error, 'creating banquet');
             }
         }
     };
 
     return (
-        (<Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 2 }}>
             {/* Button to create a new banquet */}
             <Button variant="contained" color="primary" onClick={handleCreateBanquet}>
                 Create New Banquet
@@ -476,10 +502,8 @@ export default function BanquetManagement() {
                                         dateTime: e.target.value,
                                     })
                                 }
-                                slotProps={{
-                                    inputLabel: {
-                                        shrink: true,
-                                    }
+                                InputLabelProps={{
+                                    shrink: true,
                                 }}
                             />
                         </Stack>
@@ -553,7 +577,9 @@ export default function BanquetManagement() {
                                     <MenuItem value="Y">Yes</MenuItem>
                                     <MenuItem value="N">No</MenuItem>
                                 </Select>
-                                {errors.available && <FormHelperText>{errors.available}</FormHelperText>}
+                                {errors.available && (
+                                    <FormHelperText>{errors.available}</FormHelperText>
+                                )}
                             </FormControl>
                             <TextField
                                 label="Quota"
@@ -566,13 +592,13 @@ export default function BanquetManagement() {
                                 onChange={(e) =>
                                     setSelectedBanquet({
                                         ...selectedBanquet,
-                                        quota: !isNaN(parseInt(e.target.value)) ? parseInt(e.target.value) : NaN,
+                                        quota: !isNaN(parseInt(e.target.value))
+                                            ? parseInt(e.target.value)
+                                            : NaN,
                                     })
                                 }
-                                slotProps={{
-                                    input: {
-                                        inputProps: { min: 0, step: 1 },
-                                    }
+                                InputProps={{
+                                    inputProps: { min: 0, step: 1 },
                                 }}
                             />
                         </Stack>
@@ -590,6 +616,17 @@ export default function BanquetManagement() {
                                     label={`Meal Type ${index + 1}`}
                                     fullWidth
                                     value={meal.type}
+                                    required
+                                    error={
+                                        !!errors.meals &&
+                                        errors.meals[index] &&
+                                        !!errors.meals[index].type
+                                    }
+                                    helperText={
+                                        errors.meals &&
+                                        errors.meals[index] &&
+                                        errors.meals[index].type
+                                    }
                                     onChange={(e) => {
                                         const updatedMeals = [...selectedBanquet.meals];
                                         updatedMeals[index].type = e.target.value;
@@ -603,6 +640,17 @@ export default function BanquetManagement() {
                                     label={`Dish Name ${index + 1}`}
                                     fullWidth
                                     value={meal.dishName}
+                                    required
+                                    error={
+                                        !!errors.meals &&
+                                        errors.meals[index] &&
+                                        !!errors.meals[index].dishName
+                                    }
+                                    helperText={
+                                        errors.meals &&
+                                        errors.meals[index] &&
+                                        errors.meals[index].dishName
+                                    }
                                     onChange={(e) => {
                                         const updatedMeals = [...selectedBanquet.meals];
                                         updatedMeals[index].dishName = e.target.value;
@@ -617,25 +665,48 @@ export default function BanquetManagement() {
                                     type="number"
                                     fullWidth
                                     value={isNaN(meal.price) ? '' : meal.price}
+                                    required
+                                    error={
+                                        !!errors.meals &&
+                                        errors.meals[index] &&
+                                        !!errors.meals[index].price
+                                    }
+                                    helperText={
+                                        errors.meals &&
+                                        errors.meals[index] &&
+                                        errors.meals[index].price
+                                    }
                                     onChange={(e) => {
                                         const updatedMeals = [...selectedBanquet.meals];
-                                        updatedMeals[index].price =
-                                            !isNaN(parseFloat(e.target.value)) ? parseFloat(e.target.value) : NaN;
+                                        updatedMeals[index].price = !isNaN(
+                                            parseFloat(e.target.value)
+                                        )
+                                            ? parseFloat(e.target.value)
+                                            : NaN;
                                         setSelectedBanquet({
                                             ...selectedBanquet,
                                             meals: updatedMeals,
                                         });
                                     }}
-                                    slotProps={{
-                                        input: {
-                                            inputProps: { min: 0 },
-                                        }
+                                    InputProps={{
+                                        inputProps: { min: 0 },
                                     }}
                                 />
                                 <TextField
                                     label={`Special Cuisine ${index + 1}`}
                                     fullWidth
                                     value={meal.specialCuisine}
+                                    required
+                                    error={
+                                        !!errors.meals &&
+                                        errors.meals[index] &&
+                                        !!errors.meals[index].specialCuisine
+                                    }
+                                    helperText={
+                                        errors.meals &&
+                                        errors.meals[index] &&
+                                        errors.meals[index].specialCuisine
+                                    }
                                     onChange={(e) => {
                                         const updatedMeals = [...selectedBanquet.meals];
                                         updatedMeals[index].specialCuisine = e.target.value;
@@ -671,6 +742,6 @@ export default function BanquetManagement() {
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
-        </Box>)
+        </Box>
     );
 }

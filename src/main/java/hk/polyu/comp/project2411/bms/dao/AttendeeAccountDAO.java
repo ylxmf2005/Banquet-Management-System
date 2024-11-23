@@ -33,21 +33,6 @@ public class AttendeeAccountDAO {
         }
     }
 
-    public boolean updateAttendeeRegistrationData(String email, Reserve registrationData) throws SQLException {
-        String sql = "UPDATE Reserves SET SeatNo=?, RegTime=?, DrinkChoice=?, MealChoice=?, Remarks=? WHERE Email=? AND BanquetBIN=?";
-        Object[] params = new Object[] {
-            registrationData.getSeatNo(),
-            registrationData.getRegTime(),
-            registrationData.getDrinkChoice(),
-            registrationData.getMealChoice(),
-            registrationData.getRemarks(),
-            email,
-            registrationData.getBanquetBIN()
-        };
-        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
-        return rowsAffected > 0;
-    }
-
     public boolean updateAttendeeProfile(AttendeeAccount attendee) throws ValidationException, SQLException {
         String sql = "UPDATE Account SET Email = ?, FirstName=?, LastName=?, Address=?, Type=?, Password=?, MobileNo=?, Organization=? WHERE Email=? AND Role='user'";
         Object[] params = new Object[] {

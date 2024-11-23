@@ -1,4 +1,5 @@
 package hk.polyu.comp.project2411.bms.connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -132,7 +133,12 @@ public class SQLConnectionTest {
         } finally {
             // Close the database connection
             if (dbConn != null) {
-                dbConn.closeConnection();
+                try {
+                    dbConn.closeConnection();
+                } catch (SQLException e) {
+                    System.err.println("Error occurred while closing the connection.");
+                    e.printStackTrace();
+                }
             }
         }
     }

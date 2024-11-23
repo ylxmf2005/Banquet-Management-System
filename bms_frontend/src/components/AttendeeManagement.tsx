@@ -7,15 +7,45 @@ import {
     TextField,
     Button,
     Stack,
-    Alert,
 } from '@mui/material';
 import api from '../utils/api';
+import * as Yup from 'yup'; // Import Yup for validation
 
-// Function to validate email format
-function validateEmail(email: string) {
-    const re = /\S+@\S+\.\S+/;
-    return re.test(email);
-}
+// Define the attendee validation schema using Yup
+const attendeeSchema = Yup.object().shape({
+    firstName: Yup.string()
+        .required('This field is required.')
+        .matches(/^[A-Za-z]+$/, 'First name must contain only English letters.'),
+    lastName: Yup.string()
+        .required('This field is required.')
+        .matches(/^[A-Za-z]+$/, 'Last name must contain only English letters.'),
+    email: Yup.string()
+        .required('This field is required.')
+        .email('Invalid email format.'),
+    address: Yup.string()
+        .required('This field is required.'),
+    type: Yup.string()
+        .required('This field is required.'),
+    organization: Yup.string()
+        .required('This field is required.'),
+    mobileNo: Yup.string()
+        .required('This field is required.')
+        .matches(/^\d{8}$/, 'Mobile number must be exactly 8 digits.'),
+    password: Yup.string(),
+});
+
+// Define the registration validation schema using Yup
+const registrationSchema = Yup.object().shape({
+    seatNo: Yup.number()
+        .required('Seat number is required.')
+        .positive('Seat number must be a positive integer.')
+        .integer('Seat number must be a positive integer.'),
+    drinkChoice: Yup.string()
+        .required('This field is required.'),
+    mealChoice: Yup.string()
+        .required('This field is required.'),
+    remarks: Yup.string(),
+});
 
 interface Registration {
     attendeeEmail: string;
@@ -96,46 +126,20 @@ export default function AttendeeManagement() {
         setErrors({});
         setAttendeeSuccessMessage('');
 
-        const validationErrors: { [key: string]: string } = {};
-
-        // Validate required fields
-        const requiredFields = [
-            'firstName',
-            'lastName',
-            'email',
-            'address',
-            'type',
-            'organization',
-            'mobileNo',
-        ];
-        for (const field of requiredFields) {
-            if (!attendee[field] || attendee[field].trim() === '') {
-                validationErrors[field] = 'This field is required.';
+        // Validate attendee data using Yup schema
+        try {
+            await attendeeSchema.validate(attendee, { abortEarly: false });
+        } catch (err) {
+            if (err instanceof Yup.ValidationError) {
+                const validationErrors: { [key: string]: string } = {};
+                err.inner.forEach((error) => {
+                    if (error.path) {
+                        validationErrors[error.path] = error.message;
+                    }
+                });
+                setErrors(validationErrors);
+                return; // Exit the function if validation fails
             }
-        }
-
-        // Validate email format
-        if (attendee.email && !validateEmail(attendee.email)) {
-            validationErrors['email'] = 'Invalid email format.';
-        }
-
-        // Validate mobile number: Only 8-digit number
-        if (attendee.mobileNo && !/^\d{8}$/.test(attendee.mobileNo)) {
-            validationErrors['mobileNo'] = 'Mobile number must be exactly 8 digits.';
-        }
-
-        // Validate first name and last name: Only English letters
-        if (attendee.firstName && !/^[A-Za-z]+$/.test(attendee.firstName.trim())) {
-            validationErrors['firstName'] = 'First name must contain only English letters.';
-        }
-
-        if (attendee.lastName && !/^[A-Za-z]+$/.test(attendee.lastName.trim())) {
-            validationErrors['lastName'] = 'Last name must contain only English letters.';
-        }
-
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            return;
         }
 
         try {
@@ -183,28 +187,25 @@ export default function AttendeeManagement() {
             return newMessages;
         });
 
-        const validationErrors: { [key: string]: string } = {};
         const registration = registrations[index];
 
-        // Validate seat number: Must be a positive integer
-        if (!registration.seatNo || isNaN(Number(registration.seatNo)) || Number(registration.seatNo) <= 0) {
-            validationErrors['seatNo'] = 'Seat number must be a positive integer.';
-        }
-
-        // Validate required fields
-        const requiredFields = ['drinkChoice', 'mealChoice'];
-        for (const field of requiredFields) {
-            if (!registration[field as keyof Registration] || (registration[field as keyof Registration] as string).trim() === '') {
-                validationErrors[field] = 'This field is required.';
+        // Validate registration data using Yup schema
+        try {
+            await registrationSchema.validate(registration, { abortEarly: false });
+        } catch (err) {
+            if (err instanceof Yup.ValidationError) {
+                const validationErrors: { [key: string]: string } = {};
+                err.inner.forEach((error) => {
+                    if (error.path) {
+                        validationErrors[error.path] = error.message;
+                    }
+                });
+                setRegistrationErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [index]: validationErrors,
+                }));
+                return; // Exit the function if validation fails
             }
-        }
-
-        if (Object.keys(validationErrors).length > 0) {
-            setRegistrationErrors((prevErrors) => ({
-                ...prevErrors,
-                [index]: validationErrors,
-            }));
-            return;
         }
 
         try {
@@ -294,7 +295,7 @@ export default function AttendeeManagement() {
     };
 
     return (
-        (<Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 2 }}>
             {/* Search attendee by email */}
             <Typography variant="h6">Search Attendee By Email</Typography>
             <Box sx={{ display: 'flex', mt: 2 }}>
@@ -435,16 +436,11 @@ export default function AttendeeManagement() {
                             error={!!errors.mobileNo}
                             helperText={errors.mobileNo}
                             onChange={(e) => {
-                                // Allow only digits
-                                const value = e.target.value.replace(/\D/g, '');
-                                // Limit to 8 digits
-                                if (value.length <= 8) {
-                                    setAttendee({ ...attendee, mobileNo: value });
-                                }
+                                // Allow only digits and limit to 8 characters
+                                const value = e.target.value.replace(/\D/g, '').slice(0, 8);
+                                setAttendee({ ...attendee, mobileNo: value });
                             }}
-                            slotProps={{
-                                htmlInput: { maxLength: 8 }
-                            }}
+                            inputProps={{ maxLength: 8 }}
                         />
                     </Stack>
 
@@ -599,6 +595,6 @@ export default function AttendeeManagement() {
                     ))}
                 </Box>
             )}
-        </Box>)
+        </Box>
     );
 }

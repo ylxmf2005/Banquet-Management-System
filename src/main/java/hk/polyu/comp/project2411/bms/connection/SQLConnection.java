@@ -17,53 +17,41 @@ public class SQLConnection {
     private String username = "system";
     private String password = "2411project";
 
-    public SQLConnection() {
+    public SQLConnection() throws SQLException {
         connect();
     }
 
-    private void connect() {
+    private void connect() throws SQLException {
+        // Load the Oracle Driver
         try {
-            // Load the Oracle Driver
             Class.forName("oracle.jdbc.driver.OracleDriver");
-
-            // Establish the connection
-            conn = DriverManager.getConnection(url, username, password);
-
-            System.out.println("Successfully connected to the database.");
-        } catch (SQLException e) {
-            System.err.println("An SQL exception occurred while connecting to the database.");
+        } catch (Exception e) {
+            System.err.println("Could not load the Oracle JDBC driver.");
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            System.err.println("Oracle JDBC driver not found.");
-            e.printStackTrace();
+            return;
         }
+
+        // Establish the connection
+        conn = DriverManager.getConnection(url, username, password);
+
+        System.out.println("Successfully connected to the database.");
     }
 
-    private void checkConnection() {
-        try {
-            if (conn == null || conn.isClosed()) {
-                connect();
-            }
-        } catch (SQLException e) {
-            System.err.println("An SQL exception occurred while checking the database connection.");
-            e.printStackTrace();
+    private void checkConnection() throws SQLException {
+        if (conn == null || conn.isClosed()) {
+            connect();
         }
     }
 
     // Close the connection
-    public void closeConnection() {
-        try {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-                System.out.println("Database connection closed.");
-            }
-        } catch (SQLException e) {
-            System.err.println("An SQL exception occurred while closing the database connection.");
-            e.printStackTrace();
+    public void closeConnection() throws SQLException {
+        if (conn != null && !conn.isClosed()) {
+            conn.close();
+            System.out.println("Database connection closed.");
         }
     }
 
-    public List<Map<String, Object>> executeQuery(String sql) {
+    public List<Map<String, Object>> executeQuery(String sql) throws SQLException {
         checkConnection();
         List<Map<String, Object>> results = new ArrayList<>();
         Statement stmt = null;
@@ -84,51 +72,30 @@ public class SQLConnection {
                 }
                 results.add(row);
             }
-        } catch (SQLException e) {
-            System.err.println("An SQL exception occurred while executing the SELECT statement.");
-            e.printStackTrace();
         } finally {
-            try {
-                if (rs != null)
-                    rs.close();
-            } catch (SQLException e) {
-                System.err.println("An SQL exception occurred while closing the ResultSet.");
-                e.printStackTrace();
-            }
-            try {
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
-                System.err.println("An SQL exception occurred while closing the Statement.");
-                e.printStackTrace();
-            }
+            if (rs != null)
+                rs.close();
+            if (stmt != null)
+                stmt.close();
         }
         return results;
     }
 
-    public int executeUpdate(String sql) {
+    public int executeUpdate(String sql) throws SQLException {
         checkConnection();
         int result = 0;
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
             result = stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            System.err.println("An SQL exception occurred while executing the INSERT/UPDATE/DELETE statement.");
-            e.printStackTrace();
         } finally {
-            try {
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
-                System.err.println("An SQL exception occurred while closing the Statement.");
-                e.printStackTrace();
-            }
+            if (stmt != null)
+                stmt.close();
         }
         return result;
     }
 
-    public List<Map<String, Object>> executePreparedQuery(String sql, Object[] params) {
+    public List<Map<String, Object>> executePreparedQuery(String sql, Object[] params) throws SQLException {
         checkConnection();
         List<Map<String, Object>> results = new ArrayList<>();
         PreparedStatement pstmt = null;
@@ -152,29 +119,16 @@ public class SQLConnection {
                 }
                 results.add(row);
             }
-        } catch (SQLException e) {
-            System.err.println("An SQL exception occurred while executing the parameterized SELECT statement.");
-            e.printStackTrace();
         } finally {
-            try {
-                if (rs != null)
-                    rs.close();
-            } catch (SQLException e) {
-                System.err.println("An SQL exception occurred while closing the ResultSet.");
-                e.printStackTrace();
-            }
-            try {
-                if (pstmt != null)
-                    pstmt.close();
-            } catch (SQLException e) {
-                System.err.println("An SQL exception occurred while closing the PreparedStatement.");
-                e.printStackTrace();
-            }
+            if (rs != null)
+                rs.close();
+            if (pstmt != null)
+                pstmt.close();
         }
         return results;
     }
 
-    public int executePreparedUpdate(String sql, Object[] params) {
+    public int executePreparedUpdate(String sql, Object[] params) throws SQLException {
         checkConnection();
         int result = 0;
         PreparedStatement pstmt = null;
@@ -184,17 +138,9 @@ public class SQLConnection {
                 pstmt.setObject(i + 1, params[i]);
             }
             result = pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("An SQL exception occurred while executing the parameterized INSERT/UPDATE/DELETE statement.");
-            e.printStackTrace();
         } finally {
-            try {
-                if (pstmt != null)
-                    pstmt.close();
-            } catch (SQLException e) {
-                System.err.println("An SQL exception occurred while closing the PreparedStatement.");
-                e.printStackTrace();
-            }
+            if (pstmt != null)
+                pstmt.close();
         }
         return result;
     }

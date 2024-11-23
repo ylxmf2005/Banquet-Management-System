@@ -8,7 +8,7 @@ import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 public class DbInitDAO {
     private SQLConnection sqlConnection;
 
-    public DbInitDAO() {
+    public DbInitDAO() throws SQLException {
         this.sqlConnection = new SQLConnection();
     }
 
@@ -36,7 +36,10 @@ public class DbInitDAO {
                 createBanquetTable();
                 createTestBanquet();
             }
-            if (!tableExists("Meal")) createMealTable();
+            if (!tableExists("Meal")) {
+                createMealTable();
+                createTestMealsForBanquet();
+            }
             if (!tableExists("Account")) {
                 createAccountTable();
                 createDefaultAdminAccount();
@@ -139,6 +142,20 @@ public class DbInitDAO {
         System.out.println("Test banquet created.");
     }
 
+    private void createTestMealsForBanquet() throws SQLException {
+        String[] sqls = {
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Grilled Salmon with Lemon Sauce', 'Fish', 150.00, 'French Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Roasted Chicken with Garlic', 'Chicken', 120.00, 'Mediterranean Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Braised Short Ribs', 'Beef', 180.00, 'American Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Kung Pao Tofu', 'Vegetarian', 100.00, 'Chinese Cuisine')"
+        };
+    
+        for (String sql : sqls) {
+            sqlConnection.executeUpdate(sql);
+        }
+        System.out.println("Test meals for banquet created.");
+    }
+
     /**
      * Creates the Meal table.
      *
@@ -157,7 +174,6 @@ public class DbInitDAO {
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Meal created.");
     }
-
 
 
     /**
@@ -192,14 +208,7 @@ public class DbInitDAO {
     /**
      * Closes the SQL connection.
      */
-    public void close() {
+    public void close() throws SQLException {
         sqlConnection.closeConnection();
-    }
-
-    // Main method for testing
-    public static void main(String[] args) {
-        DbInitDAO dbInitDao = new DbInitDAO();
-        dbInitDao.initDb();
-        dbInitDao.close();
     }
 }

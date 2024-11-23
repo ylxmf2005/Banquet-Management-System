@@ -18,8 +18,6 @@ import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.Meal;
 import hk.polyu.comp.project2411.bms.model.Reserve;
 
-// Implementing the BMSMainInterface
-// Temporaily don't implement the interface until we implement all the methods
 public class BMSMain {
     private SQLConnection sqlConnection;
     private DbInitDAO dbInitDao;
@@ -29,7 +27,7 @@ public class BMSMain {
     private ReserveDAO reserveDao;
     private MealDAO mealDao;
 
-    public BMSMain() {
+    public BMSMain() throws SQLException {
         this.sqlConnection = new SQLConnection();
         this.dbInitDao = new DbInitDAO(sqlConnection);
         this.banquetDao = new BanquetDAO(sqlConnection);
@@ -42,7 +40,7 @@ public class BMSMain {
     }
 
     // Close the SQLConnection when done
-    public void close() {
+    public void close() throws SQLException {
         sqlConnection.closeConnection();
     }
 
@@ -77,7 +75,7 @@ public class BMSMain {
     }
 
     public boolean updateAttendeeRegistrationData(String email, Reserve registrationData) throws SQLException {
-        return attendeeAccountDao.updateAttendeeRegistrationData(email, registrationData);
+        return reserveDao.updateAttendeeRegistrationData(email, registrationData);
     }
 
     public List<Banquet> getAllBanquets() throws SQLException {
