@@ -6,12 +6,12 @@ import java.util.Map;
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
-import hk.polyu.comp.project2411.bms.model.Reserves;
+import hk.polyu.comp.project2411.bms.model.Reserve;
 
-public class AttendeeAccountDao {
+public class AttendeeAccountDAO {
     private SQLConnection sqlConnection;
 
-    public AttendeeAccountDao(SQLConnection sqlConnection) {
+    public AttendeeAccountDAO(SQLConnection sqlConnection) {
         this.sqlConnection = sqlConnection;
     }
 
@@ -29,7 +29,7 @@ public class AttendeeAccountDao {
         }
     }
 
-    public boolean updateAttendeeRegistrationData(String email, Reserves registrationData) throws SQLException {
+    public boolean updateAttendeeRegistrationData(String email, Reserve registrationData) throws SQLException {
         String sql = "UPDATE Reserves SET SeatNo=?, RegTime=?, DrinkChoice=?, MealChoice=?, Remarks=? WHERE Email=? AND BanquetBIN=?";
         Object[] params = new Object[] {
             registrationData.getSeatNo(),

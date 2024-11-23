@@ -10,10 +10,10 @@ import hk.polyu.comp.project2411.bms.model.Account;
 import hk.polyu.comp.project2411.bms.model.AdminAccount;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 
-public class AccountDao {
+public class AccountDAO {
     private SQLConnection sqlConnection;
 
-    public AccountDao(SQLConnection sqlConnection) {
+    public AccountDAO(SQLConnection sqlConnection) {
         this.sqlConnection = sqlConnection;
     }
     

@@ -11,7 +11,7 @@ import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.Meal;
 import hk.polyu.comp.project2411.bms.model.RegistrationResult;
 import hk.polyu.comp.project2411.bms.model.ReportData;
-import hk.polyu.comp.project2411.bms.model.Reserves;
+import hk.polyu.comp.project2411.bms.model.Reserve;
 import hk.polyu.comp.project2411.bms.model.SearchCriteria;
 
 public interface BMSMainInterface {
@@ -63,7 +63,7 @@ public interface BMSMainInterface {
      * @return True if the update is successful, false otherwise.
      * @throws SQLException If a database access error occurs.
      */
-    boolean updateAttendeeRegistrationData(String email, Reserves registrationData) throws SQLException;
+    boolean updateAttendeeRegistrationData(String email, Reserve registrationData) throws SQLException;
 
     /**
      * Generates a report on registration status.

@@ -5,16 +5,20 @@ import java.util.List;
 import java.util.Map;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
-import hk.polyu.comp.project2411.bms.exceptions.RegistrationException;
 import hk.polyu.comp.project2411.bms.model.Banquet;
-import hk.polyu.comp.project2411.bms.model.Meal;
-import hk.polyu.comp.project2411.bms.model.RegistrationResult;
 
 public class BanquetDAO {
     private SQLConnection sqlConnection;
 
     public BanquetDAO(SQLConnection sqlConnection) {
         this.sqlConnection = sqlConnection;
+    }
+
+    public boolean deleteBanquet(int BIN) throws SQLException {
+        String sql = "DELETE FROM Banquet WHERE BIN=?";
+        Object[] params = new Object[] {BIN};
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
+        return rowsAffected > 0;
     }
 
     private int getNextBIN() throws SQLException {
@@ -26,16 +30,7 @@ public class BanquetDAO {
         }
         return newBIN;
     }
-    private int getRegisteredNumberForBanquet(Banquet banquet) throws SQLException {
-        /*Count number of people reserved for the banquet.*/
-        String sql = "SELECT COUNT(*) FROM Reserves WHERE BanquetBIN=?";
-        Object[] param = {banquet.getBIN()};
-        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, param);
-        if (!results.isEmpty()) {
-            return ((Number) results.get(0).get("Count")).intValue();
-        }
-        return 0;
-    }
+
     private int insertBanquet(Banquet banquet) throws SQLException {
         String sql = "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -82,21 +77,6 @@ public class BanquetDAO {
         return rowsAffected > 0;
     }
 
-    // Assuming the frontend has already checked to ensure that the meals for the same banquet are different.
-    public boolean addMealToBanquet(int banquetBIN, Meal meal) throws SQLException {
-        String sql = "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (?, ?, ?, ?, ?)";
-        Object[] params = new Object[] {
-            banquetBIN,
-            meal.getDishName(),
-            meal.getType(),
-            meal.getPrice(),
-            meal.getSpecialCuisine()
-        };
-
-        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
-        return rowsAffected > 0;
-    }
-
     public List<Banquet> getAllBanquets() throws SQLException {
         String sql = "SELECT * FROM Banquet";
         List<Map<String, Object>> result = sqlConnection.executeQuery(sql);
@@ -124,34 +104,5 @@ public class BanquetDAO {
         }
         else return null;
         return banquets;
-    }
-    boolean updateRegistration(String attendeeEmail, int banquetBIN, String newDrinkChoice, String newMealChoice, String newRemarks) throws SQLException{
-        String sql = "UPDATE Reserves SET banquetBIN=?, newDrinkChoice=?, newMealChoice=?, newRemarks=? WHERE attendeeEmail=?";
-        Object[] params = new Object[] {
-                banquetBIN,
-                newDrinkChoice,
-                newMealChoice,
-                newRemarks,
-                attendeeEmail
-        };
-        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
-        return rowsAffected > 0;
-    }
-    RegistrationResult registerForBanquet(String attendeeEmail, int banquetBIN, int seatNo, String drinkChoice, String mealChoice, String remarks) throws RegistrationException, SQLException {
-        String sql = "INSERT INTO Reserves (AttendeeEmail, BanquetBIN, SeatNo, DrinkChoice, MealChoice, Remarks) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        Object[] params = new Object[] {
-                attendeeEmail,
-                banquetBIN,
-                seatNo,
-                drinkChoice,
-                mealChoice,
-                remarks
-        };
-        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
-        if (rowsAffected > 0) {
-            return new RegistrationResult(true, "You have successfully registered the banquet.");
-        }
-        else return new RegistrationResult(false, "You have not successfully registered the banquet.");
     }
 }

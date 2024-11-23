@@ -5,14 +5,14 @@ import java.util.Map;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 // TODO: Add check constraints for data entries
-public class DbInitDao {
+public class DbInitDAO {
     private SQLConnection sqlConnection;
 
-    public DbInitDao() {
+    public DbInitDAO() {
         this.sqlConnection = new SQLConnection();
     }
 
-    public DbInitDao(SQLConnection sqlConnection) {
+    public DbInitDAO(SQLConnection sqlConnection) {
         this.sqlConnection = sqlConnection;
     }
 
@@ -28,11 +28,14 @@ public class DbInitDao {
                 if (tableExists("Banquet")) dropTable("Banquet");
                 if (tableExists("Meal")) dropTable("Meal");
                 if (tableExists("Account")) dropTable("Account");
-                if (tableExists("Reserves")) dropTable("Reserves");
+                if (tableExists("Reserve")) dropTable("Reserve");
             }
     
             // Create tables if they do not exist
-            if (!tableExists("Banquet")) createBanquetTable();
+            if (!tableExists("Banquet")) {
+                createBanquetTable();
+                createTestBanquet();
+            }
             if (!tableExists("Meal")) createMealTable();
             if (!tableExists("Account")) {
                 createAccountTable();
@@ -40,7 +43,10 @@ public class DbInitDao {
                 createTestAttendeeAccount();
             }
 
-            if (!tableExists("Reserves")) createReservesTable();
+            if (!tableExists("Reserve")) {
+                createReserveTable();
+                createTestReserve();
+            }
     
             System.out.println("Database initialization completed.");
             return true;
@@ -126,6 +132,12 @@ public class DbInitDao {
         System.out.println("Table Banquet created.");
     }
 
+    private void createTestBanquet() throws SQLException {
+        String sql = "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
+                     "VALUES (1, 'Test Banquet', TO_DATE('2024-12-31 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), '15 Fat Kwong Street', 'Hall of HMT', 'San', 'Zhang', 'Y', 100)";
+        sqlConnection.executeUpdate(sql);
+        System.out.println("Test banquet created.");
+    }
 
     /**
      * Creates the Meal table.
@@ -146,13 +158,15 @@ public class DbInitDao {
         System.out.println("Table Meal created.");
     }
 
+
+
     /**
-     * Creates the Reserves table.
+     * Creates the Reserve table.
      *
      * @throws SQLException If a database access error occurs.
      */
-    private void createReservesTable() throws SQLException {
-        String sql = "CREATE TABLE Reserves (" +
+    private void createReserveTable() throws SQLException {
+        String sql = "CREATE TABLE Reserve (" +
                 "AttendeeEmail VARCHAR2(255), " +
                 "BanquetBIN NUMBER, " +
                 "SeatNo NUMBER, " +
@@ -165,7 +179,14 @@ public class DbInitDao {
                 "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN)" +
                 ")";
         sqlConnection.executeUpdate(sql);
-        System.out.println("Table Reserves created.");
+        System.out.println("Table Reserve created.");
+    }
+
+    private void createTestReserve() throws SQLException {
+        String sql = "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+                     "VALUES ('test@polyu.hk', 1, 1, CURRENT_TIMESTAMP, 'Cold Lemon Tea', 'Chicken and rice', 'Test')";
+        sqlConnection.executeUpdate(sql);
+        System.out.println("Test reserve created.");
     }
 
     /**
@@ -177,7 +198,7 @@ public class DbInitDao {
 
     // Main method for testing
     public static void main(String[] args) {
-        DbInitDao dbInitDao = new DbInitDao();
+        DbInitDAO dbInitDao = new DbInitDAO();
         dbInitDao.initDb();
         dbInitDao.close();
     }

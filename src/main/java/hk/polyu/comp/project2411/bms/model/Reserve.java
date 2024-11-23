@@ -1,6 +1,8 @@
 package hk.polyu.comp.project2411.bms.model;
 import java.sql.Timestamp;
-public class Reserves {
+import java.util.Map;
+
+public class Reserve {
     private String attendeeEmail;
     private int banquetBIN;
     private int seatNo;
@@ -9,8 +11,7 @@ public class Reserves {
     private String mealChoice;
     private String remarks;
 
-    public Reserves(String attendeeEmail, int banquetBIN, int seatNo, Timestamp regTime,
-                    String drinkChoice, String mealChoice, String remarks) {
+    public Reserve(String attendeeEmail, int banquetBIN, int seatNo, Timestamp regTime, String drinkChoice, String mealChoice, String remarks) {
         this.attendeeEmail = attendeeEmail;
         this.banquetBIN = banquetBIN;
         this.seatNo = seatNo;
@@ -18,6 +19,18 @@ public class Reserves {
         this.drinkChoice = drinkChoice;
         this.mealChoice = mealChoice;
         this.remarks = remarks;
+    }
+
+    public Reserve(Map<String, Object> row) {
+        Map<String, Object> lowerCaseRow = Utils.getLowerCasedMap(row);
+        
+        this.attendeeEmail = (String) lowerCaseRow.get("attendeeemail");
+        this.banquetBIN = ((Number) lowerCaseRow.get("banquetbin")).intValue();
+        this.seatNo = ((Number) lowerCaseRow.get("seatno")).intValue();
+        this.regTime = Utils.parseTimestamp(lowerCaseRow.get("regtime"));
+        this.drinkChoice = (String) lowerCaseRow.get("drinkchoice");
+        this.mealChoice = (String) lowerCaseRow.get("mealchoice"); 
+        this.remarks = (String) lowerCaseRow.get("remarks");
     }
 
     // Check if an account is valid or not

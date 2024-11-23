@@ -15,9 +15,10 @@ import {
     FormControl,
     InputLabel,
     FormHelperText,
-    Stack, // Import Stack for layout
+    Stack,
+    Snackbar,
+    Alert,
 } from '@mui/material';
-// Remove Grid import since we're replacing it
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import api from '../utils/api';
 
@@ -68,6 +69,22 @@ export default function BanquetManagement() {
     // State to hold validation errors
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+    // Snackbar state
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+
+    // Function to handle closing of the snackbar
+    const handleSnackbarClose = (
+        event?: React.SyntheticEvent | Event,
+        reason?: string
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
     // Fetch banquets when component mounts
     useEffect(() => {
         fetchBanquets();
@@ -99,7 +116,10 @@ export default function BanquetManagement() {
             // After fetching data, calculate column widths
             calculateColumnWidths(fetchedBanquets);
         } catch (error) {
-            console.error('Failed to fetch banquets', error);
+            console.log('Failed to fetch banquets', error);
+            setSnackbarMessage('Failed to fetch banquets');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
         setLoading(false);
     };
@@ -248,16 +268,23 @@ export default function BanquetManagement() {
     // Delete a banquet
     const handleDeleteBanquet = async (banquetBIN: number) => {
         try {
-            const response = await api.delete(`/deleteBanquet`, {
-                data: { BIN: banquetBIN },
-            });
+            const response = await api.post(`/deleteBanquet`, { banquetBIN });
             if (response.data.status === 'success') {
                 fetchBanquets();
+                setSnackbarMessage('Banquet deleted successfully!');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
             } else {
-                console.error('Failed to delete banquet:', response.data.message);
+                console.log('Failed to delete banquet:', response.data.message);
+                setSnackbarMessage('Failed to delete banquet: ' + response.data.message);
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
             }
         } catch (error) {
-            console.error('Error deleting banquet:', error);
+            console.log('Error deleting banquet:', error);
+            setSnackbarMessage('Error deleting banquet');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
         }
     };
 
@@ -315,11 +342,20 @@ export default function BanquetManagement() {
                 if (response.data.status === 'success') {
                     fetchBanquets();
                     handleDialogClose();
+                    setSnackbarMessage('Banquet updated successfully!');
+                    setSnackbarSeverity('success');
+                    setSnackbarOpen(true);
                 } else {
-                    console.error('Failed to update banquet:', response.data.message);
+                    console.log('Failed to update banquet:', response.data.message);
+                    setSnackbarMessage('Failed to update banquet: ' + response.data.message);
+                    setSnackbarSeverity('error');
+                    setSnackbarOpen(true);
                 }
             } catch (error) {
-                console.error('Error updating banquet:', error);
+                console.log('Error updating banquet:', error);
+                setSnackbarMessage('Error updating banquet');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
             }
         } else {
             // Create banquet
@@ -328,17 +364,26 @@ export default function BanquetManagement() {
                 if (response.data.status === 'success') {
                     fetchBanquets();
                     handleDialogClose();
+                    setSnackbarMessage('Banquet created successfully!');
+                    setSnackbarSeverity('success');
+                    setSnackbarOpen(true);
                 } else {
-                    console.error('Failed to create banquet:', response.data.message);
+                    console.log('Failed to create banquet:', response.data.message);
+                    setSnackbarMessage('Failed to create banquet: ' + response.data.message);
+                    setSnackbarSeverity('error');
+                    setSnackbarOpen(true);
                 }
             } catch (error) {
-                console.error('Error creating banquet:', error);
+                console.log('Error creating banquet:', error);
+                setSnackbarMessage('Error creating banquet');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
             }
         }
     };
 
     return (
-        (<Box sx={{ mt: 2 }}>
+        <Box sx={{ mt: 2 }}>
             {/* Button to create a new banquet */}
             <Button variant="contained" color="primary" onClick={handleCreateBanquet}>
                 Create New Banquet
@@ -390,7 +435,6 @@ export default function BanquetManagement() {
                         },
                     }}
                     pageSizeOptions={[10]}
-                // Removed autoHeight prop as it's deprecated
                 />
             </Box>
             {/* Dialog for Creating/Editing Banquet */}
@@ -399,11 +443,9 @@ export default function BanquetManagement() {
                 onClose={handleDialogClose}
                 maxWidth="md"
                 fullWidth
-                // Added 'scroll' to enable scrolling if content overflows
                 scroll="paper"
             >
                 <DialogTitle>{isEditing ? 'Edit Banquet' : 'Create New Banquet'}</DialogTitle>
-                {/* Added sx prop to set overflow to visible to prevent label clipping */}
                 <DialogContent sx={{ overflow: 'visible', paddingTop: 2 }}>
                     {/* Use Stack for layout instead of Grid */}
                     <Stack spacing={2}>
@@ -434,10 +476,8 @@ export default function BanquetManagement() {
                                         dateTime: e.target.value,
                                     })
                                 }
-                                slotProps={{
-                                    inputLabel: {
-                                        shrink: true,
-                                    }
+                                InputLabelProps={{
+                                    shrink: true,
                                 }}
                             />
                         </Stack>
@@ -524,11 +564,11 @@ export default function BanquetManagement() {
                                 onChange={(e) =>
                                     setSelectedBanquet({
                                         ...selectedBanquet,
-                                        quota: parseInt(e.target.value) || 0,
+                                        quota: !isNaN(parseInt(e.target.value)) ? parseInt(e.target.value) : NaN,
                                     })
                                 }
-                                slotProps={{
-                                    htmlInput: { min: 0, step: 1 }
+                                InputProps={{
+                                    inputProps: { min: 0, step: 1 },
                                 }}
                             />
                         </Stack>
@@ -576,14 +616,14 @@ export default function BanquetManagement() {
                                     onChange={(e) => {
                                         const updatedMeals = [...selectedBanquet.meals];
                                         updatedMeals[index].price =
-                                            parseFloat(e.target.value) || 0;
+                                            !isNaN(parseFloat(e.target.value)) ? parseFloat(e.target.value) : NaN;
                                         setSelectedBanquet({
                                             ...selectedBanquet,
                                             meals: updatedMeals,
                                         });
                                     }}
-                                    slotProps={{
-                                        htmlInput: { min: 0 }
+                                    InputProps={{
+                                        inputProps: { min: 0 },
                                     }}
                                 />
                                 <TextField
@@ -610,6 +650,21 @@ export default function BanquetManagement() {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Box>)
+            {/* Snackbar for notifications */}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={2000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity={snackbarSeverity}
+                    sx={{ width: '100%' }}
+                >
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+        </Box>
     );
 }
