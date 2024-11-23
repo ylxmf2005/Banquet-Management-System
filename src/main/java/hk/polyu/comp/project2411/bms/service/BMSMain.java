@@ -74,8 +74,8 @@ public class BMSMain {
         return reserveDao.getReservesByAttendeeEmail(email);
     }
 
-    public boolean updateAttendeeRegistrationData(String email, Reserve registrationData) throws SQLException {
-        return reserveDao.updateAttendeeRegistrationData(email, registrationData);
+    public boolean updateAttendeeRegistrationData(Reserve registrationData) throws SQLException {
+        return reserveDao.updateAttendeeRegistrationData(registrationData);
     }
 
     public List<Banquet> getAllBanquets() throws SQLException {
