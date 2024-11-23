@@ -1,55 +1,29 @@
+// src/components/BanquetManagement.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import {
-    Box,
-    Button,
-    Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    FormHelperText,
-    Stack,
-    Snackbar,
-    Alert,
-} from '@mui/material';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import api from '../utils/api';
+import React, { useEffect, useState, useContext } from 'react';
+import { Box, Button } from '@mui/material';
+import { GridColDef } from '@mui/x-data-grid';
+import { Banquet } from '../utils/types'; 
+import { SnackbarContext } from '../context/SnackbarContext'; 
+import Service from '../service/Service'; 
+import BanquetList from './BanquetList';
+import BanquetForm from './BanquetForm';
+import { formatDateTimeForInput } from '../utils/utils'; 
+import { banquetSchema } from '../utils/validationSchemas'; 
+import * as Yup from 'yup'; 
 
-// Interface for Meal object
-interface Meal {
-    type: string;
-    dishName: string;
-    price: number;
-    specialCuisine: string;
-}
-
-// Interface for Banquet object
-interface Banquet {
-    BIN: number;
-    name: string;
-    dateTime: string;
-    address: string;
-    location: string;
-    contactFirstName: string;
-    contactLastName: string;
-    available: string;
-    quota: number;
-    meals: Meal[];
-}
-
+// BanquetManagement Component
 export default function BanquetManagement() {
+    // State to hold the list of banquets
     const [banquets, setBanquets] = useState<Banquet[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // Loading state for data fetch
 
-    const [openDialog, setOpenDialog] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
+    // Dialog control states
+    const [openDialog, setOpenDialog] = useState(false); // Controls whether the banquet form dialog is open
+    const [isEditing, setIsEditing] = useState(false); // Determines if the form is in editing mode
+
+    // Selected banquet for editing or creating
     const [selectedBanquet, setSelectedBanquet] = useState<Banquet>({
         BIN: 0,
         name: '',
@@ -60,31 +34,16 @@ export default function BanquetManagement() {
         contactLastName: '',
         available: 'Y',
         quota: 0,
-        meals: [
-            { type: '', dishName: '', price: NaN, specialCuisine: '' },
-            { type: '', dishName: '', price: NaN, specialCuisine: '' },
-            { type: '', dishName: '', price: NaN, specialCuisine: '' },
-            { type: '', dishName: '', price: NaN, specialCuisine: '' },
-        ],
+        meals: Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }), // Initialize meals with 4 empty meal objects
     });
 
-    // State to hold validation errors, including meals errors
+    // State to hold validation errors, including errors for meals
     const [errors, setErrors] = useState<{ [key: string]: any }>({});
 
-    // Snackbar state
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
+    // Get showMessage function from SnackbarContext for displaying notifications
+    const { showMessage } = useContext(SnackbarContext);
 
-    // Function to handle closing of the snackbar
-    const handleSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setSnackbarOpen(false);
-    };
-
-    // Fetch banquets when component mounts
+    // Fetch banquets when the component mounts
     useEffect(() => {
         fetchBanquets();
     }, []);
@@ -93,21 +52,15 @@ export default function BanquetManagement() {
     const fetchBanquets = async () => {
         setLoading(true);
         try {
-            const response = await api.get('/getAllBanquets');
-            let fetchedBanquets: Banquet[] = response.data.banquets || [];
+            const data = await Service.fetchBanquets();
 
             // Map over fetched banquets and ensure meals are properly set
-            fetchedBanquets = fetchedBanquets.map((banquet) => ({
+            const fetchedBanquets = data.map((banquet: Banquet) => ({
                 ...banquet,
                 meals:
                     banquet.meals && banquet.meals.length > 0
                         ? banquet.meals
-                        : [
-                            { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                            { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                            { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                            { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                        ],
+                        : Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }),
             }));
 
             setBanquets(fetchedBanquets);
@@ -120,7 +73,7 @@ export default function BanquetManagement() {
         setLoading(false);
     };
 
-    // State to hold column definitions
+    // State to hold column definitions for the DataGrid
     const [columns, setColumns] = useState<GridColDef[]>([]);
 
     // Function to calculate column widths based on content
@@ -135,7 +88,6 @@ export default function BanquetManagement() {
             { field: 'contactLastName', headerName: 'Contact Last Name' },
             { field: 'available', headerName: 'Available' },
             { field: 'quota', headerName: 'Quota' },
-            { field: 'actions', headerName: 'Actions' },
         ];
 
         const ctx = document.createElement('canvas').getContext('2d');
@@ -151,48 +103,19 @@ export default function BanquetManagement() {
 
         const calculatedColumns = headers.map((header) => {
             let maxWidth = getTextWidth(header.headerName) + 40; // Adding padding
-            if (header.field !== 'actions') {
-                data.forEach((row) => {
-                    // @ts-ignore
-                    const value = row[header.field as keyof Banquet];
-                    const text = value ? value.toString() : '';
-                    const width = getTextWidth(text) + 40; // Adding padding
-                    if (width > maxWidth) {
-                        maxWidth = width;
-                    }
-                });
-            } else {
-                // Actions column
-                maxWidth = 180;
-            }
-
+            data.forEach((row) => {
+                // @ts-ignore
+                const value = row[header.field as keyof Banquet];
+                const text = value ? value.toString() : '';
+                const width = getTextWidth(text) + 40; // Adding padding
+                if (width > maxWidth) {
+                    maxWidth = width;
+                }
+            });
             return {
                 field: header.field,
                 headerName: header.headerName,
                 width: Math.min(maxWidth, 400), // Set a max width to prevent excessively wide columns
-                renderCell:
-                    header.field === 'actions'
-                        ? (params: GridRenderCellParams) => (
-                            <div>
-                                <Button
-                                    size="small"
-                                    variant="outlined"
-                                    onClick={() => handleEditBanquet(params.row as Banquet)}
-                                >
-                                    Edit
-                                </Button>
-                                <Button
-                                    size="small"
-                                    variant="outlined"
-                                    color="error"
-                                    onClick={() => handleDeleteBanquet((params.row as Banquet).BIN)}
-                                    sx={{ ml: 1 }}
-                                >
-                                    Delete
-                                </Button>
-                            </div>
-                        )
-                        : undefined,
             } as GridColDef;
         });
 
@@ -201,6 +124,7 @@ export default function BanquetManagement() {
 
     // Open the dialog to create a new banquet
     const handleCreateBanquet = () => {
+        // Reset selectedBanquet to default values
         setSelectedBanquet({
             BIN: 0,
             name: '',
@@ -211,32 +135,11 @@ export default function BanquetManagement() {
             contactLastName: '',
             available: 'Y',
             quota: 0,
-            meals: [
-                { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                { type: '', dishName: '', price: NaN, specialCuisine: '' },
-            ],
+            meals: Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }),
         });
-        setErrors({});
-        setIsEditing(false);
-        setOpenDialog(true);
-    };
-
-    // Helper function to format dateTime for input field
-    const formatDateTimeForInput = (dateTimeStr: string): string => {
-        const date = new Date(dateTimeStr);
-        // Check if date is valid
-        if (isNaN(date.getTime())) {
-            return '';
-        }
-        // Format date to 'YYYY-MM-DDTHH:mm'
-        const year = date.getFullYear();
-        const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are zero-based
-        const day = ('0' + date.getDate()).slice(-2);
-        const hours = ('0' + date.getHours()).slice(-2);
-        const minutes = ('0' + date.getMinutes()).slice(-2);
-        return `${year}-${month}-${day}T${hours}:${minutes}`;
+        setErrors({}); // Reset any previous errors
+        setIsEditing(false); // Set editing mode to false
+        setOpenDialog(true); // Open the dialog
     };
 
     // Open the dialog to edit an existing banquet
@@ -244,66 +147,22 @@ export default function BanquetManagement() {
         // Ensure meals are properly set in selectedBanquet
         setSelectedBanquet({
             ...banquet,
-            // Format the dateTime to "YYYY-MM-DDTHH:mm" format
+            // Format the dateTime to "YYYY-MM-DDTHH:mm" format for the input field
             dateTime: formatDateTimeForInput(banquet.dateTime),
             meals:
                 banquet.meals && banquet.meals.length > 0
                     ? banquet.meals
-                    : [
-                        { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                        { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                        { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                        { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                    ],
+                    : Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }),
         });
-        setErrors({});
-        setIsEditing(true);
-        setOpenDialog(true);
-    };
-
-    // Function to handle API errors and display messages
-    const handleApiError = (error: any, action: string) => {
-        if (error.response && error.response.data && error.response.data.message) {
-            console.log(`Error ${action}:`, error.response.data.message);
-            setSnackbarMessage(`Error ${action}: ${error.response.data.message}`);
-        } else {
-            console.log(`Error ${action}:`, error.message);
-            setSnackbarMessage(`Error ${action}: ${error.message}`);
-        }
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
-    };
-
-    // Function to handle API success and display messages
-    const handleApiSuccess = (message: string) => {
-        setSnackbarMessage(message);
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
-    };
-
-    // Function to handle API responses and execute callbacks
-    const handleApiResponse = (
-        response: any,
-        successMessage: string,
-        action: string,
-        successCallback?: Function
-    ) => {
-        if (response.data.status === 'success') {
-            if (successCallback) successCallback();
-            handleApiSuccess(successMessage);
-        } else {
-            console.log(`Failed to ${action}:`, response.data.message);
-            setSnackbarMessage(`Failed to ${action}: ${response.data.message}`);
-            setSnackbarSeverity('error');
-            setSnackbarOpen(true);
-        }
+        setErrors({}); // Reset any previous errors
+        setIsEditing(true); // Set editing mode to true
+        setOpenDialog(true); // Open the dialog
     };
 
     // Delete a banquet
     const handleDeleteBanquet = async (banquetBIN: number) => {
         try {
-            const response = await api.post(`/deleteBanquet`, { banquetBIN });
-            console.log('Delete banquet response:', response.data);
+            const response = await Service.deleteBanquet(banquetBIN);
             handleApiResponse(response, 'Banquet deleted successfully!', 'delete banquet', fetchBanquets);
         } catch (error: any) {
             handleApiError(error, 'deleting banquet');
@@ -313,7 +172,8 @@ export default function BanquetManagement() {
     // Close the dialog and reset selected banquet
     const handleDialogClose = () => {
         setOpenDialog(false);
-        setErrors({});
+        setErrors({}); // Reset errors
+        // Reset selectedBanquet to default values
         setSelectedBanquet({
             BIN: 0,
             name: '',
@@ -324,59 +184,55 @@ export default function BanquetManagement() {
             contactLastName: '',
             available: 'Y',
             quota: 0,
-            meals: [
-                { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                { type: '', dishName: '', price: NaN, specialCuisine: '' },
-                { type: '', dishName: '', price: NaN, specialCuisine: '' },
-            ],
+            meals: Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }),
         });
     };
 
     // Submit the create or update banquet request
-    const handleDialogSubmit = async () => {
-        // Validate required fields
-        let tempErrors: { [key: string]: any } = {};
-        if (!selectedBanquet.name) tempErrors.name = 'Banquet Name is required';
-        if (!selectedBanquet.dateTime) tempErrors.dateTime = 'Date & Time is required';
-        if (!selectedBanquet.address) tempErrors.address = 'Address is required';
-        if (!selectedBanquet.location) tempErrors.location = 'Location is required';
-        if (!selectedBanquet.contactFirstName)
-            tempErrors.contactFirstName = 'Contact First Name is required';
-        if (!selectedBanquet.contactLastName)
-            tempErrors.contactLastName = 'Contact Last Name is required';
-        if (!selectedBanquet.available) tempErrors.available = 'Available is required';
-        if (
-            selectedBanquet.quota === null ||
-            selectedBanquet.quota === undefined ||
-            isNaN(selectedBanquet.quota)
-        )
-            tempErrors.quota = 'Quota is required and must be a number';
+    const handleDialogSubmit = async (banquet: Banquet) => {
+        // Reset previous errors
+        setErrors({});
 
-        // Validate meals
-        const mealsErrors = selectedBanquet.meals.map((meal, index) => {
-            const mealErrors: { [key: string]: string } = {};
-            if (!meal.type) mealErrors.type = 'Meal Type is required';
-            if (!meal.dishName) mealErrors.dishName = 'Dish Name is required';
-            if (meal.price === null || meal.price === undefined || isNaN(meal.price))
-                mealErrors.price = 'Price is required and must be a number';
-            if (!meal.specialCuisine) mealErrors.specialCuisine = 'Special Cuisine is required';
-            return mealErrors;
-        });
-
-        // Check if there are any errors in meals
-        if (mealsErrors.some((mealError) => Object.keys(mealError).length > 0)) {
-            tempErrors.meals = mealsErrors;
+        // Validate banquet data using Yup schema
+        try {
+            await banquetSchema.validate(banquet, { abortEarly: false });
+        } catch (err) {
+            if (err instanceof Yup.ValidationError) {
+                const validationErrors: { [key: string]: any } = {};
+                err.inner.forEach((error) => {
+                    if (error.path) {
+                        // Handle nested errors for meals
+                        if (error.path.startsWith('meals')) {
+                            const pathParts = error.path.split('.');
+                            const index = parseInt(pathParts[1], 10);
+                            const field = pathParts[2];
+                            if (!validationErrors.meals) {
+                                validationErrors.meals = [];
+                            }
+                            if (!validationErrors.meals[index]) {
+                                validationErrors.meals[index] = {};
+                            }
+                            validationErrors.meals[index][field] = error.message;
+                        } else {
+                            validationErrors[error.path] = error.message;
+                        }
+                    }
+                });
+                setErrors(validationErrors); // Set errors to display in the form
+                return; // Exit the function if validation fails
+            } else {
+                // If it's another type of error, handle accordingly
+                console.error('Validation error', err);
+                showMessage('Validation error occurred.', 'error');
+                return;
+            }
         }
 
-        if (Object.keys(tempErrors).length > 0) {
-            setErrors(tempErrors);
-            return;
-        }
-
+        // If validation passes, proceed to create or update
         if (isEditing) {
+            // Update existing banquet
             try {
-                const response = await api.post('/updateBanquet', selectedBanquet);
+                const response = await Service.updateBanquet(banquet);
                 handleApiResponse(
                     response,
                     'Banquet updated successfully!',
@@ -390,9 +246,9 @@ export default function BanquetManagement() {
                 handleApiError(error, 'updating banquet');
             }
         } else {
-            // Create banquet
+            // Create new banquet
             try {
-                const response = await api.post('/createBanquet', selectedBanquet);
+                const response = await Service.createBanquet(banquet);
                 handleApiResponse(
                     response,
                     'Banquet created successfully!',
@@ -408,340 +264,66 @@ export default function BanquetManagement() {
         }
     };
 
+    // Function to handle API errors and display messages
+    const handleApiError = (error: any, action: string) => {
+        let message = '';
+        if (error.response && error.response.data && error.response.data.message) {
+            console.log(`Error ${action}:`, error.response.data.message);
+            message = `Error ${action}: ${error.response.data.message}`;
+        } else {
+            console.log(`Error ${action}:`, error.message);
+            message = `Error ${action}: ${error.message}`;
+        }
+        showMessage(message, 'error'); // Use showMessage from SnackbarContext to display error
+    };
+
+    // Function to handle API success and display messages
+    const handleApiSuccess = (message: string) => {
+        showMessage(message, 'success'); // Use showMessage from SnackbarContext to display success
+    };
+
+    // Function to handle API responses and execute callbacks
+    const handleApiResponse = (
+        response: any,
+        successMessage: string,
+        action: string,
+        successCallback?: Function
+    ) => {
+        if (response.status === 'success') {
+            if (successCallback) successCallback(); // Execute any provided success callback
+            handleApiSuccess(successMessage); // Display success message
+        } else {
+            console.log(`Failed to ${action}:`, response.message);
+            const message = `Failed to ${action}: ${response.message}`;
+            showMessage(message, 'error'); // Display error message
+        }
+    };
+
     return (
         <Box sx={{ mt: 2 }}>
             {/* Button to create a new banquet */}
             <Button variant="contained" color="primary" onClick={handleCreateBanquet}>
                 Create New Banquet
             </Button>
-            {/* DataGrid container with scrollbar */}
-            <Box
-                sx={{
-                    mt: 2,
-                    overflowX: 'auto',
-                    overflowY: 'auto',
-                    '& .MuiDataGrid-root': {
-                        overflowX: 'visible',
-                    },
-                    '& .MuiDataGrid-columnHeader, & .MuiDataGrid-cell': {
-                        outline: 'none !important',
-                        whiteSpace: 'nowrap',
-                    },
-                    '& .MuiDataGrid-columnHeaders': {
-                        backgroundColor: '#f5f5f5',
-                    },
-                    // Custom scrollbar styles
-                    '&::-webkit-scrollbar': {
-                        height: '10px',
-                        width: '10px',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                        backgroundColor: '#c1c1c1',
-                        borderRadius: '5px',
-                    },
-                    '&::-webkit-scrollbar-track': {
-                        backgroundColor: '#f0f0f0',
-                    },
-                    // For Firefox
-                    scrollbarWidth: 'thin',
-                    scrollbarColor: '#c1c1c1 #f0f0f0',
-                    // Set a fixed height for the DataGrid container
-                    height: 600, // Adjust as needed
-                }}
-            >
-                <DataGrid
-                    rows={banquets}
-                    columns={columns}
-                    loading={loading}
-                    getRowId={(row) => row.BIN}
-                    paginationMode="client"
-                    initialState={{
-                        pagination: {
-                            paginationModel: { pageSize: 10, page: 0 },
-                        },
-                    }}
-                    pageSizeOptions={[10]}
-                />
-            </Box>
-            {/* Dialog for Creating/Editing Banquet */}
-            <Dialog
-                open={openDialog}
+            {/* Banquet List component displaying the list of banquets */}
+            <BanquetList
+                banquets={banquets}
+                loading={loading}
+                columns={columns}
+                onEdit={handleEditBanquet}
+                onDelete={handleDeleteBanquet}
+            />
+            {/* Banquet Form Dialog for creating/editing a banquet */}
+            <BanquetForm
+                isOpen={openDialog}
+                isEditing={isEditing}
+                banquet={selectedBanquet}
+                errors={errors}
                 onClose={handleDialogClose}
-                maxWidth="md"
-                fullWidth
-                scroll="paper"
-            >
-                <DialogTitle>{isEditing ? 'Edit Banquet' : 'Create New Banquet'}</DialogTitle>
-                <DialogContent sx={{ overflow: 'visible', paddingTop: 2 }}>
-                    {/* Use Stack for layout instead of Grid */}
-                    <Stack spacing={2}>
-                        {/* Banquet detail fields */}
-                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                            <TextField
-                                label="Banquet Name"
-                                fullWidth
-                                value={selectedBanquet.name}
-                                required
-                                error={!!errors.name}
-                                helperText={errors.name}
-                                onChange={(e) =>
-                                    setSelectedBanquet({ ...selectedBanquet, name: e.target.value })
-                                }
-                            />
-                            <TextField
-                                label="Date & Time"
-                                type="datetime-local"
-                                fullWidth
-                                required
-                                error={!!errors.dateTime}
-                                helperText={errors.dateTime}
-                                value={selectedBanquet.dateTime}
-                                onChange={(e) =>
-                                    setSelectedBanquet({
-                                        ...selectedBanquet,
-                                        dateTime: e.target.value,
-                                    })
-                                }
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                            />
-                        </Stack>
-                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                            <TextField
-                                label="Address"
-                                fullWidth
-                                value={selectedBanquet.address}
-                                required
-                                error={!!errors.address}
-                                helperText={errors.address}
-                                onChange={(e) =>
-                                    setSelectedBanquet({ ...selectedBanquet, address: e.target.value })
-                                }
-                            />
-                            <TextField
-                                label="Location"
-                                fullWidth
-                                value={selectedBanquet.location}
-                                required
-                                error={!!errors.location}
-                                helperText={errors.location}
-                                onChange={(e) =>
-                                    setSelectedBanquet({ ...selectedBanquet, location: e.target.value })
-                                }
-                            />
-                        </Stack>
-                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                            <TextField
-                                label="Contact First Name"
-                                fullWidth
-                                value={selectedBanquet.contactFirstName}
-                                required
-                                error={!!errors.contactFirstName}
-                                helperText={errors.contactFirstName}
-                                onChange={(e) =>
-                                    setSelectedBanquet({
-                                        ...selectedBanquet,
-                                        contactFirstName: e.target.value,
-                                    })
-                                }
-                            />
-                            <TextField
-                                label="Contact Last Name"
-                                fullWidth
-                                value={selectedBanquet.contactLastName}
-                                required
-                                error={!!errors.contactLastName}
-                                helperText={errors.contactLastName}
-                                onChange={(e) =>
-                                    setSelectedBanquet({
-                                        ...selectedBanquet,
-                                        contactLastName: e.target.value,
-                                    })
-                                }
-                            />
-                        </Stack>
-                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                            <FormControl fullWidth error={!!errors.available} required>
-                                <InputLabel>Available *</InputLabel>
-                                <Select
-                                    value={selectedBanquet.available}
-                                    onChange={(e) =>
-                                        setSelectedBanquet({
-                                            ...selectedBanquet,
-                                            available: e.target.value as string,
-                                        })
-                                    }
-                                    label="Available"
-                                >
-                                    <MenuItem value="Y">Yes</MenuItem>
-                                    <MenuItem value="N">No</MenuItem>
-                                </Select>
-                                {errors.available && (
-                                    <FormHelperText>{errors.available}</FormHelperText>
-                                )}
-                            </FormControl>
-                            <TextField
-                                label="Quota"
-                                type="number"
-                                fullWidth
-                                value={isNaN(selectedBanquet.quota) ? '' : selectedBanquet.quota}
-                                required
-                                error={!!errors.quota}
-                                helperText={errors.quota}
-                                onChange={(e) =>
-                                    setSelectedBanquet({
-                                        ...selectedBanquet,
-                                        quota: !isNaN(parseInt(e.target.value))
-                                            ? parseInt(e.target.value)
-                                            : NaN,
-                                    })
-                                }
-                                InputProps={{
-                                    inputProps: { min: 0, step: 1 },
-                                }}
-                            />
-                        </Stack>
-                        {/* Meals Inputs */}
-                        <Typography variant="h6" gutterBottom>
-                            Meals
-                        </Typography>
-                        {selectedBanquet.meals.map((meal: Meal, index: number) => (
-                            <Stack
-                                key={index}
-                                direction={{ xs: 'column', sm: 'row' }}
-                                spacing={2}
-                            >
-                                <TextField
-                                    label={`Meal Type ${index + 1}`}
-                                    fullWidth
-                                    value={meal.type}
-                                    required
-                                    error={
-                                        !!errors.meals &&
-                                        errors.meals[index] &&
-                                        !!errors.meals[index].type
-                                    }
-                                    helperText={
-                                        errors.meals &&
-                                        errors.meals[index] &&
-                                        errors.meals[index].type
-                                    }
-                                    onChange={(e) => {
-                                        const updatedMeals = [...selectedBanquet.meals];
-                                        updatedMeals[index].type = e.target.value;
-                                        setSelectedBanquet({
-                                            ...selectedBanquet,
-                                            meals: updatedMeals,
-                                        });
-                                    }}
-                                />
-                                <TextField
-                                    label={`Dish Name ${index + 1}`}
-                                    fullWidth
-                                    value={meal.dishName}
-                                    required
-                                    error={
-                                        !!errors.meals &&
-                                        errors.meals[index] &&
-                                        !!errors.meals[index].dishName
-                                    }
-                                    helperText={
-                                        errors.meals &&
-                                        errors.meals[index] &&
-                                        errors.meals[index].dishName
-                                    }
-                                    onChange={(e) => {
-                                        const updatedMeals = [...selectedBanquet.meals];
-                                        updatedMeals[index].dishName = e.target.value;
-                                        setSelectedBanquet({
-                                            ...selectedBanquet,
-                                            meals: updatedMeals,
-                                        });
-                                    }}
-                                />
-                                <TextField
-                                    label={`Price ${index + 1}`}
-                                    type="number"
-                                    fullWidth
-                                    value={isNaN(meal.price) ? '' : meal.price}
-                                    required
-                                    error={
-                                        !!errors.meals &&
-                                        errors.meals[index] &&
-                                        !!errors.meals[index].price
-                                    }
-                                    helperText={
-                                        errors.meals &&
-                                        errors.meals[index] &&
-                                        errors.meals[index].price
-                                    }
-                                    onChange={(e) => {
-                                        const updatedMeals = [...selectedBanquet.meals];
-                                        updatedMeals[index].price = !isNaN(
-                                            parseFloat(e.target.value)
-                                        )
-                                            ? parseFloat(e.target.value)
-                                            : NaN;
-                                        setSelectedBanquet({
-                                            ...selectedBanquet,
-                                            meals: updatedMeals,
-                                        });
-                                    }}
-                                    InputProps={{
-                                        inputProps: { min: 0 },
-                                    }}
-                                />
-                                <TextField
-                                    label={`Special Cuisine ${index + 1}`}
-                                    fullWidth
-                                    value={meal.specialCuisine}
-                                    required
-                                    error={
-                                        !!errors.meals &&
-                                        errors.meals[index] &&
-                                        !!errors.meals[index].specialCuisine
-                                    }
-                                    helperText={
-                                        errors.meals &&
-                                        errors.meals[index] &&
-                                        errors.meals[index].specialCuisine
-                                    }
-                                    onChange={(e) => {
-                                        const updatedMeals = [...selectedBanquet.meals];
-                                        updatedMeals[index].specialCuisine = e.target.value;
-                                        setSelectedBanquet({
-                                            ...selectedBanquet,
-                                            meals: updatedMeals,
-                                        });
-                                    }}
-                                />
-                            </Stack>
-                        ))}
-                    </Stack>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleDialogClose}>Cancel</Button>
-                    <Button onClick={handleDialogSubmit}>
-                        {isEditing ? 'Update' : 'Create'}
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            {/* Snackbar for notifications */}
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={2000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-                <Alert
-                    onClose={handleSnackbarClose}
-                    severity={snackbarSeverity}
-                    sx={{ width: '100%' }}
-                >
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar>
+                onSubmit={handleDialogSubmit}
+                setBanquet={setSelectedBanquet}
+                setErrors={setErrors}
+            />
         </Box>
     );
 }

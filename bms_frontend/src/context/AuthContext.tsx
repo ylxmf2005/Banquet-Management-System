@@ -1,6 +1,6 @@
 'use client';
 import React, { createContext, useState, useEffect } from 'react';
-import api from '../utils/api';
+import api from '../service/api';
 
 interface User {
     email: string;

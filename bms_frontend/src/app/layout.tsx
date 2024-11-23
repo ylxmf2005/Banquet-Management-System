@@ -1,5 +1,6 @@
 'use client';
 import { AuthProvider } from '../context/AuthContext';
+import { SnackbarProvider } from '../context/SnackbarContext';
 import Navbar from '../components/Navbar';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -7,10 +8,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2', // Primary color
+      main: '#1976d2', 
     },
     secondary: {
-      main: '#dc004e', // Secondary color
+      main: '#dc004e', 
     },
   },
 });
@@ -20,11 +21,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <AuthProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Navbar />
-            {children}
-          </ThemeProvider>
+          <SnackbarProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <Navbar />
+              {children}
+            </ThemeProvider>
+          </SnackbarProvider>
         </AuthProvider>
       </body>
     </html>

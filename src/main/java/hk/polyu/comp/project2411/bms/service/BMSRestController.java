@@ -62,6 +62,7 @@ public class BMSRestController {
         }
     }
 
+
     @POST
     @Path("/createBanquet")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -336,6 +337,40 @@ public class BMSRestController {
             response.put("status", result ? "success" : "failure");
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
+    @POST
+    @Path("/registerAttendee")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response registerAttendee(String attendeeData) {
+        System.out.println("Received request at /registerAttendee: " + attendeeData);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            AttendeeAccount attendee = gson.fromJson(attendeeData, AttendeeAccount.class);
+            boolean result = bmsMain.registerAttendee(attendee);
+            response.put("status", result ? "success" : "failure");
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (ValidationException e) {
+            System.out.println("Validation error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.BAD_REQUEST).entity(jsonResponse).build();
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
             response.put("status", "error");

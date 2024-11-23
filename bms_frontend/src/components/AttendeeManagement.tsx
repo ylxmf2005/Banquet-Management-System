@@ -1,105 +1,64 @@
+// src/components/AttendeeManagement.tsx
 'use client';
 
-import React, { useState } from 'react';
-import {
-    Box,
-    Typography,
-    TextField,
-    Button,
-    Stack,
-} from '@mui/material';
-import api from '../utils/api';
-import * as Yup from 'yup'; // Import Yup for validation
+import React, { useState, useContext } from 'react';
+import { Box } from '@mui/material';
+import { Attendee, Registration } from '../utils/types';
+import AttendeeSearch from './AttendeeSearch';
+import AttendeeForm from './AttendeeForm';
+import RegistrationList from './RegistrationList';
+import Service from '../service/Service';
+import { attendeeSchema, registrationSchema } from '../utils/validationSchemas';
+import * as Yup from 'yup';
+import { SnackbarContext } from '../context/SnackbarContext'; 
 
-// Define the attendee validation schema using Yup
-const attendeeSchema = Yup.object().shape({
-    firstName: Yup.string()
-        .required('This field is required.')
-        .matches(/^[A-Za-z]+$/, 'First name must contain only English letters.'),
-    lastName: Yup.string()
-        .required('This field is required.')
-        .matches(/^[A-Za-z]+$/, 'Last name must contain only English letters.'),
-    email: Yup.string()
-        .required('This field is required.')
-        .email('Invalid email format.'),
-    address: Yup.string()
-        .required('This field is required.'),
-    type: Yup.string()
-        .required('This field is required.'),
-    organization: Yup.string()
-        .required('This field is required.'),
-    mobileNo: Yup.string()
-        .required('This field is required.')
-        .matches(/^\d{8}$/, 'Mobile number must be exactly 8 digits.'),
-    password: Yup.string(),
-});
-
-// Define the registration validation schema using Yup
-const registrationSchema = Yup.object().shape({
-    seatNo: Yup.number()
-        .required('Seat number is required.')
-        .positive('Seat number must be a positive integer.')
-        .integer('Seat number must be a positive integer.'),
-    drinkChoice: Yup.string()
-        .required('This field is required.'),
-    mealChoice: Yup.string()
-        .required('This field is required.'),
-    remarks: Yup.string(),
-});
-
-interface Registration {
-    attendeeEmail: string;
-    banquetBIN: number;
-    seatNo: number;
-    regTime: string; // Assuming regTime is a string; adjust if it's a Date
-    drinkChoice: string;
-    mealChoice: string;
-    remarks: string;
-}
 
 export default function AttendeeManagement() {
-    const [email, setEmail] = useState('');
-    const [attendee, setAttendee] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(''); // Error message for search
-    const [errors, setErrors] = useState<{ [key: string]: string }>({}); // Errors for attendee update
-    const [attendeeSuccessMessage, setAttendeeSuccessMessage] = useState(''); // Success message for attendee update
+    // Get showMessage function from SnackbarContext
+    const { showMessage } = useContext(SnackbarContext);
 
-    const [registrations, setRegistrations] = useState<Registration[]>([]); // Attendee's registrations
-    const [registrationErrors, setRegistrationErrors] = useState<{ [key: number]: { [key: string]: string } }>({}); // Errors for registration updates
-    const [registrationSuccessMessages, setRegistrationSuccessMessages] = useState<{ [key: number]: string }>({}); // Success messages for registration updates
+    // State for attendee information
+    const [attendee, setAttendee] = useState<Attendee | null>(null);
+    const [registrations, setRegistrations] = useState<Registration[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    // State for form validation errors
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+    // State for registration validation errors
+    const [registrationErrors, setRegistrationErrors] = useState<{
+        [key: number]: { [key: string]: string };
+    }>({});
+
+    const [registrationSuccessMessages, setRegistrationSuccessMessages] = useState<{
+        [key: number]: string;
+    }>({});
+
+    const [searchError, setSearchError] = useState<string>('');
 
     // Handle attendee search by email
-    const handleSearch = async () => {
-        if (!email) return;
+    const handleSearch = async (email: string) => {
         setLoading(true);
-        setErrorMessage('');
-        setAttendee(null); // Reset attendee info when initiating search
-        setRegistrations([]); // Reset registrations
+        setSearchError('');
+        // Reset attendee and registrations
+        setAttendee(null);
+        setRegistrations([]);
         try {
-            const response = await api.get('/getAttendeeByEmail', { params: { email } });
-            console.log('Attendee:', response.data);
-            if (response.data.status === 'success') {
-                if (response.data.attendee == null) {
-                    setErrorMessage('Attendee not found.');
-                    setAttendee(null);
-                } else {
-                    setAttendee({
-                        ...response.data.attendee,
-                        password: '', // Initialize password as empty
-                        originalEmail: response.data.attendee.email,
-                    });
-                    // After fetching attendee, fetch their registrations
-                    fetchRegistrations(response.data.attendee.email);
-                }
+            const fetchedAttendee = await Service.getAttendeeByEmail(email);
+            if (fetchedAttendee) {
+                setAttendee({
+                    ...fetchedAttendee,
+                    password: '',
+                    originalEmail: fetchedAttendee.email,
+                });
+                fetchRegistrations(fetchedAttendee.email);
             } else {
-                setErrorMessage('Attendee not found.');
-                setAttendee(null);
+                // Display error using Snackbar
+                showMessage('Attendee not found.', 'error');
             }
         } catch (error) {
             console.error('Error fetching attendee:', error);
-            setErrorMessage('Error fetching attendee.');
-            setAttendee(null);
+            showMessage('Error fetching attendee.', 'error');
         }
         setLoading(false);
     };
@@ -107,62 +66,57 @@ export default function AttendeeManagement() {
     // Fetch attendee's registrations
     const fetchRegistrations = async (email: string) => {
         try {
-            const response = await api.get('/getReservesByAttendeeEmail', { params: { email } });
-            if (response.data.status === 'success') {
-                console.log('Registrations:', response.data.registrations);
-                setRegistrations(response.data.registrations);
-            } else {
-                setErrorMessage('Error fetching registrations.');
-            }
+            const fetchedRegistrations = await Service.getRegistrationsByEmail(email);
+            setRegistrations(fetchedRegistrations);
         } catch (error) {
             console.error('Error fetching registrations:', error);
-            setErrorMessage('Error fetching registrations.');
+            showMessage('Error fetching registrations.', 'error');
         }
     };
 
     // Handle attendee information update
     const handleUpdateAttendee = async () => {
-        // Reset previous errors and success message
         setErrors({});
-        setAttendeeSuccessMessage('');
+        if (attendee) {
+            // Validate attendee data
+            try {
+                await attendeeSchema.validate(attendee, { abortEarly: false });
+            } catch (err) {
+                if (err instanceof Yup.ValidationError) {
+                    const validationErrors: { [key: string]: string } = {};
+                    err.inner.forEach((error) => {
+                        if (error.path) {
+                            validationErrors[error.path] = error.message;
+                        }
+                    });
+                    setErrors(validationErrors);
+                    return;
+                }
+            }
 
-        // Validate attendee data using Yup schema
-        try {
-            await attendeeSchema.validate(attendee, { abortEarly: false });
-        } catch (err) {
-            if (err instanceof Yup.ValidationError) {
-                const validationErrors: { [key: string]: string } = {};
-                err.inner.forEach((error) => {
-                    if (error.path) {
-                        validationErrors[error.path] = error.message;
-                    }
-                });
-                setErrors(validationErrors);
-                return; // Exit the function if validation fails
+            try {
+                const response = await Service.updateAttendeeProfile(attendee);
+                if (response.status === 'success') {
+                    // Update originalEmail if email was changed
+                    setAttendee({ ...attendee, originalEmail: attendee.email });
+                    setErrors({});
+                    // Display success message using Snackbar
+                    showMessage('Attendee updated successfully.', 'success');
+                } else {
+                    // Display error message using Snackbar
+                    showMessage(response.message || 'Failed to update attendee.', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating attendee:', error);
+                showMessage('Error updating attendee.', 'error');
             }
         }
+    };
 
-        try {
-            // Send the updated attendee object to the backend
-            const response = await api.post('/updateAttendeeProfile', attendee);
-            if (response.data.status === 'success') {
-                console.log('Attendee updated successfully');
-                // Optionally, update originalEmail if email was changed
-                setAttendee({
-                    ...attendee,
-                    originalEmail: attendee.email,
-                });
-                // Clear any previous errors
-                setErrors({});
-                // Set success message
-                setAttendeeSuccessMessage('Attendee updated successfully.');
-            } else {
-                console.error('Failed to update attendee:', response.data.message);
-                setErrors({ form: response.data.message || 'Failed to update attendee.' });
-            }
-        } catch (error) {
-            console.error('Error updating attendee:', error);
-            setErrors({ form: 'Error updating attendee.' });
+    // Handle attendee field change
+    const handleAttendeeChange = (field: string, value: any) => {
+        if (attendee) {
+            setAttendee({ ...attendee, [field]: value });
         }
     };
 
@@ -175,21 +129,16 @@ export default function AttendeeManagement() {
 
     // Validate and update registration data
     const handleUpdateRegistration = async (index: number) => {
-        // Reset previous errors and success message
-        setRegistrationErrors((prevErrors) => {
-            const newErrors = { ...prevErrors };
+        // Reset previous errors
+        setRegistrationErrors((prev) => {
+            const newErrors = { ...prev };
             delete newErrors[index];
             return newErrors;
-        });
-        setRegistrationSuccessMessages((prevMessages) => {
-            const newMessages = { ...prevMessages };
-            delete newMessages[index];
-            return newMessages;
         });
 
         const registration = registrations[index];
 
-        // Validate registration data using Yup schema
+        // Validate registration data
         try {
             await registrationSchema.validate(registration, { abortEarly: false });
         } catch (err) {
@@ -200,400 +149,98 @@ export default function AttendeeManagement() {
                         validationErrors[error.path] = error.message;
                     }
                 });
-                setRegistrationErrors((prevErrors) => ({
-                    ...prevErrors,
+                setRegistrationErrors((prev) => ({
+                    ...prev,
                     [index]: validationErrors,
                 }));
-                return; // Exit the function if validation fails
+                return;
             }
         }
 
         try {
-            // Send the updated registration data to the backend
-            const response = await api.post('/updateAttendeeRegistrationData', {
-                email: registration.attendeeEmail,
-                registrationData: registration,
-            });
-            if (response.data.status === 'success') {
-                console.log('Registration updated successfully');
-                // Clear any previous errors
-                setRegistrationErrors((prevErrors) => {
-                    const newErrors = { ...prevErrors };
-                    delete newErrors[index];
-                    return newErrors;
-                });
-                // Set success message
-                setRegistrationSuccessMessages((prevMessages) => ({
-                    ...prevMessages,
-                    [index]: 'Registration updated successfully.',
+            const response = await Service.updateRegistrationData(registration);
+            if (response.status === 'success') {
+                setRegistrationSuccessMessages(prev => ({
+                    ...prev,
+                    [index]: 'Registration updated successfully.'
                 }));
+                showMessage('Registration updated successfully.', 'success');
             } else {
-                console.error('Failed to update registration:', response.data.message);
-                setRegistrationErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [index]: { form: response.data.message || 'Failed to update registration.' },
-                }));
+                showMessage(response.message || 'Failed to update registration.', 'error');
             }
         } catch (error) {
             console.error('Error updating registration:', error);
-            setRegistrationErrors((prevErrors) => ({
-                ...prevErrors,
-                [index]: { form: 'Error updating registration.' },
-            }));
+            showMessage('Error updating registration.', 'error');
         }
     };
 
     // Handle deletion of a registration
     const handleDeleteRegistration = async (index: number) => {
         const registration = registrations[index];
+        if (!registration) return;
 
-        // Reset previous errors and success messages
-        setRegistrationErrors((prevErrors) => {
-            const newErrors = { ...prevErrors };
+        // Reset previous errors
+        setRegistrationErrors((prev) => {
+            const newErrors = { ...prev };
             delete newErrors[index];
             return newErrors;
         });
-        setRegistrationSuccessMessages((prevMessages) => {
-            const newMessages = { ...prevMessages };
-            delete newMessages[index];
-            return newMessages;
-        });
 
         try {
-            // Send delete request to backend
-            const response = await api.post('/deleteReserve', {
-                attendeeEmail: registration.attendeeEmail,
-                banquetBIN: registration.banquetBIN,
-            });
-
-            if (response.data.status === 'success') {
+            const response = await Service.deleteRegistration(
+                registration.attendeeEmail,
+                registration.banquetBIN
+            );
+            if (response.status === 'success') {
                 // Remove the registration from the state
                 const updatedRegistrations = [...registrations];
                 updatedRegistrations.splice(index, 1);
                 setRegistrations(updatedRegistrations);
 
-                // Reset errors and success messages
-                setRegistrationErrors({});
-                setRegistrationSuccessMessages({});
-
-                // Set success message
-                setAttendeeSuccessMessage('Registration deleted successfully.');
+                // Display success message using Snackbar
+                showMessage('Registration deleted successfully.', 'success');
             } else {
-                // Handle error
-                setRegistrationErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [index]: { form: response.data.message || 'Failed to delete registration.' },
-                }));
+                // Display error message using Snackbar
+                showMessage(response.message || 'Failed to delete registration.', 'error');
             }
         } catch (error) {
             console.error('Error deleting registration:', error);
-            setRegistrationErrors((prevErrors) => ({
-                ...prevErrors,
-                [index]: { form: 'Error deleting registration.' },
-            }));
+            showMessage('Error deleting registration.', 'error');
         }
     };
 
     return (
         <Box sx={{ mt: 2 }}>
             {/* Search attendee by email */}
-            <Typography variant="h6">Search Attendee By Email</Typography>
-            <Box sx={{ display: 'flex', mt: 2 }}>
-                <TextField
-                    label="Email Address"
-                    variant="outlined"
-                    fullWidth
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSearch}
-                    sx={{ ml: 2 }}
-                >
-                    Search
-                </Button>
-            </Box>
-            {/* Display loading indicator */}
-            {loading && <Typography sx={{ mt: 2 }}>Loading...</Typography>}
-            {/* Display error message if attendee not found */}
-            {errorMessage && (
-                <Typography color="error" sx={{ mt: 2 }}>
-                    {errorMessage}
-                </Typography>
-            )}
+            <AttendeeSearch
+                onSearch={handleSearch}
+                loading={loading}
+                errorMessage={searchError}
+            />
+
             {/* Display attendee information if found */}
             {attendee && (
-                <Box sx={{ mt: 4 }}>
-                    <Typography variant="h6">Attendee Information</Typography>
+                <>
+                    <AttendeeForm
+                        attendee={attendee}
+                        errors={errors}
+                        onUpdate={handleUpdateAttendee}
+                        onChange={handleAttendeeChange}
+                        successMessage=""
+                    />
 
-                    {/* First Name and Last Name */}
-                    <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
-                        spacing={2}
-                        sx={{ mt: 2 }}
-                    >
-                        <TextField
-                            label="First Name"
-                            fullWidth
-                            required
-                            value={attendee.firstName}
-                            error={!!errors.firstName}
-                            helperText={errors.firstName}
-                            onChange={(e) => {
-                                // Allow only English letters
-                                const value = e.target.value.replace(/[^A-Za-z]/g, '');
-                                setAttendee({ ...attendee, firstName: value });
-                            }}
+                    {/* Display attendee registrations if any */}
+                    {registrations && registrations.length > 0 && (
+                        <RegistrationList
+                            registrations={registrations}
+                            registrationErrors={registrationErrors}
+                            registrationSuccessMessages={registrationSuccessMessages}
+                            onRegistrationChange={handleRegistrationChange}
+                            onUpdateRegistration={handleUpdateRegistration}
+                            onDeleteRegistration={handleDeleteRegistration}
                         />
-                        <TextField
-                            label="Last Name"
-                            fullWidth
-                            required
-                            value={attendee.lastName}
-                            error={!!errors.lastName}
-                            helperText={errors.lastName}
-                            onChange={(e) => {
-                                // Allow only English letters
-                                const value = e.target.value.replace(/[^A-Za-z]/g, '');
-                                setAttendee({ ...attendee, lastName: value });
-                            }}
-                        />
-                    </Stack>
-
-                    {/* Email and Address */}
-                    <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
-                        spacing={2}
-                        sx={{ mt: 2 }}
-                    >
-                        <TextField
-                            label="Email"
-                            fullWidth
-                            required
-                            value={attendee.email}
-                            error={!!errors.email}
-                            helperText={errors.email}
-                            onChange={(e) =>
-                                setAttendee({ ...attendee, email: e.target.value })
-                            }
-                        />
-                        <TextField
-                            label="Address"
-                            fullWidth
-                            required
-                            value={attendee.address}
-                            error={!!errors.address}
-                            helperText={errors.address}
-                            onChange={(e) =>
-                                setAttendee({ ...attendee, address: e.target.value })
-                            }
-                        />
-                    </Stack>
-
-                    {/* Type and Organization */}
-                    <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
-                        spacing={2}
-                        sx={{ mt: 2 }}
-                    >
-                        <TextField
-                            label="Type"
-                            fullWidth
-                            required
-                            value={attendee.type}
-                            error={!!errors.type}
-                            helperText={errors.type}
-                            onChange={(e) =>
-                                setAttendee({ ...attendee, type: e.target.value })
-                            }
-                        />
-                        <TextField
-                            label="Organization"
-                            fullWidth
-                            required
-                            value={attendee.organization}
-                            error={!!errors.organization}
-                            helperText={errors.organization}
-                            onChange={(e) =>
-                                setAttendee({ ...attendee, organization: e.target.value })
-                            }
-                        />
-                    </Stack>
-
-                    {/* Mobile Number */}
-                    <Stack
-                        direction={{ xs: 'column', sm: 'row' }}
-                        spacing={2}
-                        sx={{ mt: 2 }}
-                    >
-                        <TextField
-                            label="Mobile Number"
-                            fullWidth
-                            required
-                            value={attendee.mobileNo}
-                            error={!!errors.mobileNo}
-                            helperText={errors.mobileNo}
-                            onChange={(e) => {
-                                // Allow only digits and limit to 8 characters
-                                const value = e.target.value.replace(/\D/g, '').slice(0, 8);
-                                setAttendee({ ...attendee, mobileNo: value });
-                            }}
-                            inputProps={{ maxLength: 8 }}
-                        />
-                    </Stack>
-
-                    {/* Password (optional) */}
-                    <Stack direction="column" spacing={2} sx={{ mt: 2 }}>
-                        <TextField
-                            label="Password"
-                            type="password"
-                            fullWidth
-                            value={attendee.password || ''}
-                            onChange={(e) =>
-                                setAttendee({ ...attendee, password: e.target.value })
-                            }
-                        />
-                    </Stack>
-
-                    {/* Display form-level error message */}
-                    {errors.form && (
-                        <Typography color="error" sx={{ mt: 2 }}>
-                            {errors.form}
-                        </Typography>
                     )}
-
-                    {/* Display success message */}
-                    {attendeeSuccessMessage && (
-                        <Typography sx={{ mt: 2, color: 'green' }}>
-                            {attendeeSuccessMessage}
-                        </Typography>
-                    )}
-
-                    {/* Button to update attendee information */}
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleUpdateAttendee}
-                        sx={{ mt: 2 }}
-                    >
-                        Update Attendee
-                    </Button>
-                </Box>
-            )}
-            {/* Display attendee registrations if any */}
-            {attendee && registrations && registrations.length > 0 && (
-                <Box sx={{ mt: 4 }}>
-                    <Typography variant="h6">Attendee Registrations</Typography>
-                    {registrations.map((registration, index) => (
-                        <Box key={index} sx={{ mt: 2, p: 2, border: '1px solid #ccc' }}>
-                            <Typography variant="subtitle1">Banquet BIN: {registration.banquetBIN}</Typography>
-
-                            {/* Registration Time and Seat Number */}
-                            <Stack
-                                direction={{ xs: 'column', sm: 'row' }}
-                                spacing={2}
-                                sx={{ mt: 2 }}
-                            >
-                                <TextField
-                                    label="Registration Time"
-                                    fullWidth
-                                    disabled
-                                    value={registration.regTime}
-                                />
-                                <TextField
-                                    label="Seat Number"
-                                    fullWidth
-                                    required
-                                    value={registration.seatNo}
-                                    error={!!registrationErrors[index]?.seatNo}
-                                    helperText={registrationErrors[index]?.seatNo}
-                                    onChange={(e) => {
-                                        // Allow only numbers
-                                        const value = e.target.value.replace(/\D/g, '');
-                                        handleRegistrationChange(index, 'seatNo', value);
-                                    }}
-                                />
-                            </Stack>
-
-                            {/* Drink Choice and Meal Choice */}
-                            <Stack
-                                direction={{ xs: 'column', sm: 'row' }}
-                                spacing={2}
-                                sx={{ mt: 2 }}
-                            >
-                                <TextField
-                                    label="Drink Choice"
-                                    fullWidth
-                                    required
-                                    value={registration.drinkChoice}
-                                    error={!!registrationErrors[index]?.drinkChoice}
-                                    helperText={registrationErrors[index]?.drinkChoice}
-                                    onChange={(e) =>
-                                        handleRegistrationChange(index, 'drinkChoice', e.target.value)
-                                    }
-                                />
-                                <TextField
-                                    label="Meal Choice"
-                                    fullWidth
-                                    required
-                                    value={registration.mealChoice}
-                                    error={!!registrationErrors[index]?.mealChoice}
-                                    helperText={registrationErrors[index]?.mealChoice}
-                                    onChange={(e) =>
-                                        handleRegistrationChange(index, 'mealChoice', e.target.value)
-                                    }
-                                />
-                            </Stack>
-
-                            {/* Remarks */}
-                            <Stack direction="column" spacing={2} sx={{ mt: 2 }}>
-                                <TextField
-                                    label="Remarks"
-                                    fullWidth
-                                    multiline
-                                    value={registration.remarks}
-                                    onChange={(e) =>
-                                        handleRegistrationChange(index, 'remarks', e.target.value)
-                                    }
-                                />
-                            </Stack>
-
-                            {/* Display form-level error message */}
-                            {registrationErrors[index]?.form && (
-                                <Typography color="error" sx={{ mt: 2 }}>
-                                    {registrationErrors[index]?.form}
-                                </Typography>
-                            )}
-
-                            {/* Display success message */}
-                            {registrationSuccessMessages[index] && (
-                                <Typography sx={{ mt: 2, color: 'green' }}>
-                                    {registrationSuccessMessages[index]}
-                                </Typography>
-                            )}
-
-                            {/* Buttons to update and delete registration */}
-                            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => handleUpdateRegistration(index)}
-                                >
-                                    Update Registration
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    onClick={() => handleDeleteRegistration(index)}
-                                >
-                                    Delete Registration
-                                </Button>
-                            </Stack>
-                        </Box>
-                    ))}
-                </Box>
+                </>
             )}
         </Box>
     );

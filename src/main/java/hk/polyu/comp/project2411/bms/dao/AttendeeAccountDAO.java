@@ -49,7 +49,7 @@ public class AttendeeAccountDAO {
         return rowsAffected > 0;
     }
     public boolean registerAttendee(AttendeeAccount attendee) throws ValidationException, SQLException {
-        String sql = "INSERT INTO AttendeeAccount (Email, FirstName, LastName, Address, Type, Password, MobileNo, Organization)" +
+        String sql = "INSERT INTO Account (Email, FirstName, LastName, Address, Type, Password, MobileNo, Organization)" +
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         Object[] params = new Object[] {
                 attendee.getEmail(),
@@ -92,3 +92,4 @@ public class AttendeeAccountDAO {
         return banquets;
     }
 }
+
