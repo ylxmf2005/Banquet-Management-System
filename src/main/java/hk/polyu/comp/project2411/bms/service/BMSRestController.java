@@ -248,8 +248,8 @@ public class BMSRestController {
         System.out.println("Received request at /updateAttendeeProfile: " + attendeeData);
         Map<String, Object> response = new HashMap<>();
         try {
-            AttendeeAccount attendee = gson.fromJson(attendeeData, AttendeeAccount.class);
-            boolean result = bmsMain.updateAttendeeProfile(attendee);
+            Map <String, Object> data = gson.fromJson(attendeeData, Map.class);
+            boolean result = bmsMain.updateAttendeeProfile(new AttendeeAccount(data));
             response.put("status", result ? "success" : "failure");
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
@@ -283,10 +283,8 @@ public class BMSRestController {
         System.out.println("Received request at /updateAttendeeRegistrationData: " + requestData);
         Map<String, Object> response = new HashMap<>();
         try {
-            JsonObject jsonObject = gson.fromJson(requestData, JsonObject.class);
-            String email = jsonObject.get("email").getAsString();
-            Reserve registrationData = gson.fromJson(jsonObject.get("registrationData"), Reserve.class);
-            boolean result = bmsMain.updateAttendeeRegistrationData(email, registrationData);
+            Map<String, Object> data = gson.fromJson(requestData, Map.class);
+            boolean result = bmsMain.updateAttendeeRegistrationData(new Reserve(data));
             response.put("status", result ? "success" : "failure");
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
@@ -360,8 +358,8 @@ public class BMSRestController {
         System.out.println("Received request at /registerAttendee: " + attendeeData);
         Map<String, Object> response = new HashMap<>();
         try {
-            AttendeeAccount attendee = gson.fromJson(attendeeData, AttendeeAccount.class);
-            boolean result = bmsMain.registerAttendee(attendee);
+            Map<String, Object> data = gson.fromJson(attendeeData, Map.class);
+            boolean result = bmsMain.registerAttendee(new AttendeeAccount(data));
             response.put("status", result ? "success" : "failure");
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();

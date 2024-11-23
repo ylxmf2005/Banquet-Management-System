@@ -69,3 +69,28 @@ export const banquetSchema = Yup.object().shape({
         .min(1, 'At least one meal is required')
         .required('Meals are required'),
 });
+
+// Registration form validation schema
+export const registerFormSchema = Yup.object().shape({
+    firstName: Yup.string()
+        .required('First name is required')
+        .matches(/^[A-Za-z]+$/, 'Only letters are allowed'),
+    lastName: Yup.string()
+        .required('Last name is required')
+        .matches(/^[A-Za-z]+$/, 'Only letters are allowed'),
+    address: Yup.string()
+        .required('Address is required'),
+    attendeeType: Yup.string()
+        .required('Attendee type is required'),
+    email: Yup.string()
+        .required('Email is required')
+        .email('Invalid email format'),
+    password: Yup.string()
+        .required('Password is required')
+        .min(6, 'Password must be at least 6 characters'),
+    mobileNumber: Yup.string()
+        .required('Mobile number is required')
+        .matches(/^\d{8}$/, 'Mobile number must be 8 digits'),
+    affiliatedOrganization: Yup.string()
+        .required('Affiliated organization is required'),
+});
