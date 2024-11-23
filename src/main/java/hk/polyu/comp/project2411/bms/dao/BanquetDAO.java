@@ -1,4 +1,5 @@
 package hk.polyu.comp.project2411.bms.dao;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class BanquetDAO {
 
     public boolean deleteBanquet(int BIN) throws SQLException {
         String sql = "DELETE FROM Banquet WHERE BIN=?";
-        Object[] params = new Object[] {BIN};
+        Object[] params = new Object[] { BIN };
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
@@ -35,59 +36,89 @@ public class BanquetDAO {
     }
 
     private int insertBanquet(Banquet banquet) throws SQLException {
-        String sql = "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        Object[] params = new Object[] {
-            banquet.getBIN(),
-            banquet.getName(),
-            banquet.getDateTime(),
-            banquet.getAddress(),
-            banquet.getLocation(),
-            banquet.getContactFirstName(),
-            banquet.getContactLastName(),
-            banquet.getAvailable(),
-            banquet.getQuota()
-        };
+        String sql = "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Object[] params = new Object[] { banquet.getBIN(), banquet.getName(), banquet.getDateTime(),
+                banquet.getAddress(), banquet.getLocation(), banquet.getContactFirstName(),
+                banquet.getContactLastName(), banquet.getAvailable(), banquet.getQuota() };
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected;
     }
 
     public Banquet createBanquet(Banquet banquet) throws SQLException {
-        int newBIN = getNextBIN();
-        banquet.setBIN(newBIN);
-        int rowsAffected = insertBanquet(banquet);
-        if (rowsAffected > 0) 
-            if (mealDAO.addMealsToBanquet(newBIN, banquet.getMeals()))
-                return banquet;
+        try {
+            // Begin transaction
+            sqlConnection.beginTransaction();
 
-        throw new SQLException("Failed to create the banquet.");
+            int newBIN = getNextBIN();
+            banquet.setBIN(newBIN);
+
+            int rowsAffected = insertBanquet(banquet);
+            if (rowsAffected <= 0) {
+                // Insert failed; roll back transaction
+                sqlConnection.rollbackTransaction();
+                throw new SQLException("Failed to insert banquet.");
+            }
+
+            boolean mealsAdded = mealDAO.addMealsToBanquet(newBIN, banquet.getMeals());
+            if (!mealsAdded) {
+                // Adding meals failed; roll back transaction
+                sqlConnection.rollbackTransaction();
+                throw new SQLException("Failed to add meals to the banquet.");
+            }
+
+            // Commit transaction
+            sqlConnection.commitTransaction();
+            return banquet;
+        } catch (SQLException e) {
+            // Roll back transaction in case of any exception
+            sqlConnection.rollbackTransaction();
+            throw e;
+        }
     }
 
     public boolean updateBanquet(Banquet banquet) throws SQLException {
-        String sql = "UPDATE Banquet SET Name=?, DateTime=?, Address=?, Location=?, ContactFirstName=?, ContactLastName=?, Available=?, Quota=? WHERE BIN=?";
-        Object[] params = new Object[] {
-            banquet.getName(),
-            banquet.getDateTime(),
-            banquet.getAddress(),
-            banquet.getLocation(),
-            banquet.getContactFirstName(),
-            banquet.getContactLastName(),
-            banquet.getAvailable(),
-            banquet.getQuota(),
-            banquet.getBIN()
-        };
-        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
-        boolean flag = false;
-        if (rowsAffected > 0) flag = true;
-        // Delete existing meals for the banquet
-        List<Meal> existingMeals = mealDAO.getMealsForBanquet(banquet.getBIN());
-        if (mealDAO.deleteMealsFromBanquet(banquet.getBIN(), existingMeals))
-            flag = true;
-        // Add new meals for the banquet
-        if (mealDAO.addMealsToBanquet(banquet.getBIN(), banquet.getMeals()))
-            flag = true;
-        
-        return flag;
+        try {
+            // Begin transaction
+            sqlConnection.beginTransaction();
+
+            String sql = "UPDATE Banquet SET Name=?, DateTime=?, Address=?, Location=?, ContactFirstName=?, ContactLastName=?, Available=?, Quota=? WHERE BIN=?";
+            Object[] params = new Object[] { banquet.getName(), banquet.getDateTime(), banquet.getAddress(),
+                    banquet.getLocation(), banquet.getContactFirstName(), banquet.getContactLastName(),
+                    banquet.getAvailable(), banquet.getQuota(), banquet.getBIN() };
+
+            int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
+            if (rowsAffected <= 0) {
+                // Update failed; roll back transaction
+                sqlConnection.rollbackTransaction();
+                return false;
+            }
+
+            // Delete existing meals for the banquet
+            List<Meal> existingMeals = mealDAO.getMealsForBanquet(banquet.getBIN());
+            boolean mealsDeleted = mealDAO.deleteMealsFromBanquet(banquet.getBIN(), existingMeals);
+            if (!mealsDeleted) {
+                // Deleting meals failed; roll back transaction
+                sqlConnection.rollbackTransaction();
+                return false;
+            }
+
+            // Add new meals for the banquet
+            boolean mealsAdded = mealDAO.addMealsToBanquet(banquet.getBIN(), banquet.getMeals());
+            if (!mealsAdded) {
+                // Adding meals failed; roll back transaction
+                sqlConnection.rollbackTransaction();
+                return false;
+            }
+
+            // Commit transaction
+            sqlConnection.commitTransaction();
+            return true;
+        } catch (SQLException e) {
+            // Roll back transaction in case of any exception
+            sqlConnection.rollbackTransaction();
+            throw e;
+        }
     }
 
     public List<Banquet> getAllBanquets() throws SQLException {
@@ -100,8 +131,8 @@ public class BanquetDAO {
                 banquet.setMeals(mealDAO.getMealsForBanquet(banquet.getBIN()));
                 banquets.add(banquet);
             }
-        }
-        else return null;
+        } else
+            return null;
         return banquets;
     }
 
@@ -115,8 +146,8 @@ public class BanquetDAO {
                 banquet.setMeals(mealDAO.getMealsForBanquet(banquet.getBIN()));
                 banquets.add(banquet);
             }
-        }
-        else return null;
+        } else
+            return null;
         return banquets;
     }
 }

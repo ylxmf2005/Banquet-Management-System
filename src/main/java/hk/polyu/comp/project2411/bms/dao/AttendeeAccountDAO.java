@@ -8,7 +8,6 @@ import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Banquet;
-import hk.polyu.comp.project2411.bms.model.Reserve;
 import hk.polyu.comp.project2411.bms.model.SearchCriteria;
 
 
@@ -49,7 +48,7 @@ public class AttendeeAccountDAO {
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
-    boolean registerAttendee(AttendeeAccount attendee) throws ValidationException, SQLException {
+    public boolean registerAttendee(AttendeeAccount attendee) throws ValidationException, SQLException {
         String sql = "INSERT INTO AttendeeAccount (Email, FirstName, LastName, Address, Type, Password, MobileNo, Organization)" +
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         Object[] params = new Object[] {
@@ -66,7 +65,7 @@ public class AttendeeAccountDAO {
         return rowsAffected > 0;
     }
 
-    List<Banquet> searchRegisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
+    public List<Banquet> searchRegisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
         String sql = "SELECT b.* " +
                 "FROM Reserves r " +
                 "JOIN Banquet b ON r.BanquetBIN = b.BIN " +

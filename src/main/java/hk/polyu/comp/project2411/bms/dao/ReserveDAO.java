@@ -75,8 +75,7 @@ public class ReserveDAO {
         return 0;
     }
 
-    
-    RegistrationResult registerForBanquet(String attendeeEmail, int banquetBIN, int seatNo, String drinkChoice, String mealChoice, String remarks) throws RegistrationException, SQLException {
+    public RegistrationResult registerForBanquet(String attendeeEmail, int banquetBIN, int seatNo, String drinkChoice, String mealChoice, String remarks) throws RegistrationException, SQLException {
         String sql = "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, DrinkChoice, MealChoice, Remarks) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         Object[] params = new Object[] {

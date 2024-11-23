@@ -92,6 +92,10 @@ public class BMSMain {
 
     // Attendee Functions
 
+    public boolean registerAttendee(AttendeeAccount attendee) throws ValidationException, SQLException {
+        return attendeeAccountDao.registerAttendee(attendee);
+    }
+
     public boolean updateAttendeeProfile(AttendeeAccount attendee) throws ValidationException, SQLException {
         return attendeeAccountDao.updateAttendeeProfile(attendee);
     }
@@ -99,6 +103,5 @@ public class BMSMain {
     public List<Banquet> getAvailableBanquets() throws SQLException {
         return banquetDao.getAvailableBanquets();
     }
-
 
 }

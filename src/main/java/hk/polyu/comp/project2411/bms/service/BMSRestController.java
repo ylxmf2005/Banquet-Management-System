@@ -77,8 +77,8 @@ public class BMSRestController {
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
-            e.printStackTrace(); 
-            // System.out.println("Error: " + e.getMessage());
+            // e.printStackTrace(); 
+            System.out.println("Error: " + e.getMessage());
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);
@@ -154,8 +154,8 @@ public class BMSRestController {
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
-            e.printStackTrace();
-            //System.out.println("Error: " + e.getMessage());
+            //e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);

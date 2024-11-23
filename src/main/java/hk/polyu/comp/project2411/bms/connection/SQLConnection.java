@@ -1,4 +1,5 @@
 package hk.polyu.comp.project2411.bms.connection;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -43,6 +44,26 @@ public class SQLConnection {
         }
     }
 
+    // Begin a transaction by disabling auto-commit mode
+    public void beginTransaction() throws SQLException {
+        checkConnection();
+        conn.setAutoCommit(false);
+    }
+
+    // Commit the current transaction and enable auto-commit mode
+    public void commitTransaction() throws SQLException {
+        checkConnection();
+        conn.commit();
+        conn.setAutoCommit(true);
+    }
+
+    // Roll back the current transaction and enable auto-commit mode
+    public void rollbackTransaction() throws SQLException {
+        checkConnection();
+        conn.rollback();
+        conn.setAutoCommit(true);
+    }
+
     // Close the connection
     public void closeConnection() throws SQLException {
         if (conn != null && !conn.isClosed()) {
@@ -63,8 +84,10 @@ public class SQLConnection {
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
 
+            // Process each row in the result set
             while (rs.next()) {
                 Map<String, Object> row = new HashMap<>();
+                // Retrieve each column in the row
                 for (int i = 1; i <= columnCount; i++) {
                     String columnName = metaData.getColumnName(i);
                     Object value = rs.getObject(i);
@@ -73,6 +96,7 @@ public class SQLConnection {
                 results.add(row);
             }
         } finally {
+            // Ensure resources are closed properly
             if (rs != null)
                 rs.close();
             if (stmt != null)
@@ -89,6 +113,7 @@ public class SQLConnection {
             stmt = conn.createStatement();
             result = stmt.executeUpdate(sql);
         } finally {
+            // Ensure the statement is closed
             if (stmt != null)
                 stmt.close();
         }
@@ -102,6 +127,7 @@ public class SQLConnection {
         ResultSet rs = null;
         try {
             pstmt = conn.prepareStatement(sql);
+            // Set the prepared statement parameters
             for (int i = 0; i < params.length; i++) {
                 pstmt.setObject(i + 1, params[i]);
             }
@@ -110,8 +136,10 @@ public class SQLConnection {
             ResultSetMetaData metaData = rs.getMetaData();
             int columnCount = metaData.getColumnCount();
 
+            // Process each row in the result set
             while (rs.next()) {
                 Map<String, Object> row = new HashMap<>();
+                // Retrieve each column in the row
                 for (int i = 1; i <= columnCount; i++) {
                     String columnName = metaData.getColumnName(i);
                     Object value = rs.getObject(i);
@@ -120,6 +148,7 @@ public class SQLConnection {
                 results.add(row);
             }
         } finally {
+            // Ensure resources are closed properly
             if (rs != null)
                 rs.close();
             if (pstmt != null)
@@ -134,11 +163,13 @@ public class SQLConnection {
         PreparedStatement pstmt = null;
         try {
             pstmt = conn.prepareStatement(sql);
+            // Set the prepared statement parameters
             for (int i = 0; i < params.length; i++) {
                 pstmt.setObject(i + 1, params[i]);
             }
             result = pstmt.executeUpdate();
         } finally {
+            // Ensure the prepared statement is closed
             if (pstmt != null)
                 pstmt.close();
         }
