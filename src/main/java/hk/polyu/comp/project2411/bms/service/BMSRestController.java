@@ -248,8 +248,8 @@ public class BMSRestController {
         System.out.println("Received request at /updateAttendeeProfile: " + attendeeData);
         Map<String, Object> response = new HashMap<>();
         try {
-            Map <String, Object> data = gson.fromJson(attendeeData, Map.class);
-            boolean result = bmsMain.updateAttendeeProfile(new AttendeeAccount(data));
+            AttendeeAccount attendee = gson.fromJson(attendeeData, AttendeeAccount.class);
+            boolean result = bmsMain.updateAttendeeProfile(attendee);
             response.put("status", result ? "success" : "failure");
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
@@ -283,8 +283,9 @@ public class BMSRestController {
         System.out.println("Received request at /updateAttendeeRegistrationData: " + requestData);
         Map<String, Object> response = new HashMap<>();
         try {
-            Map<String, Object> data = gson.fromJson(requestData, Map.class);
-            boolean result = bmsMain.updateAttendeeRegistrationData(new Reserve(data));
+            JsonObject jsonObject = gson.fromJson(requestData, JsonObject.class);
+            Reserve registrationData = gson.fromJson(jsonObject.get("registrationData"), Reserve.class);
+            boolean result = bmsMain.updateAttendeeRegistrationData(registrationData);
             response.put("status", result ? "success" : "failure");
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();

@@ -10,7 +10,7 @@ import oracle.sql.TIMESTAMP;
 
 public class Utils {
     
-        public static Timestamp parseTimestamp(Object dateTime) {
+    public static Timestamp parseTimestamp(Object dateTime) {
         if (dateTime == null) {
             return null;
         }

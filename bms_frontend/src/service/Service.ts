@@ -54,7 +54,6 @@ const Service = {
     // Update attendee registration data
     updateRegistrationData: async (registration: Registration): Promise<any> => {
         const response = await api.post('/updateAttendeeRegistrationData', {
-            email: registration.attendeeEmail,
             registrationData: registration,
         });
         return response.data;
