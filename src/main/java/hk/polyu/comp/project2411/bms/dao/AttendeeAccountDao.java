@@ -60,6 +60,22 @@ public class AttendeeAccountDAO {
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
+    boolean registerAttendee(AttendeeAccount attendee) throws ValidationException, SQLException {
+        String sql = "INSERT INTO AttendeeAccount (Email, FirstName, LastName, Address, Type, Password, MobileNo, Organization)" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        Object[] params = new Object[] {
+                attendee.getEmail(),
+                attendee.getFirstName(),
+                attendee.getLastName(),
+                attendee.getAddress(),
+                attendee.getType(),
+                attendee.getPassword(),
+                attendee.getMobileNo(),
+                attendee.getOrganization()
+        };
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
+        return rowsAffected > 0;
+    }
     List<Banquet> searchRegisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
         String sql = "SELECT b.* " +
                 "FROM Reserves r " +
