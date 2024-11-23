@@ -383,7 +383,7 @@ export default function BanquetManagement() {
     };
 
     return (
-        <Box sx={{ mt: 2 }}>
+        (<Box sx={{ mt: 2 }}>
             {/* Button to create a new banquet */}
             <Button variant="contained" color="primary" onClick={handleCreateBanquet}>
                 Create New Banquet
@@ -476,8 +476,10 @@ export default function BanquetManagement() {
                                         dateTime: e.target.value,
                                     })
                                 }
-                                InputLabelProps={{
-                                    shrink: true,
+                                slotProps={{
+                                    inputLabel: {
+                                        shrink: true,
+                                    }
                                 }}
                             />
                         </Stack>
@@ -557,7 +559,7 @@ export default function BanquetManagement() {
                                 label="Quota"
                                 type="number"
                                 fullWidth
-                                value={selectedBanquet.quota}
+                                value={isNaN(selectedBanquet.quota) ? '' : selectedBanquet.quota}
                                 required
                                 error={!!errors.quota}
                                 helperText={errors.quota}
@@ -567,8 +569,10 @@ export default function BanquetManagement() {
                                         quota: !isNaN(parseInt(e.target.value)) ? parseInt(e.target.value) : NaN,
                                     })
                                 }
-                                InputProps={{
-                                    inputProps: { min: 0, step: 1 },
+                                slotProps={{
+                                    input: {
+                                        inputProps: { min: 0, step: 1 },
+                                    }
                                 }}
                             />
                         </Stack>
@@ -612,7 +616,7 @@ export default function BanquetManagement() {
                                     label={`Price ${index + 1}`}
                                     type="number"
                                     fullWidth
-                                    value={meal.price}
+                                    value={isNaN(meal.price) ? '' : meal.price}
                                     onChange={(e) => {
                                         const updatedMeals = [...selectedBanquet.meals];
                                         updatedMeals[index].price =
@@ -622,8 +626,10 @@ export default function BanquetManagement() {
                                             meals: updatedMeals,
                                         });
                                     }}
-                                    InputProps={{
-                                        inputProps: { min: 0 },
+                                    slotProps={{
+                                        input: {
+                                            inputProps: { min: 0 },
+                                        }
                                     }}
                                 />
                                 <TextField
@@ -665,6 +671,6 @@ export default function BanquetManagement() {
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
-        </Box>
+        </Box>)
     );
 }

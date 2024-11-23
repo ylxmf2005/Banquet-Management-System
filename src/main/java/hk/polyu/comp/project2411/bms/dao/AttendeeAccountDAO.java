@@ -1,12 +1,16 @@
 package hk.polyu.comp.project2411.bms.dao;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
+import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.Reserve;
+import hk.polyu.comp.project2411.bms.model.SearchCriteria;
+
 
 public class AttendeeAccountDAO {
     private SQLConnection sqlConnection;
@@ -76,6 +80,7 @@ public class AttendeeAccountDAO {
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
+
     List<Banquet> searchRegisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
         String sql = "SELECT b.* " +
                 "FROM Reserves r " +
@@ -98,18 +103,7 @@ public class AttendeeAccountDAO {
 
         List<Banquet> banquets = new ArrayList<>();
         for(Map<String, Object> row : results) {
-            Banquet banquet = new Banquet(
-                    (int) row.get("BIN"),
-                    (String) row.get("Name"),
-                    (Timestamp) row.get("Date"),
-                    (String) row.get("Address"),
-                    (String) row.get("Location"),
-                    (String) row.get("FirstName"),
-                    (String) row.get("LastName"),
-                    (String) row.get("Available"),
-                    (int) row.get("Quota")
-            );
-            banquets.add(banquet);
+            banquets.add(new Banquet(row));
         }
         return banquets;
     }

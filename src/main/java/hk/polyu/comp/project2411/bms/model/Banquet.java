@@ -46,6 +46,17 @@ public class Banquet {
         this.contactLastName = (String) lowerCaseRow.get("contactlastname");
         this.available = (String) lowerCaseRow.get("available");
         this.quota = ((Number) lowerCaseRow.get("quota")).intValue();
+        
+        this.meals = new ArrayList<>();
+        Object mealsData = lowerCaseRow.get("meals");
+        if (mealsData instanceof List<?>) {
+            for (Object mealObj : (List<?>) mealsData) {
+                if (mealObj instanceof Map<?, ?>) {
+                    Meal meal = new Meal((Map<String, Object>) mealObj);
+                    this.meals.add(meal);
+                }
+            }
+        }
 
         if (lowerCaseRow.get("bin") != null) {
             this.BIN = ((Number) lowerCaseRow.get("bin")).intValue();

@@ -294,7 +294,7 @@ export default function AttendeeManagement() {
     };
 
     return (
-        <Box sx={{ mt: 2 }}>
+        (<Box sx={{ mt: 2 }}>
             {/* Search attendee by email */}
             <Typography variant="h6">Search Attendee By Email</Typography>
             <Box sx={{ display: 'flex', mt: 2 }}>
@@ -314,17 +314,14 @@ export default function AttendeeManagement() {
                     Search
                 </Button>
             </Box>
-
             {/* Display loading indicator */}
             {loading && <Typography sx={{ mt: 2 }}>Loading...</Typography>}
-
             {/* Display error message if attendee not found */}
             {errorMessage && (
                 <Typography color="error" sx={{ mt: 2 }}>
                     {errorMessage}
                 </Typography>
             )}
-
             {/* Display attendee information if found */}
             {attendee && (
                 <Box sx={{ mt: 4 }}>
@@ -445,7 +442,9 @@ export default function AttendeeManagement() {
                                     setAttendee({ ...attendee, mobileNo: value });
                                 }
                             }}
-                            inputProps={{ maxLength: 8 }}
+                            slotProps={{
+                                htmlInput: { maxLength: 8 }
+                            }}
                         />
                     </Stack>
 
@@ -487,7 +486,6 @@ export default function AttendeeManagement() {
                     </Button>
                 </Box>
             )}
-
             {/* Display attendee registrations if any */}
             {attendee && registrations && registrations.length > 0 && (
                 <Box sx={{ mt: 4 }}>
@@ -601,6 +599,6 @@ export default function AttendeeManagement() {
                     ))}
                 </Box>
             )}
-        </Box>
+        </Box>)
     );
 }

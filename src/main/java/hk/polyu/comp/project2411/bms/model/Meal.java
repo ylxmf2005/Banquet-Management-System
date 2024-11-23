@@ -1,5 +1,7 @@
 package hk.polyu.comp.project2411.bms.model;
 
+import java.util.Map;
+
 // Class representing a Meal associated with a Banquet
 public class Meal {
     private String dishName;
@@ -13,8 +15,14 @@ public class Meal {
         this.price = price;
         this.specialCuisine = specialCuisine;
     }
-    public Meal() {
-        
+    
+    public Meal(Map<String, Object> row) {
+        Map<String, Object> lowerCaseRow = Utils.getLowerCasedMap(row);
+
+        this.dishName = (String) lowerCaseRow.get("dishname");
+        this.type = (String) lowerCaseRow.get("type");
+        this.price = ((Number) lowerCaseRow.get("price")).doubleValue();
+        this.specialCuisine = (String) lowerCaseRow.get("specialcuisine");
     }
 
     // Getters
