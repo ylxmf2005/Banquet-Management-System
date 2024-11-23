@@ -3,7 +3,6 @@ import React, { useEffect, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { AuthContext } from '../../context/AuthContext';
-import { SnackbarContext } from '../../context/SnackbarContext';
 import {
     Avatar,
     Button,
@@ -25,27 +24,25 @@ export default function LoginPage() {
     const { register, handleSubmit } = useForm<LoginFormInputs>();
     const router = useRouter();
     const auth = useContext(AuthContext);
-    const { showMessage } = useContext(SnackbarContext);
 
     const onSubmit = async (data: LoginFormInputs) => {
         try {
             await auth?.login(data.email, data.password);
-            showMessage('Login successful', 'success');
         } catch (error) {
-            showMessage('Invalid email or password', 'error');
+            alert('Login Failed');
         }
     };
 
     useEffect(() => {
         if (auth?.user) {
-            showMessage(`Welcome back, ${auth.user.email}`, 'success');
+            console.log("auth?.user: ", auth?.user);
             if (auth.user.role === 'admin') {
                 router.push('/admin');
             } else {
                 router.push('/user');
             }
         }
-    }, [auth?.user, router, showMessage]);
+    }, [auth?.user, router]);
 
     return (
         <Container component="main" maxWidth="xs">

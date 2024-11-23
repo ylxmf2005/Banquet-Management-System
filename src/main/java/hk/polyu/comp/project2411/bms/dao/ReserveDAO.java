@@ -19,7 +19,7 @@ public class ReserveDAO {
         this.sqlConnection = sqlConnection;
     }
 
-    public boolean updateAttendeeRegistrationData(Reserve registrationData) throws SQLException {
+    public boolean updateAttendeeRegistrationData(String email, Reserve registrationData) throws SQLException {
         String sql = "UPDATE Reserve SET SeatNo=?, RegTime=?, DrinkChoice=?, MealChoice=?, Remarks=? WHERE attendeeEmail=? AND BanquetBIN=?";
         Object[] params = new Object[] {
             registrationData.getSeatNo(),
@@ -27,7 +27,7 @@ public class ReserveDAO {
             registrationData.getDrinkChoice(),
             registrationData.getMealChoice(),
             registrationData.getRemarks(),
-            registrationData.getAttendeeEmail(),
+            email,
             registrationData.getBanquetBIN()
         };
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);

@@ -49,10 +49,9 @@ public class AttendeeAccountDAO {
         return rowsAffected > 0;
     }
     public boolean registerAttendee(AttendeeAccount attendee) throws ValidationException, SQLException {
-        String sql = "INSERT INTO Account (Role, Email, FirstName, LastName, Address, Type, Password, MobileNo, Organization)" +
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Account (Email, FirstName, LastName, Address, Type, Password, MobileNo, Organization)" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         Object[] params = new Object[] {
-                attendee.getRole(), // user
                 attendee.getEmail(),
                 attendee.getFirstName(),
                 attendee.getLastName(),
@@ -62,7 +61,6 @@ public class AttendeeAccountDAO {
                 attendee.getMobileNo(),
                 attendee.getOrganization()
         };
-        // System.out.println("Role:" + attendee.getRole());
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }

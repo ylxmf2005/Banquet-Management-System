@@ -28,7 +28,7 @@ public class AccountDAO {
             // System.out.println(row);
             String storedPassword = (String) row.get("PASSWORD");
             if (storedPassword.equals(password)) {
-                String role = (String) row.get("ROLE") == null ? (String) row.get("role") : (String) row.get("ROLE");
+                String role = (String) row.get("ROLE");
                 if ("admin".equalsIgnoreCase(role)) {
                     return new AdminAccount(row);
                 } else if ("user".equalsIgnoreCase(role)) {
