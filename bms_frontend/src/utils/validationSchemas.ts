@@ -94,7 +94,7 @@ export const registerFormSchema = Yup.object().shape({
         .matches(/^[A-Za-z]+$/, 'Only letters are allowed'),
     address: Yup.string()
         .required('Address is required'),
-    attendeeType: Yup.string()
+    type: Yup.string()
         .required('Attendee type is required'),
     email: Yup.string()
         .required('Email is required')
@@ -105,9 +105,9 @@ export const registerFormSchema = Yup.object().shape({
             if (value.length < 6) return false;
             return /^[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]*$/.test(value);
         }),
-    mobileNumber: Yup.string()
+    mobileNo: Yup.string()
         .required('Mobile number is required')
         .matches(/^\d{8}$/, 'Mobile number must be 8 digits'),
-    affiliatedOrganization: Yup.string()
+    organization: Yup.string()
         .required('Affiliated organization is required'),
 });

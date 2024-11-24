@@ -13,7 +13,6 @@ import {
     Box,
     Typography,
     Container,
-    MenuItem,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { SnackbarContext } from '../../context/SnackbarContext';
@@ -96,12 +95,12 @@ export default function RegisterPage() {
                         />
                         
                         <TextField
-                            {...register('attendeeType')}
+                            {...register('type')}
                             required
                             fullWidth
                             label="Attendee Type"
-                            error={!!errors.attendeeType}
-                            helperText={errors.attendeeType?.message}
+                            error={!!errors.type}
+                            helperText={errors.type?.message}
                         />
                         
                         <TextField
@@ -126,21 +125,21 @@ export default function RegisterPage() {
                         />
                         
                         <TextField
-                            {...register('mobileNumber')}
+                            {...register('mobileNo')}
                             required
                             fullWidth
                             label="Mobile Number"
-                            error={!!errors.mobileNumber}
-                            helperText={errors.mobileNumber?.message}
+                            error={!!errors.mobileNo}
+                            helperText={errors.mobileNo?.message}
                         />
                         
                         <TextField
-                            {...register('affiliatedOrganization')}
+                            {...register('organization')}
                             required
                             fullWidth
                             label="Affiliated Organization"
-                            error={!!errors.affiliatedOrganization}
-                            helperText={errors.affiliatedOrganization?.message}
+                            error={!!errors.organization}
+                            helperText={errors.organization?.message}
                         />
                         
                         <Button

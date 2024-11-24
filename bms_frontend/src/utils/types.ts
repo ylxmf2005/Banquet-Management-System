@@ -54,11 +54,11 @@ export interface RegisterFormInputs {
     firstName: string;
     lastName: string;
     address: string;
-    attendeeType: string;
+    type: string;
     email: string;
     password?: string;
-    mobileNumber: string;
-    affiliatedOrganization: string;
+    mobileNo: string;
+    organization: string;
 }
 
 export interface RegistrationWithBanquet extends Registration {

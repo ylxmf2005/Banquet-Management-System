@@ -254,26 +254,15 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ user, showMessage }) => {
                     </Grid>
                     {/* Affiliated Organization */}
                     <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth error={!!errors.organization}>
-                            <InputLabel id="organization-label">Affiliated Organization</InputLabel>
-                            <Select
-                                labelId="organization-label"
-                                name="organization"
-                                value={profileData.organization}
-                                onChange={handleSelectChange}
-                                label="Affiliated Organization"
-                            >
-                                <MenuItem value="PolyU">PolyU</MenuItem>
-                                <MenuItem value="SPEED">SPEED</MenuItem>
-                                <MenuItem value="HKCC">HKCC</MenuItem>
-                                <MenuItem value="Others">Others</MenuItem>
-                            </Select>
-                            {errors.organization && (
-                                <Typography variant="caption" color="error">
-                                    {errors.organization}
-                                </Typography>
-                            )}
-                        </FormControl>
+                        <TextField
+                            name="organization"
+                            label="Affiliated Organization"
+                            value={profileData.organization}
+                            onChange={handleInputChange}
+                            fullWidth
+                            error={!!errors.organization}
+                            helperText={errors.organization}
+                        />
                     </Grid>
                     {/* New Password Field */}
                     <Grid item xs={12}>
