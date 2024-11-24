@@ -7,8 +7,7 @@ import { Attendee, Registration } from '../utils/types';
 import AttendeeSearch from './AttendeeSearch';
 import AttendeeForm from './AttendeeForm';
 import RegistrationList from './RegistrationList';
-import Service from '../service/Service';
-import { attendeeSchema, registrationSchema } from '../utils/validationSchemas';
+import { attendeeSchema, registrationSchemaForAdmin } from '../utils/validationSchemas';
 import * as Yup from 'yup';
 import { SnackbarContext } from '../context/SnackbarContext'; 
 import api from '../service/api';
@@ -163,7 +162,7 @@ export default function AttendeeManagement() {
 
         // Validate registration data
         try {
-            await registrationSchema.validate(registration, { abortEarly: false });
+            await registrationSchemaForAdmin.validate(registration, { abortEarly: false });
         } catch (err) {
             if (err instanceof Yup.ValidationError) {
                 const validationErrors: { [key: string]: string } = {};

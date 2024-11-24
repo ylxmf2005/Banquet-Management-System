@@ -6,7 +6,6 @@ import { Box, Button } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { Banquet } from '../utils/types'; 
 import { SnackbarContext } from '../context/SnackbarContext'; 
-import Service from '../service/Service'; 
 import BanquetList from './BanquetList';
 import BanquetForm from './BanquetForm';
 import { formatDateTimeForInput } from '../utils/utils'; 

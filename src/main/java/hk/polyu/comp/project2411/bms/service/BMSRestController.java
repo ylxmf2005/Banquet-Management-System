@@ -9,10 +9,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import hk.polyu.comp.project2411.bms.exceptions.AuthenticationException;
+import hk.polyu.comp.project2411.bms.exceptions.RegistrationException;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.Account;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Banquet;
+import hk.polyu.comp.project2411.bms.model.RegistrationResult;
 import hk.polyu.comp.project2411.bms.model.Reserve;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -388,6 +390,41 @@ public class BMSRestController {
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (ValidationException e) {
             System.out.println("Validation error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.BAD_REQUEST).entity(jsonResponse).build();
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
+    @POST
+    @Path("/registerForBanquet")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response registerForBanquet(String registrationData) {
+        System.out.println("Received request at /registerForBanquet: " + registrationData);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Reserve reserve = gson.fromJson(registrationData, Reserve.class);
+            RegistrationResult result = bmsMain.registerForBanquet(reserve);
+            response.put("status", "success");
+            response.put("registrationResult", result);
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (RegistrationException e) {
+            System.out.println("Registration error: " + e.getMessage());
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);

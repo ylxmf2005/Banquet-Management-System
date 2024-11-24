@@ -95,4 +95,6 @@ public class ReserveDAO {
         }
         else return new RegistrationResult(false, "You have not successfully registered the banquet.");
     }
+
+    
 }

@@ -31,7 +31,7 @@ export const attendeeSchema = Yup.object().shape({
 });
 
 // Registration validation schema
-export const registrationSchema = Yup.object().shape({
+export const registrationSchemaForAdmin = Yup.object().shape({
     seatNo: Yup.number()
         .required('Seat number is required.')
         .positive('Seat number must be a positive integer.')
@@ -42,6 +42,15 @@ export const registrationSchema = Yup.object().shape({
         .required('This field is required.'),
     remarks: Yup.string(),
 });
+
+export const registrationSchemaForUser = Yup.object().shape({
+    drinkChoice: Yup.string()
+        .required('This field is required.'),
+    mealChoice: Yup.string()
+        .required('This field is required.'),
+    remarks: Yup.string(),
+});
+
 // Define the Meal validation schema
 const mealSchema = Yup.object().shape({
     type: Yup.string().required('Meal Type is required'),

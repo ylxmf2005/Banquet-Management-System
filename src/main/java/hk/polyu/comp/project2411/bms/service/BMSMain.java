@@ -11,11 +11,13 @@ import hk.polyu.comp.project2411.bms.dao.DbInitDAO;
 import hk.polyu.comp.project2411.bms.dao.MealDAO;
 import hk.polyu.comp.project2411.bms.dao.ReserveDAO;
 import hk.polyu.comp.project2411.bms.exceptions.AuthenticationException;
+import hk.polyu.comp.project2411.bms.exceptions.RegistrationException;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.Account;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.Meal;
+import hk.polyu.comp.project2411.bms.model.RegistrationResult;
 import hk.polyu.comp.project2411.bms.model.Reserve;
 
 public class BMSMain {
@@ -102,6 +104,10 @@ public class BMSMain {
     
     public List<Banquet> getAvailableBanquets() throws SQLException {
         return banquetDao.getAvailableBanquets();
+    }
+
+    public RegistrationResult registerForBanquet(Reserve registrationData) throws RegistrationException, SQLException {
+        return reserveDao.registerForBanquet(registrationData);
     }
 
 }
