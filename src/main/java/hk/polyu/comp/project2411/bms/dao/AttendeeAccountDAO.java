@@ -93,16 +93,13 @@ public class AttendeeAccountDAO {
                 "JOIN AttendeeAccount a ON r.AttendeeEmail = a.Email " +
                 "WHERE r.AttendeeEmail = ? " +
                 "AND (? IS NULL OR b.Name LIKE ?) " +    //Banquet Name   if criteria has null, it is not tested.
-                "AND (? IS NULL OR b.DateTime = ?) " +   //Date
-                "AND (? IS NULL OR a.Type = ?)";         //Attendee Type
+                "AND (? IS NULL OR b.DateTime = ?) ";   //Date
         Object[] params = new Object[] {
                 attendeeEmail,
                 criteria.getBanquetNamePart(),
                 criteria.getBanquetNamePart(),
                 criteria.getDate(),
                 criteria.getDate(),
-                criteria.getAttendeeType(),
-                criteria.getAttendeeType()
         };
         List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
 

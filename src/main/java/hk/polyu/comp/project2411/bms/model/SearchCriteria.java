@@ -7,10 +7,9 @@ public class SearchCriteria {
     private String banquetNamePart;
     private String attendeeType;
 
-    public SearchCriteria(Timestamp date, String banquetNamePart, String attendeeType) {
+    public SearchCriteria(Timestamp date, String banquetNamePart) {
         this.date = date;
-        this.banquetNamePart = banquetNamePart;
-        this.attendeeType = attendeeType;
+        this.banquetNamePart = "%" + banquetNamePart + "%";
     }
 
     public Timestamp getDate() {
@@ -26,10 +25,7 @@ public class SearchCriteria {
     }
 
     public void setBanquetNamePart(String banquetNamePart) {
-        this.banquetNamePart = banquetNamePart;
+        this.banquetNamePart = "%" + banquetNamePart + "%";
     }
 
-    public String getAttendeeType() {
-        return attendeeType;
-    }
 }
