@@ -1,3 +1,4 @@
+// src/admin/page.tsx
 'use client';
 
 import React, { useEffect, useContext, useState } from 'react';

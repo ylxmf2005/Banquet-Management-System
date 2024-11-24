@@ -18,17 +18,7 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { SnackbarContext } from '../../context/SnackbarContext';
 import { registerFormSchema } from '../../utils/validationSchemas';
-
-interface RegisterFormInputs {
-    firstName: string;
-    lastName: string;
-    address: string;
-    attendeeType: string;
-    email: string;
-    password: string;
-    mobileNumber: string;
-    affiliatedOrganization: string;
-}
+import { RegisterFormInputs } from '../../utils/types';
 
 export default function RegisterPage() {
     const {

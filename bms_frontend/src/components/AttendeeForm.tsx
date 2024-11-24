@@ -123,6 +123,8 @@ const AttendeeForm: React.FC<AttendeeFormProps> = ({
                     type="password"
                     fullWidth
                     value={attendee.password || ''}
+                    error={!!errors.password}
+                    helperText={errors.password}
                     onChange={(e) => onChange('password', e.target.value)}
                 />
             </Stack>

@@ -22,7 +22,12 @@ export const attendeeSchema = Yup.object().shape({
     mobileNo: Yup.string()
         .required('This field is required.')
         .matches(/^\d{8}$/, 'Mobile number must be exactly 8 digits.'),
-    password: Yup.string(),
+    password: Yup.string()
+        .test('password-format', 'Password must be at least 6 characters and contain only letters, numbers, and common special characters', function(value) {
+            if (!value) return true;
+            if (value.length < 6) return false;
+            return /^[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]*$/.test(value);
+        }),
 });
 
 // Registration validation schema
@@ -86,8 +91,11 @@ export const registerFormSchema = Yup.object().shape({
         .required('Email is required')
         .email('Invalid email format'),
     password: Yup.string()
-        .required('Password is required')
-        .min(6, 'Password must be at least 6 characters'),
+        .test('password-format', 'Password must be at least 6 characters and contain only letters, numbers, and common special characters', function(value) {
+            if (!value) return true;
+            if (value.length < 6) return false;
+            return /^[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]*$/.test(value);
+        }),
     mobileNumber: Yup.string()
         .required('Mobile number is required')
         .matches(/^\d{8}$/, 'Mobile number must be 8 digits'),

@@ -45,3 +45,14 @@ export interface Registration {
     mealChoice: string;
     remarks: string;
 }
+
+export interface RegisterFormInputs {
+    firstName: string;
+    lastName: string;
+    address: string;
+    attendeeType: string;
+    email: string;
+    password?: string;
+    mobileNumber: string;
+    affiliatedOrganization: string;
+}

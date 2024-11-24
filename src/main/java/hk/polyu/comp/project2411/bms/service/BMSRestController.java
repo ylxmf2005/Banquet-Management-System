@@ -164,6 +164,28 @@ public class BMSRestController {
         }
     }
 
+    @GET
+    @Path("/getAvailableBanquets")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAvailableBanquets() {
+        System.out.println("Received request at /getAvailableBanquets");
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Banquet> banquets = bmsMain.getAvailableBanquets();
+            response.put("status", "success");
+            response.put("banquets", banquets);
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            //e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
     // Depraecated
     // @POST
     // @Path("/addMealToBanquet")
