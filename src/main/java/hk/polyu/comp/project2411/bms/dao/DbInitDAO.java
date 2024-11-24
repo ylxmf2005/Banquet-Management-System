@@ -80,7 +80,7 @@ public class DbInitDAO {
      */
     private void createAccountTable() throws SQLException {
         String sql = "CREATE TABLE Account (" +
-                "Email VARCHAR2(255) PRIMARY KEY, " +
+                "Email VARCHAR2(255), " +
                 "Role VARCHAR2(50), " +
                 "FirstName VARCHAR2(255), " +
                 "LastName VARCHAR2(255), " +
@@ -89,7 +89,8 @@ public class DbInitDAO {
                 "Location VARCHAR2(255), " +
                 "Address VARCHAR2(255), " +
                 "Type VARCHAR2(50), " +
-                "Organization VARCHAR2(255)" +
+                "Organization VARCHAR2(255)," +
+                "PRIMARY KEY (Email)" +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Account created.");
@@ -121,7 +122,7 @@ public class DbInitDAO {
      */
     private void createBanquetTable() throws SQLException {
         String sql = "CREATE TABLE Banquet (" +
-                "BIN NUMBER PRIMARY KEY, " +
+                "BIN NUMBER, " +
                 "Name VARCHAR2(255), " +
                 "DateTime DATE , " +
                 "Address VARCHAR2(255), " +
@@ -129,7 +130,8 @@ public class DbInitDAO {
                 "ContactFirstName VARCHAR2(255), " +
                 "ContactLastName VARCHAR2(255), " +
                 "Available VARCHAR2(1), " +
-                "Quota NUMBER" +
+                "Quota NUMBER," +
+                "PRIMARY KEY(BIN)" +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Banquet created.");
@@ -170,6 +172,7 @@ public class DbInitDAO {
                 "SpecialCuisine VARCHAR2(255), " +
                 "PRIMARY KEY (BanquetBIN, DishName), " +
                 "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN)" +
+                "ON DELETE CASCADE" +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Meal created.");
@@ -191,8 +194,10 @@ public class DbInitDAO {
                 "MealChoice VARCHAR2(255), " +
                 "Remarks VARCHAR2(255), " +
                 "PRIMARY KEY (AttendeeEmail, BanquetBIN), " +
-                "FOREIGN KEY (AttendeeEmail) REFERENCES Account(Email), " +
+                "FOREIGN KEY (AttendeeEmail) REFERENCES Account(Email) " +
+                "ON DELETE CASCADE, " +
                 "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN)" +
+                "ON DELETE CASCADE " +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Reserve created.");
