@@ -8,7 +8,6 @@ import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Banquet;
-import hk.polyu.comp.project2411.bms.model.PasswordEncoding;
 import hk.polyu.comp.project2411.bms.model.SearchCriteria;
 
 
@@ -34,21 +33,40 @@ public class AttendeeAccountDAO {
     }
 
     public boolean updateAttendeeProfile(AttendeeAccount attendee) throws ValidationException, SQLException {
-        String sql = "UPDATE Account SET Email = ?, FirstName=?, LastName=?, Address=?, Type=?, Password=?, MobileNo=?, Organization=? WHERE Email=? AND Role='user'";
-        Object[] params = new Object[] {
-                attendee.getEmail(),
-                attendee.getFirstName(),
-                attendee.getLastName(),
-                attendee.getAddress(),
-                attendee.getType(),
-                PasswordEncoding.encoding(attendee.getPassword()),
-                attendee.getMobileNo(),
-                attendee.getOrganization(),
-                attendee.getOriginalEmail(),
-        };
+        String sql;
+        Object[] params;
+        
+        if (attendee.getPassword() == null || attendee.getPassword().isEmpty()) {
+            sql = "UPDATE Account SET Email = ?, FirstName=?, LastName=?, Address=?, Type=?, MobileNo=?, Organization=? WHERE Email=? AND Role='user'";
+            params = new Object[] {
+                    attendee.getEmail(),
+                    attendee.getFirstName(),
+                    attendee.getLastName(),
+                    attendee.getAddress(),
+                    attendee.getType(),
+                    attendee.getMobileNo(),
+                    attendee.getOrganization(),
+                    attendee.getOriginalEmail()
+            }; 
+        } else {
+            sql = "UPDATE Account SET Email = ?, FirstName=?, LastName=?, Address=?, Type=?, Password=?, MobileNo=?, Organization=? WHERE Email=? AND Role='user'";
+            params = new Object[] {
+                    attendee.getEmail(),
+                    attendee.getFirstName(),
+                    attendee.getLastName(),
+                    attendee.getAddress(),
+                    attendee.getType(),
+                    Utils.encoding(attendee.getPassword()),
+                    attendee.getMobileNo(),
+                    attendee.getOrganization(),
+                    attendee.getOriginalEmail()
+            };
+        }
+        
         int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
         return rowsAffected > 0;
     }
+    
     public boolean registerAttendee(AttendeeAccount attendee) throws ValidationException, SQLException {
         String sql = "INSERT INTO Account (Role, Email, FirstName, LastName, Address, Type, Password, MobileNo, Organization)" +
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -59,7 +77,7 @@ public class AttendeeAccountDAO {
                 attendee.getLastName(),
                 attendee.getAddress(),
                 attendee.getType(),
-                PasswordEncoding.encoding(attendee.getPassword()),
+                Utils.encoding(attendee.getPassword()),
                 attendee.getMobileNo(),
                 attendee.getOrganization()
         };

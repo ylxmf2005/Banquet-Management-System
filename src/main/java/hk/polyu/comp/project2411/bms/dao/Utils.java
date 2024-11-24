@@ -1,9 +1,9 @@
-package hk.polyu.comp.project2411.bms.model;
+package hk.polyu.comp.project2411.bms.dao;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class PasswordEncoding {
+public class Utils {
     public static String encoding(String passwd)  {
         String ret = "";
         try {

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
-import hk.polyu.comp.project2411.bms.model.PasswordEncoding;
 
 // TODO: Add check constraints for data entries
 public class DbInitDAO {
@@ -108,7 +107,7 @@ public class DbInitDAO {
 
     private void createDefaultAdminAccount() throws SQLException {
         String passwd = "2411project";
-        passwd = PasswordEncoding.encoding(passwd);
+        passwd = Utils.encoding(passwd);
         String sql = "INSERT INTO Account (Email, Role, Password) VALUES ('bmsadmin@polyu.hk', 'admin', '" +
                 passwd + "')";
         sqlConnection.executeUpdate(sql);
@@ -117,7 +116,7 @@ public class DbInitDAO {
 
     private void createTestAttendeeAccount() throws SQLException {
         String passwd = "2411project";
-        passwd = PasswordEncoding.encoding(passwd);
+        passwd = Utils.encoding(passwd);
         String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
                      "VALUES ('test@polyu.hk', 'user', 'San', 'Zhang', '114514', '" +
                 passwd + "', 'PolyU HJ202', 'PolyU HJ202', 'Student', 'PolyU')";
