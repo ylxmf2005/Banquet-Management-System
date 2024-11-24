@@ -257,7 +257,7 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
                             >
                                 {selectedBanquet.meals.map((meal, index) => (
                                     <MenuItem key={index} value={meal.dishName}>
-                                        {meal.dishName} ({meal.type})
+                                        {meal.dishName} ({meal.type}) - ${meal.price}
                                     </MenuItem>
                                 ))}
                             </Select>

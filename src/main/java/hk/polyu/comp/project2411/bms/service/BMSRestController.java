@@ -445,7 +445,7 @@ public class BMSRestController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-            e.printStackTrace();
+            // e.printStackTrace();
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);
@@ -454,10 +454,10 @@ public class BMSRestController {
     }
 
     @POST
-    @Path("/searchRegisteredBanquets")
+    @Path("/searchRegistrations")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response searchRegisteredBanquets(String searchData) {
+    public Response searchRegistrations(String searchData) {
         System.out.println("Received request at /searchRegisteredBanquets: " + searchData);
         Map<String, Object> response = new HashMap<>();
         try {
@@ -472,9 +472,31 @@ public class BMSRestController {
                 return Response.status(Response.Status.BAD_REQUEST).entity(jsonResponse).build();
             }
             
-            List<Banquet> banquets = bmsMain.searchRegisteredBanquets(attendeeEmail, criteria);
+            List<Reserve> reserves = bmsMain.searchRegistrations(attendeeEmail, criteria);
             response.put("status", "success");
-            response.put("banquets", banquets);
+            response.put("registrations", reserves);
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
+    @GET
+    @Path("/getBanquetByBIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getBanquetByBIN(@QueryParam("banquetBIN") int BIN) {
+        System.out.println("Received request at /getBanquetByBIN: " + BIN);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Banquet banquet = bmsMain.getBanquetByBIN(BIN);
+            response.put("status", "success");
+            response.put("banquet", banquet);
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
@@ -486,5 +508,4 @@ public class BMSRestController {
         }
     }
 
-    
 }
