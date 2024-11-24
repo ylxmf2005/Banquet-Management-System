@@ -11,6 +11,7 @@ import Service from '../service/Service';
 import { attendeeSchema, registrationSchema } from '../utils/validationSchemas';
 import * as Yup from 'yup';
 import { SnackbarContext } from '../context/SnackbarContext'; 
+import api from '../service/api';
 
 
 export default function AttendeeManagement() {
@@ -36,29 +37,53 @@ export default function AttendeeManagement() {
 
     const [searchError, setSearchError] = useState<string>('');
 
+    const handleApiResponse = (
+        response: any,
+        successCallback: (data: any) => void,
+        action: string
+    ) => {
+        const data = response.data;
+        if (data.status === 'success') {
+            successCallback(data);
+        } else {
+            const message = `Failed to ${action}: ${data.message || 'Unknown error'}`;
+            showMessage(message, 'error');
+        }
+    };
+
+    const handleApiError = (error: any, action: string) => {
+        let message = '';
+        if (error.response?.data?.message) {
+            message = `Error ${action}: ${error.response.data.message}`;
+        } else {
+            message = `Error ${action}: ${error.message}`;
+        }
+        showMessage(message, 'error');
+    };
+
     // Handle attendee search by email
     const handleSearch = async (email: string) => {
         setLoading(true);
         setSearchError('');
-        // Reset attendee and registrations
         setAttendee(null);
         setRegistrations([]);
         try {
-            const fetchedAttendee = await Service.getAttendeeByEmail(email);
-            if (fetchedAttendee) {
-                setAttendee({
-                    ...fetchedAttendee,
-                    password: '',
-                    originalEmail: fetchedAttendee.email,
-                });
-                fetchRegistrations(fetchedAttendee.email);
-            } else {
-                // Display error using Snackbar
-                showMessage('Attendee not found.', 'error');
-            }
+            const response = await api.get('/getAttendeeByEmail', { params: { email } });
+            handleApiResponse(
+                response,
+                (data) => {
+                    const fetchedAttendee = data.attendee;
+                    setAttendee({
+                        ...fetchedAttendee,
+                        password: '',
+                        originalEmail: fetchedAttendee.email,
+                    });
+                    fetchRegistrations(fetchedAttendee.email);
+                },
+                'fetching attendee'
+            );
         } catch (error) {
-            console.error('Error fetching attendee:', error);
-            showMessage('Error fetching attendee.', 'error');
+            handleApiError(error, 'fetching attendee');
         }
         setLoading(false);
     };
@@ -66,11 +91,16 @@ export default function AttendeeManagement() {
     // Fetch attendee's registrations
     const fetchRegistrations = async (email: string) => {
         try {
-            const fetchedRegistrations = await Service.getRegistrationsByEmail(email);
-            setRegistrations(fetchedRegistrations);
+            const response = await api.get('/getReservesByAttendeeEmail', { params: { email } });
+            handleApiResponse(
+                response,
+                (data) => {
+                    setRegistrations(data.registrations);
+                },
+                'fetching registrations'
+            );
         } catch (error) {
-            console.error('Error fetching registrations:', error);
-            showMessage('Error fetching registrations.', 'error');
+            handleApiError(error, 'fetching registrations');
         }
     };
 
@@ -78,9 +108,18 @@ export default function AttendeeManagement() {
     const handleUpdateAttendee = async () => {
         setErrors({});
         if (attendee) {
-            // Validate attendee data
             try {
                 await attendeeSchema.validate(attendee, { abortEarly: false });
+                const response = await api.post('/updateAttendeeProfile', attendee);
+                handleApiResponse(
+                    response,
+                    () => {
+                        setAttendee({ ...attendee, originalEmail: attendee.email });
+                        setErrors({});
+                        showMessage('Attendee updated successfully.', 'success');
+                    },
+                    'updating attendee'
+                );
             } catch (err) {
                 if (err instanceof Yup.ValidationError) {
                     const validationErrors: { [key: string]: string } = {};
@@ -92,23 +131,7 @@ export default function AttendeeManagement() {
                     setErrors(validationErrors);
                     return;
                 }
-            }
-
-            try {
-                const response = await Service.updateAttendeeProfile(attendee);
-                if (response.status === 'success') {
-                    // Update originalEmail if email was changed
-                    setAttendee({ ...attendee, originalEmail: attendee.email });
-                    setErrors({});
-                    // Display success message using Snackbar
-                    showMessage('Attendee updated successfully.', 'success');
-                } else {
-                    // Display error message using Snackbar
-                    showMessage(response.message || 'Failed to update attendee.', 'error');
-                }
-            } catch (error) {
-                console.error('Error updating attendee:', error);
-                showMessage('Error updating attendee.', 'error');
+                handleApiError(err, 'updating attendee');
             }
         }
     };
@@ -158,19 +181,22 @@ export default function AttendeeManagement() {
         }
 
         try {
-            const response = await Service.updateRegistrationData(registration);
-            if (response.status === 'success') {
-                setRegistrationSuccessMessages(prev => ({
-                    ...prev,
-                    [index]: 'Registration updated successfully.'
-                }));
-                showMessage('Registration updated successfully.', 'success');
-            } else {
-                showMessage(response.message || 'Failed to update registration.', 'error');
-            }
+            const response = await api.post('/updateAttendeeRegistrationData', {
+                registrationData: registrations[index],
+            });
+            handleApiResponse(
+                response,
+                () => {
+                    setRegistrationSuccessMessages(prev => ({
+                        ...prev,
+                        [index]: 'Registration updated successfully.'
+                    }));
+                    showMessage('Registration updated successfully.', 'success');
+                },
+                'updating registration'
+            );
         } catch (error) {
-            console.error('Error updating registration:', error);
-            showMessage('Error updating registration.', 'error');
+            handleApiError(error, 'updating registration');
         }
     };
 
@@ -179,7 +205,6 @@ export default function AttendeeManagement() {
         const registration = registrations[index];
         if (!registration) return;
 
-        // Reset previous errors
         setRegistrationErrors((prev) => {
             const newErrors = { ...prev };
             delete newErrors[index];
@@ -187,25 +212,22 @@ export default function AttendeeManagement() {
         });
 
         try {
-            const response = await Service.deleteRegistration(
-                registration.attendeeEmail,
-                registration.banquetBIN
+            const response = await api.post('/deleteReserve', {
+                attendeeEmail: registration.attendeeEmail,
+                banquetBIN: registration.banquetBIN,
+            });
+            handleApiResponse(
+                response,
+                () => {
+                    const updatedRegistrations = [...registrations];
+                    updatedRegistrations.splice(index, 1);
+                    setRegistrations(updatedRegistrations);
+                    showMessage('Registration deleted successfully.', 'success');
+                },
+                'deleting registration'
             );
-            if (response.status === 'success') {
-                // Remove the registration from the state
-                const updatedRegistrations = [...registrations];
-                updatedRegistrations.splice(index, 1);
-                setRegistrations(updatedRegistrations);
-
-                // Display success message using Snackbar
-                showMessage('Registration deleted successfully.', 'success');
-            } else {
-                // Display error message using Snackbar
-                showMessage(response.message || 'Failed to delete registration.', 'error');
-            }
         } catch (error) {
-            console.error('Error deleting registration:', error);
-            showMessage('Error deleting registration.', 'error');
+            handleApiError(error, 'deleting registration');
         }
     };
 

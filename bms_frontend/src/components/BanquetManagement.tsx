@@ -12,6 +12,7 @@ import BanquetForm from './BanquetForm';
 import { formatDateTimeForInput } from '../utils/utils'; 
 import { banquetSchema } from '../utils/validationSchemas'; 
 import * as Yup from 'yup'; 
+import api from '../service/api'; 
 
 // BanquetManagement Component
 export default function BanquetManagement() {
@@ -52,20 +53,17 @@ export default function BanquetManagement() {
     const fetchBanquets = async () => {
         setLoading(true);
         try {
-            const data = await Service.fetchBanquets();
+            const response = await api.get('/getAllBanquets');
+            const data = response.data.banquets || [];
 
-            // Map over fetched banquets and ensure meals are properly set
             const fetchedBanquets = data.map((banquet: Banquet) => ({
                 ...banquet,
-                meals:
-                    banquet.meals && banquet.meals.length > 0
-                        ? banquet.meals
-                        : Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }),
+                meals: banquet.meals?.length > 0 
+                    ? banquet.meals 
+                    : Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }),
             }));
 
             setBanquets(fetchedBanquets);
-
-            // After fetching data, calculate column widths
             calculateColumnWidths(fetchedBanquets);
         } catch (error: any) {
             handleApiError(error, 'fetching banquets');
@@ -162,8 +160,8 @@ export default function BanquetManagement() {
     // Delete a banquet
     const handleDeleteBanquet = async (banquetBIN: number) => {
         try {
-            const response = await Service.deleteBanquet(banquetBIN);
-            handleApiResponse(response, 'Banquet deleted successfully!', 'delete banquet', fetchBanquets);
+            const response = await api.post('/deleteBanquet', { banquetBIN });
+            handleApiResponse(response.data, 'Banquet deleted successfully!', 'delete banquet', fetchBanquets);
         } catch (error: any) {
             handleApiError(error, 'deleting banquet');
         }
@@ -230,11 +228,10 @@ export default function BanquetManagement() {
 
         // If validation passes, proceed to create or update
         if (isEditing) {
-            // Update existing banquet
             try {
-                const response = await Service.updateBanquet(banquet);
+                const response = await api.post('/updateBanquet', banquet);
                 handleApiResponse(
-                    response,
+                    response.data,
                     'Banquet updated successfully!',
                     'update banquet',
                     () => {
@@ -246,11 +243,10 @@ export default function BanquetManagement() {
                 handleApiError(error, 'updating banquet');
             }
         } else {
-            // Create new banquet
             try {
-                const response = await Service.createBanquet(banquet);
+                const response = await api.post('/createBanquet', banquet);
                 handleApiResponse(
-                    response,
+                    response.data,
                     'Banquet created successfully!',
                     'create banquet',
                     () => {

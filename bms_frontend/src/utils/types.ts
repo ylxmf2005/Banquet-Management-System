@@ -1,5 +1,10 @@
 // src/types.ts
 
+export interface User {
+    email: string;
+    role: 'admin' | 'user';
+}
+
 // Interface for Meal object
 export interface Meal {
     type: string;
@@ -7,7 +12,6 @@ export interface Meal {
     price: number;
     specialCuisine: string;
 }
-
 // Interface for Banquet object
 export interface Banquet {
     BIN: number;
