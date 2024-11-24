@@ -8,6 +8,7 @@ import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Banquet;
+import hk.polyu.comp.project2411.bms.model.PasswordEncoding;
 import hk.polyu.comp.project2411.bms.model.SearchCriteria;
 
 
@@ -40,7 +41,7 @@ public class AttendeeAccountDAO {
                 attendee.getLastName(),
                 attendee.getAddress(),
                 attendee.getType(),
-                attendee.getPassword(),
+                PasswordEncoding.encoding(attendee.getPassword()),
                 attendee.getMobileNo(),
                 attendee.getOrganization(),
                 attendee.getOriginalEmail(),
@@ -58,7 +59,7 @@ public class AttendeeAccountDAO {
                 attendee.getLastName(),
                 attendee.getAddress(),
                 attendee.getType(),
-                attendee.getPassword(),
+                PasswordEncoding.encoding(attendee.getPassword()),
                 attendee.getMobileNo(),
                 attendee.getOrganization()
         };

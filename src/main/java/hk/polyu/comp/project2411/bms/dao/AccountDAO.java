@@ -9,6 +9,7 @@ import hk.polyu.comp.project2411.bms.exceptions.AuthenticationException;
 import hk.polyu.comp.project2411.bms.model.Account;
 import hk.polyu.comp.project2411.bms.model.AdminAccount;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
+import hk.polyu.comp.project2411.bms.model.PasswordEncoding;
 
 public class AccountDAO {
     private SQLConnection sqlConnection;
@@ -18,6 +19,7 @@ public class AccountDAO {
     }
     
     public Account authenticateAccount(String email, String password) throws AuthenticationException, SQLException {
+        password = PasswordEncoding.encoding(password);
         String sql = "SELECT * FROM Account WHERE Email = ?";
         Object[] params = new Object[] { email };
 

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
+import hk.polyu.comp.project2411.bms.model.PasswordEncoding;
+
 // TODO: Add check constraints for data entries
 public class DbInitDAO {
     private SQLConnection sqlConnection;
@@ -50,7 +52,9 @@ public class DbInitDAO {
                 createReserveTable();
                 createTestReserve();
             }
-    
+
+            createTrigger();
+
             System.out.println("Database initialization completed.");
             return true;
         } catch (SQLException e) {
@@ -103,14 +107,21 @@ public class DbInitDAO {
      */
 
     private void createDefaultAdminAccount() throws SQLException {
-        String sql = "INSERT INTO Account (Email, Role, Password) VALUES ('bmsadmin@polyu.hk', 'admin', '2411project')";
+        String passwd = "2411project";
+        passwd = PasswordEncoding.encoding(passwd);
+        String sql = "INSERT INTO Account (Email, Role, Password) VALUES ('bmsadmin@polyu.hk', 'admin', '" +
+                passwd + "')";
         sqlConnection.executeUpdate(sql);
         System.out.println("Default admin account created.");
     }
 
     private void createTestAttendeeAccount() throws SQLException {
+        String passwd = "2411project";
+        passwd = PasswordEncoding.encoding(passwd);
         String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
-                     "VALUES ('test@polyu.hk', 'user', 'San', 'Zhang', '114514', '2411project', 'PolyU HJ202', 'PolyU HJ202', 'Student', 'PolyU')";
+                     "VALUES ('test@polyu.hk', 'user', 'San', 'Zhang', '114514', '" +
+                passwd + "', 'PolyU HJ202', 'PolyU HJ202', 'Student', 'PolyU')";
+
         sqlConnection.executeUpdate(sql);
         System.out.println("Test attendee account created.");
     }
@@ -197,7 +208,7 @@ public class DbInitDAO {
                 "FOREIGN KEY (AttendeeEmail) REFERENCES Account(Email) " +
                 "ON DELETE CASCADE, " +
                 "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN)" +
-                "ON DELETE CASCADE " +
+                "ON DELETE CASCADE" +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Reserve created.");
@@ -210,6 +221,18 @@ public class DbInitDAO {
         System.out.println("Test reserve created.");
     }
 
+    private void createTrigger() throws SQLException {
+        String sql = "CREATE OR REPLACE TRIGGER email_update_cascade_trigger " +
+                "AFTER UPDATE OF email ON Account " +
+                "FOR EACH ROW " +
+                "BEGIN " +
+                "UPDATE Reserve " +
+                "SET AttendeeEmail = :NEW.email " +
+                "WHERE AttendeeEmail = :OLD.email; " +
+                "END;";
+        sqlConnection.executeUpdate(sql);
+        System.out.println("Trigger created");
+    }
     /**
      * Closes the SQL connection.
      */
