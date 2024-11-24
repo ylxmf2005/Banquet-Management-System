@@ -167,19 +167,25 @@ public class BMSRestController {
     }
 
     @GET
-    @Path("/getAvailableBanquets")
+    @Path("/getAvailableUnregisteredBanquets")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAvailableBanquets() {
-        System.out.println("Received request at /getAvailableBanquets");
+    public Response getAvailableUnregisteredBanquets(@QueryParam("attendeeEmail") String attendeeEmail) {
+        System.out.println("Received request at /getAvailableUnregisteredBanquets for email: " + attendeeEmail);
         Map<String, Object> response = new HashMap<>();
         try {
-            List<Banquet> banquets = bmsMain.getAvailableBanquets();
+            if (attendeeEmail == null || attendeeEmail.trim().isEmpty()) {
+                response.put("status", "error");
+                response.put("message", "Attendee email is required");
+                String jsonResponse = gson.toJson(response);
+                return Response.status(Response.Status.BAD_REQUEST).entity(jsonResponse).build();
+            }
+            
+            List<Banquet> banquets = bmsMain.getAvailableUnregisteredBanquets(attendeeEmail);
             response.put("status", "success");
             response.put("banquets", banquets);
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
-            //e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
             response.put("status", "error");
             response.put("message", e.getMessage());

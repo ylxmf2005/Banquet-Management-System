@@ -102,8 +102,8 @@ public class BMSMain {
         return attendeeAccountDao.updateAttendeeProfile(attendee);
     }
     
-    public List<Banquet> getAvailableBanquets() throws SQLException {
-        return banquetDao.getAvailableBanquets();
+    public List<Banquet> getAvailableUnregisteredBanquets(String attendeeEmail) throws SQLException {
+        return banquetDao.getAvailableUnregisteredBanquets(attendeeEmail);
     }
 
     public RegistrationResult registerForBanquet(Reserve registrationData) throws RegistrationException, SQLException {

@@ -157,9 +157,6 @@ const ProfileTab: React.FC<ProfileTabProps> = ({ user, showMessage }) => {
 
     return (
         <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom>
-                Profile
-            </Typography>
             <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
                     {/* First Name */}

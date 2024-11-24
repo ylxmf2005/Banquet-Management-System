@@ -169,9 +169,6 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
 
     return (
         <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom>
-                My Registrations
-            </Typography>
             <Box sx={{ mb: 2 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
