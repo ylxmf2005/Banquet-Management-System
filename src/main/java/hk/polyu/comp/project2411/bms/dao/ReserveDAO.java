@@ -36,12 +36,11 @@ public class ReserveDAO {
 
     private boolean insertAttendeeRegistrationData(Reserve registrationData) throws SQLException {
         String sql = "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks)" +
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                " VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?, ?)";
         Object[] params = new Object[] {
                 registrationData.getAttendeeEmail(),
                 registrationData.getBanquetBIN(),
                 registrationData.getSeatNo(),
-                registrationData.getRegTime(),
                 registrationData.getDrinkChoice(),
                 registrationData.getMealChoice(),
                 registrationData.getRemarks()
@@ -69,11 +68,11 @@ public class ReserveDAO {
 
     private int getRegisteredNumberForBanquet(int bin) throws SQLException {
         /*Count number of people reserved for the banquet.*/
-        String sql = "SELECT COUNT(*) FROM Reserve WHERE BanquetBIN=?";
+        String sql = "SELECT COUNT(*) AS cnt FROM Reserve WHERE BanquetBIN=?";
         Object[] param = {bin};
         List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, param);
         if (!results.isEmpty()) {
-            return ((Number) results.get(0).get("COUNT")).intValue();
+            return ((Number) results.get(0).get("CNT")).intValue();
         }
         return 0;
     }
@@ -81,15 +80,15 @@ public class ReserveDAO {
     public Banquet getBanquet(int BIN) throws SQLException {
         String sql = "SELECT * FROM Banquet WHERE BIN=?";
         Object[] params = new Object[] { BIN };
-        List<Map<String, Object>> result = sqlConnection.executeQuery(sql);
-        if(result.get(0) == null) return null;
+        List<Map<String, Object>> result = sqlConnection.executePreparedQuery(sql, params);
+        if(result.isEmpty()) return null;
         return new Banquet(result.get(0));
     }
 
     public int getAvailableSeatNo(Banquet banquet) throws SQLException {
         String sql = "SELECT SeatNo FROM Reserve WHERE BanquetBIN=? ORDER BY SeatNo ASC";
         Object[] params = new Object[] { banquet.getBIN() };
-        List<Map<String, Object>> results = sqlConnection.executeQuery(sql);
+        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
         if(results.isEmpty()) return 1;
         int cur = 1;
         for(Map<String, Object> result : results) {
@@ -100,6 +99,7 @@ public class ReserveDAO {
     }
 
     public RegistrationResult registerForBanquet(Reserve registrationData) throws RegistrationException, SQLException {
+        
         Banquet curBan = getBanquet(registrationData.getBanquetBIN());
         if(curBan == null) throw new RegistrationException("Banquet not found");
         if(getRegisteredNumberForBanquet(registrationData.getBanquetBIN()) >= curBan.getQuota())

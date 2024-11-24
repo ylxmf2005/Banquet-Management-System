@@ -21,7 +21,7 @@ import {
     SelectChangeEvent,
 } from '@mui/material';
 import * as yup from 'yup';
-import { registrationSchemaForUser } from '../utils/validationSchemas'
+import { registrationSchemaForUser } from '../utils/validationSchemas';
 import { AlertColor } from '@mui/material';
 import api from '../service/api';
 import { Meal, Banquet, User } from '../utils/types';
@@ -38,7 +38,6 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
     const [selectedBanquet, setSelectedBanquet] = useState<Banquet | null>(null);
     const [openRegistrationDialog, setOpenRegistrationDialog] = useState(false);
     const [registrationData, setRegistrationData] = useState({
-        // seatNo: '',  // 移除 seatNo 字段
         drinkChoice: '',
         mealChoice: '',
         remarks: '',
@@ -56,7 +55,8 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
     ) => {
         const data = response.data;
         if (data.status === 'success') {
-            successCallback(data);
+            const banquets = data.banquets || [];
+            successCallback({ ...data, banquets });
         } else {
             const message = `Failed to ${action}: ${data.message || 'Unknown error'}`;
             showMessage(message, 'error');
@@ -76,19 +76,23 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
     const fetchBanquets = async () => {
         setLoading(true);
         try {
-            const response = await api.get('/getAvailableBanquets');
+            const response = await api.get('/getAvailableUnregisteredBanquets', {
+                params: {
+                    attendeeEmail: user.email
+                }
+            });
 
             handleApiResponse(
                 response,
                 (data: any) => {
-                    const banquets = data.banquets as Banquet[];
-                    setBanquets(banquets);
+                    setBanquets(data.banquets);
                     setLoading(false);
                 },
-                'fetching available banquets',
+                'fetching available banquets'
             );
         } catch (error: any) {
             handleApiError(error, 'fetching available banquets');
+            setBanquets([]);
             setLoading(false);
         }
     };
@@ -96,7 +100,6 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
     const handleRegisterClick = (banquet: Banquet) => {
         setSelectedBanquet(banquet);
         setRegistrationData({
-            // seatNo: '',  // 移除 seatNo 字段
             drinkChoice: '',
             mealChoice: '',
             remarks: '',
@@ -140,11 +143,17 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
 
                 handleApiResponse(
                     response,
-                    () => {
-                        setOpenRegistrationDialog(false);
-                        fetchBanquets(); // Refresh the list of banquets
+                    (data: any) => {
+                        const registrationResult = data.registrationResult;
+                        if (registrationResult.success) {
+                            setOpenRegistrationDialog(false);
+                            fetchBanquets(); // Refresh the list of banquets
+                            showMessage(registrationResult.message, 'success');
+                        } else {
+                            showMessage(registrationResult.message || 'Registration failed', 'error');
+                        }
                     },
-                    'registering for banquet',
+                    'registering for banquet'
                 );
             } catch (error) {
                 handleApiError(error, 'registering for banquet');
@@ -167,42 +176,49 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
 
     return (
         <Box sx={{ mt: 3 }}>
-            <Typography variant="h6" gutterBottom>
-                Available Banquets
-            </Typography>
             <Grid container spacing={2}>
-                {banquets.map((banquet) => (
-                    <Grid item xs={12} md={6} lg={4} key={banquet.BIN}>
-                        <Card>
-                            <CardContent>
-                                <Typography variant="h6">{banquet.name}</Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                    Date and Time: {banquet.dateTime}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                    Location: {banquet.location}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                    Address: {banquet.address}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                    Contact: {banquet.contactFirstName} {banquet.contactLastName}
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                {banquet.available ? (
-                                    <Button size="small" onClick={() => handleRegisterClick(banquet)}>
-                                        Register
-                                    </Button>
-                                ) : (
-                                    <Button size="small" disabled>
-                                        Full
-                                    </Button>
-                                )}
-                            </CardActions>
-                        </Card>
+                {loading ? (
+                    <Grid item xs={12}>
+                        <Typography>Loading...</Typography>
                     </Grid>
-                ))}
+                ) : (!banquets || banquets.length === 0) ? (
+                    <Grid item xs={12}>
+                        <Typography>No available banquets found.</Typography>
+                    </Grid>
+                ) : (
+                    banquets.map((banquet) => (
+                        <Grid item xs={12} md={6} lg={4} key={banquet.BIN}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="h6">{banquet.name}</Typography>
+                                    <Typography variant="body2" color="textSecondary">
+                                        Date and Time: {banquet.dateTime}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary">
+                                        Location: {banquet.location}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary">
+                                        Address: {banquet.address}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary">
+                                        Contact: {banquet.contactFirstName} {banquet.contactLastName}
+                                    </Typography>
+                                </CardContent>
+                                <CardActions>
+                                    {banquet.available ? (
+                                        <Button size="small" onClick={() => handleRegisterClick(banquet)}>
+                                            Register
+                                        </Button>
+                                    ) : (
+                                        <Button size="small" disabled>
+                                            Full
+                                        </Button>
+                                    )}
+                                </CardActions>
+                            </Card>
+                        </Grid>
+                    ))
+                )}
             </Grid>
 
             {selectedBanquet && (

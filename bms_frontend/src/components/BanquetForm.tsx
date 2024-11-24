@@ -164,8 +164,9 @@ const BanquetForm: React.FC<BanquetFormProps> = ({
                                 error={!!errors.meals && errors.meals[index]?.type}
                                 helperText={errors.meals && errors.meals[index]?.type}
                                 onChange={(e) => {
-                                    const updatedMeals = [...banquet.meals];
-                                    updatedMeals[index].type = e.target.value;
+                                    const updatedMeals = banquet.meals.map((m, i) => 
+                                        i === index ? { ...m, type: e.target.value } : m
+                                    );
                                     setBanquet({ ...banquet, meals: updatedMeals });
                                 }}
                             />
@@ -177,8 +178,9 @@ const BanquetForm: React.FC<BanquetFormProps> = ({
                                 error={!!errors.meals && errors.meals[index]?.dishName}
                                 helperText={errors.meals && errors.meals[index]?.dishName}
                                 onChange={(e) => {
-                                    const updatedMeals = [...banquet.meals];
-                                    updatedMeals[index].dishName = e.target.value;
+                                    const updatedMeals = banquet.meals.map((m, i) => 
+                                        i === index ? { ...m, dishName: e.target.value } : m
+                                    );
                                     setBanquet({ ...banquet, meals: updatedMeals });
                                 }}
                             />
@@ -191,10 +193,9 @@ const BanquetForm: React.FC<BanquetFormProps> = ({
                                 error={!!errors.meals && errors.meals[index]?.price}
                                 helperText={errors.meals && errors.meals[index]?.price}
                                 onChange={(e) => {
-                                    const updatedMeals = [...banquet.meals];
-                                    updatedMeals[index].price = !isNaN(parseFloat(e.target.value))
-                                        ? parseFloat(e.target.value)
-                                        : NaN;
+                                    const updatedMeals = banquet.meals.map((m, i) => 
+                                        i === index ? { ...m, price: !isNaN(parseFloat(e.target.value)) ? parseFloat(e.target.value) : NaN } : m
+                                    );
                                     setBanquet({ ...banquet, meals: updatedMeals });
                                 }}
                                 InputProps={{
@@ -209,8 +210,9 @@ const BanquetForm: React.FC<BanquetFormProps> = ({
                                 error={!!errors.meals && errors.meals[index]?.specialCuisine}
                                 helperText={errors.meals && errors.meals[index]?.specialCuisine}
                                 onChange={(e) => {
-                                    const updatedMeals = [...banquet.meals];
-                                    updatedMeals[index].specialCuisine = e.target.value;
+                                    const updatedMeals = banquet.meals.map((m, i) => 
+                                        i === index ? { ...m, specialCuisine: e.target.value } : m
+                                    );
                                     setBanquet({ ...banquet, meals: updatedMeals });
                                 }}
                             />

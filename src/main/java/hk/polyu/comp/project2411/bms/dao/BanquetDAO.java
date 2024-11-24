@@ -1,6 +1,5 @@
 package hk.polyu.comp.project2411.bms.dao;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +136,7 @@ public class BanquetDAO {
         return banquets;
     }
 
+    // Deprecated
     public List<Banquet> getAvailableBanquets() throws SQLException {
         String sql = "SELECT * FROM Banquet WHERE Available = 'Y'";
         List<Map<String, Object>> result = sqlConnection.executeQuery(sql);
@@ -150,5 +150,27 @@ public class BanquetDAO {
         } else
             return null;
         return banquets;
+    }
+
+    public List<Banquet> getAvailableUnregisteredBanquets(String attendeeEmail) throws SQLException {
+        String sql = "SELECT * FROM Banquet b WHERE b.Available = 'Y' " +
+                    "AND NOT EXISTS (SELECT 1 FROM Reserve r " +
+                    "WHERE r.BanquetBIN = b.BIN " +
+                    "AND r.AttendeeEmail = ?)";
+                    
+        Object[] params = new Object[] { attendeeEmail };
+        List<Map<String, Object>> result = sqlConnection.executePreparedQuery(sql, params);
+        List<Banquet> banquets = new ArrayList<>();
+        
+        if (!result.isEmpty()) {
+            for (Map<String, Object> row : result) {
+                Banquet banquet = new Banquet(row);
+                banquet.setMeals(mealDAO.getMealsForBanquet(banquet.getBIN()));
+                banquets.add(banquet);
+            }
+            return banquets;
+        } else {
+            return null;
+        }
     }
 }
