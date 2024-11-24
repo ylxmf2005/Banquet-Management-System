@@ -68,6 +68,11 @@ export default function AttendeeManagement() {
         setRegistrations([]);
         try {
             const response = await api.get('/getAttendeeByEmail', { params: { email } });
+            if (!response.data.attendee) {
+                showMessage('Attendee not found', 'error');
+                setLoading(false);
+                return;
+            }
             handleApiResponse(
                 response,
                 (data) => {
