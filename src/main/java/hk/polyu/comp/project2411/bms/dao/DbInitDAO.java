@@ -83,17 +83,17 @@ public class DbInitDAO {
      */
     private void createAccountTable() throws SQLException {
         String sql = "CREATE TABLE Account (" +
-                "Email VARCHAR2(255), " +
-                "Role VARCHAR2(50), " +
-                "FirstName VARCHAR2(255), " +
-                "LastName VARCHAR2(255), " +
-                "MobileNo VARCHAR2(20), " +
+                "Email VARCHAR2(255) NOT NULL CHECK(Email LIKE '%@%'), " +
+                "Role VARCHAR2(50) NOT NULL, " +
+                "FirstName VARCHAR2(255) CHECK (FirstName NOT LIKE '%[^A-Z|a-z]%'), " +
+                "LastName VARCHAR2(255) CHECK (LastName NOT LIKE '%[^A-Z|a-z]%'), " +
+                "MobileNo VARCHAR2(20) CHECK (MobileNo NOT LIKE '%[^0-9]%' AND LENGTH(MobileNo) = 8), " +
                 "Password VARCHAR2(255), " +
                 "Location VARCHAR2(255), " +
                 "Address VARCHAR2(255), " +
                 "Type VARCHAR2(50), " +
-                "Organization VARCHAR2(255)," +
-                "PRIMARY KEY (Email)" +
+                "Organization VARCHAR2(255), " +
+                "PRIMARY KEY (Email) " +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Account created.");
@@ -118,7 +118,7 @@ public class DbInitDAO {
         String passwd = "2411project";
         passwd = Utils.encoding(passwd);
         String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
-                     "VALUES ('test@polyu.hk', 'user', 'San', 'Zhang', '114514', '" +
+                     "VALUES ('test@polyu.hk', 'user', 'San', 'Zhang', '11451134', '" +
                 passwd + "', 'PolyU HJ202', 'PolyU HJ202', 'Student', 'PolyU')";
 
         sqlConnection.executeUpdate(sql);
@@ -132,15 +132,15 @@ public class DbInitDAO {
      */
     private void createBanquetTable() throws SQLException {
         String sql = "CREATE TABLE Banquet (" +
-                "BIN NUMBER, " +
-                "Name VARCHAR2(255), " +
-                "DateTime DATE , " +
-                "Address VARCHAR2(255), " +
-                "Location VARCHAR2(255), " +
-                "ContactFirstName VARCHAR2(255), " +
-                "ContactLastName VARCHAR2(255), " +
-                "Available VARCHAR2(1), " +
-                "Quota NUMBER," +
+                "BIN NUMBER NOT NULL, " +
+                "Name VARCHAR2(255) NOT NULL, " +
+                "DateTime DATE NOT NULL, " +
+                "Address VARCHAR2(255) NOT NULL, " +
+                "Location VARCHAR2(255) NOT NULL, " +
+                "ContactFirstName VARCHAR2(255) NOT NULL CHECK (ContactFirstName NOT LIKE '%[^A-Z|a-z]%'), " +
+                "ContactLastName VARCHAR2(255) NOT NULL CHECK (ContactLastName NOT LIKE '%[^A-Z|a-z]%'), " +
+                "Available VARCHAR2(1) NOT NULL, " +
+                "Quota NUMBER NOT NULL," +
                 "PRIMARY KEY(BIN)" +
                 ")";
         sqlConnection.executeUpdate(sql);
@@ -175,10 +175,10 @@ public class DbInitDAO {
      */
     private void createMealTable() throws SQLException {
         String sql = "CREATE TABLE Meal (" +
-                "BanquetBIN NUMBER, " +
-                "DishName VARCHAR2(255), " +
-                "Type VARCHAR2(50), " +
-                "Price NUMBER(10, 2), " +
+                "BanquetBIN NUMBER NOT NULL, " +
+                "DishName VARCHAR2(255) NOT NULL, " +
+                "Type VARCHAR2(50) NOT NULL, " +
+                "Price NUMBER(10, 2) NOT NULL, " +
                 "SpecialCuisine VARCHAR2(255), " +
                 "PRIMARY KEY (BanquetBIN, DishName), " +
                 "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN)" +
@@ -196,12 +196,12 @@ public class DbInitDAO {
      */
     private void createReserveTable() throws SQLException {
         String sql = "CREATE TABLE Reserve (" +
-                "AttendeeEmail VARCHAR2(255), " +
-                "BanquetBIN NUMBER, " +
-                "SeatNo NUMBER, " +
-                "RegTime TIMESTAMP, " +
-                "DrinkChoice VARCHAR2(50), " +
-                "MealChoice VARCHAR2(255), " +
+                "AttendeeEmail VARCHAR2(255) NOT NULL, " +
+                "BanquetBIN NUMBER NOT NULL, " +
+                "SeatNo NUMBER NOT NULL, " +
+                "RegTime TIMESTAMP NOT NULL, " +
+                "DrinkChoice VARCHAR2(50) NOT NULL, " +
+                "MealChoice VARCHAR2(255) NOT NULL, " +
                 "Remarks VARCHAR2(255), " +
                 "PRIMARY KEY (AttendeeEmail, BanquetBIN), " +
                 "FOREIGN KEY (AttendeeEmail) REFERENCES Account(Email) " +

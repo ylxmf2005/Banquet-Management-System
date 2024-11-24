@@ -34,6 +34,22 @@ public class ReserveDAO {
         return rowsAffected > 0;
     }
 
+    private boolean insertAttendeeRegistrationData(Reserve registrationData) throws SQLException {
+        String sql = "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks)" +
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        Object[] params = new Object[] {
+                registrationData.getAttendeeEmail(),
+                registrationData.getBanquetBIN(),
+                registrationData.getSeatNo(),
+                registrationData.getRegTime(),
+                registrationData.getDrinkChoice(),
+                registrationData.getMealChoice(),
+                registrationData.getRemarks()
+        };
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
+        return rowsAffected > 0;
+    }
+
     public List<Reserve> getReservesByAttendeeEmail(String email) throws SQLException {
         String sql = "SELECT * FROM Reserve WHERE AttendeeEmail=?";
         Object[] param = {email};
@@ -90,11 +106,9 @@ public class ReserveDAO {
             throw new RegistrationException("The quota of the banquet is not enough");
         int curSeatNo = getAvailableSeatNo(curBan);
         registrationData.setSeatNo(curSeatNo);
-        if(updateAttendeeRegistrationData(registrationData)) {
+        if(insertAttendeeRegistrationData(registrationData)) {
             return new RegistrationResult(true, "You have successfully registered the banquet.");
         }
         else return new RegistrationResult(false, "You have not successfully registered the banquet.");
     }
-
-    
 }
