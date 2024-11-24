@@ -170,12 +170,6 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
 
     const handleUpdateClick = async (registration: Registration) => {
         try {
-            setUpdateData({
-                newDrinkChoice: registration.drinkChoice || '',
-                newMealChoice: registration.mealChoice || '',
-                newRemarks: registration.remarks || '',
-            });
-
             const response = await api.get('/getBanquetByBIN', {
                 params: { banquetBIN: registration.banquetBIN }
             });
@@ -186,6 +180,11 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
                     ...registration,
                     meals: banquet.meals
                 });
+                setUpdateData({
+                    newDrinkChoice: registration.drinkChoice || '',
+                    newMealChoice: registration.mealChoice || '',
+                    newRemarks: registration.remarks || '',
+                });
                 setErrors({});
                 setOpenUpdateDialog(true);
             } else {
@@ -193,32 +192,6 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
             }
         } catch (error: any) {
             handleApiError(error, 'fetching banquet details');
-        }
-    };
-
-    const handleUnregisterClick = (registration: Registration) => {
-        setRegistrationToUnregister(registration);
-        setOpenUnregisterDialog(true);
-    };
-
-    const handleUnregister = async () => {
-        try {
-            const response = await api.post('/deleteReserve', {
-                attendeeEmail: user.email,
-                banquetBIN: registrationToUnregister!.banquetBIN
-            });
-
-            handleApiResponse(
-                response,
-                () => {
-                    showMessage('Successfully unregistered from the banquet', 'success');
-                    setOpenUnregisterDialog(false);
-                    handleSearch();
-                },
-                'unregistering from banquet'
-            );
-        } catch (error: any) {
-            handleApiError(error, 'unregistering from banquet');
         }
     };
 
