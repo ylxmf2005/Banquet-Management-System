@@ -11,10 +11,9 @@ public class Reserve {
     private String mealChoice;
     private String remarks;
 
-    public Reserve(String attendeeEmail, int banquetBIN, int seatNo, Timestamp regTime, String drinkChoice, String mealChoice, String remarks) {
+    public Reserve(String attendeeEmail, int banquetBIN, Timestamp regTime, String drinkChoice, String mealChoice, String remarks) {
         this.attendeeEmail = attendeeEmail;
         this.banquetBIN = banquetBIN;
-        this.seatNo = seatNo;
         this.regTime = regTime;
         this.drinkChoice = drinkChoice;
         this.mealChoice = mealChoice;
@@ -79,4 +78,7 @@ public class Reserve {
     public Object[] getParams() {
         return new Object[] { seatNo, regTime, drinkChoice, mealChoice, remarks, attendeeEmail, banquetBIN };
     }
+
+    // Setters
+    public void setSeatNo(int seatNo) { this.seatNo = seatNo;}
 }

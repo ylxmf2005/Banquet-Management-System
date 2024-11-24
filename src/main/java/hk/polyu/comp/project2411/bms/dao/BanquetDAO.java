@@ -1,5 +1,6 @@
 package hk.polyu.comp.project2411.bms.dao;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
