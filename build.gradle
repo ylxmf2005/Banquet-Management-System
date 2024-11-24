@@ -10,6 +10,7 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     // ojdbc8 dependency
     implementation files('lib/ojdbc8.jar')
@@ -42,6 +43,11 @@ dependencies {
 
     // Jakarta Activation API
     implementation 'jakarta.activation:jakarta.activation-api:2.0.1'
+
+    // https://mvnrepository.com/artifact/com.itextpdf/root
+    implementation 'com.itextpdf:itext7-core:7.1.15'
+
+
 }
 
 sourceCompatibility = '21'
