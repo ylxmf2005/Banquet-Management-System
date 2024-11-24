@@ -111,8 +111,12 @@ public class BMSMain {
         return reserveDao.registerForBanquet(registrationData);
     }
 
-    public List<Banquet> searchRegisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
-        return attendeeAccountDao.searchRegisteredBanquets(attendeeEmail, criteria);
+    public List<Reserve> searchRegistrations(String attendeeEmail, SearchCriteria criteria) throws SQLException {
+        return attendeeAccountDao.searchRegistrations(attendeeEmail, criteria);
+    }
+
+    public Banquet getBanquetByBIN(int BIN) throws SQLException {
+        return banquetDao.getBanquetByBIN(BIN);
     }
 
 }

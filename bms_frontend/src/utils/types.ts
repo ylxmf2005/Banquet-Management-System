@@ -60,3 +60,12 @@ export interface RegisterFormInputs {
     mobileNumber: string;
     affiliatedOrganization: string;
 }
+
+export interface RegistrationWithBanquet extends Registration {
+    banquetName?: string;
+    banquetDateTime?: string;
+    location?: string;
+    address?: string;
+    contactFirstName?: string;
+    contactLastName?: string;
+}

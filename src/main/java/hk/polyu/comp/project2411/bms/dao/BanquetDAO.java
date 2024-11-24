@@ -173,4 +173,17 @@ public class BanquetDAO {
             return null;
         }
     }
+
+    public Banquet getBanquetByBIN(int BIN) throws SQLException {
+        String sql = "SELECT * FROM Banquet WHERE BIN = ?";
+        Object[] params = new Object[] { BIN };
+        List<Map<String, Object>> result = sqlConnection.executePreparedQuery(sql, params);
+        
+        if (!result.isEmpty()) {
+            Banquet banquet = new Banquet(result.get(0));
+            banquet.setMeals(mealDAO.getMealsForBanquet(banquet.getBIN()));
+            return banquet;
+        }
+        return null;
+    }
 }

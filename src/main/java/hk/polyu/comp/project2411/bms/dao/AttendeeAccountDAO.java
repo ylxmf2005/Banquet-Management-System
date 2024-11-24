@@ -7,7 +7,7 @@ import java.util.Map;
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.exceptions.ValidationException;
 import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
-import hk.polyu.comp.project2411.bms.model.Banquet;
+import hk.polyu.comp.project2411.bms.model.Reserve;
 import hk.polyu.comp.project2411.bms.model.SearchCriteria;
 
 
@@ -86,10 +86,10 @@ public class AttendeeAccountDAO {
         return rowsAffected > 0;
     }
 
-    public List<Banquet> searchRegisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
+    public List<Reserve> searchRegistrations(String attendeeEmail, SearchCriteria criteria) throws SQLException {
         StringBuilder sql = new StringBuilder(
-            "SELECT DISTINCT b.* FROM Banquet b " +
-            "JOIN Reserve r ON b.BIN = r.BanquetBIN " +
+            "SELECT r.* FROM Reserve r " +
+            "JOIN Banquet b ON b.BIN = r.BanquetBIN " +
             "WHERE r.AttendeeEmail = ?");
         
         List<Object> params = new ArrayList<>();
@@ -101,27 +101,27 @@ public class AttendeeAccountDAO {
         }
 
         if (criteria.getStartDate() != null) {
-            sql.append(" AND b.DateTime >= ?");
+            sql.append(" AND b.DateTime >= TO_TIMESTAMP(?, 'YYYY-MM-DD\"T\"HH24:MI:SS.FF3\"Z\"')");
             params.add(criteria.getStartDate());
         }
 
         if (criteria.getEndDate() != null) {
-            sql.append(" AND b.DateTime <= ?");
+            sql.append(" AND b.DateTime <= TO_TIMESTAMP(?, 'YYYY-MM-DD\"T\"HH24:MI:SS.FF3\"Z\"')");
             params.add(criteria.getEndDate());
         }
 
-        sql.append(" ORDER BY b.DateTime");
+        sql.append(" ORDER BY r.RegTime");
 
         List<Map<String, Object>> results = sqlConnection.executePreparedQuery(
             sql.toString(), 
             params.toArray()
         );
 
-        List<Banquet> banquets = new ArrayList<>();
+        List<Reserve> reservations = new ArrayList<>();
         for (Map<String, Object> result : results) {
-            banquets.add(new Banquet(result));
+            reservations.add(new Reserve(result));
         }
-        return banquets;
+        return reservations;
     }
 }
 

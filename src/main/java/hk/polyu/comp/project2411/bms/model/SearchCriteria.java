@@ -28,8 +28,4 @@ public class SearchCriteria {
     public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
-
-    public String getBanquetNamePart() {
-        return banquetName != null ? "%" + banquetName + "%" : "%";
-    }
 }
