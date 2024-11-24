@@ -1,41 +1,35 @@
 package hk.polyu.comp.project2411.bms.model;
 
-import java.sql.Timestamp;
-
 public class SearchCriteria {
-    private Timestamp startDate;
-    private Timestamp endDate;
-    private String banquetNamePart;
-    // private String attendeeType;
+    private String banquetName;
+    private String startDate;
+    private String endDate;
 
-    public SearchCriteria(Timestamp startDate, Timestamp endDate, String banquetNamePart) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.banquetNamePart = "%" + banquetNamePart + "%";
+    public String getBanquetName() {
+        return banquetName;
     }
 
-    public Timestamp getStartDate() {
+    public void setBanquetName(String banquetName) {
+        this.banquetName = banquetName;
+    }
+
+    public String getStartDate() {
         return startDate;
     }
 
-    public Timestamp getEndDate() {
-        return endDate;
-    }
-
-    public void setStartDate(Timestamp startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public void setEndDate(Timestamp endDate) {
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 
     public String getBanquetNamePart() {
-        return banquetNamePart;
+        return banquetName != null ? "%" + banquetName + "%" : "%";
     }
-
-    public void setBanquetNamePart(String banquetNamePart) {
-        this.banquetNamePart = "%" + banquetNamePart + "%";
-    }
-
 }

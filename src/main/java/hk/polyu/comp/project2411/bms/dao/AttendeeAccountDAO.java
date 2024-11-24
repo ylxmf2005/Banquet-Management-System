@@ -87,26 +87,39 @@ public class AttendeeAccountDAO {
     }
 
     public List<Banquet> searchRegisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
-        String sql = "SELECT b.* " +
-                "FROM Reserves r " +
-                "JOIN Banquet b ON r.BanquetBIN = b.BIN " +
-                "JOIN AttendeeAccount a ON r.AttendeeEmail = a.Email " +
-                "WHERE r.AttendeeEmail = ? " +
-                "AND (? IS NULL OR b.Name LIKE ?) " +    //Banquet Name   if criteria has null, it is not tested.
-                "AND (? IS NULL OR b.DateTime = ?) ";   //Date
-        Object[] params = new Object[] {
-                attendeeEmail,
-                criteria.getBanquetNamePart(),
-                criteria.getBanquetNamePart(),
-                // criteria.getDate(),
-                // criteria.getDate(),
-                // startDate, endDate
-        };
-        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
+        StringBuilder sql = new StringBuilder(
+            "SELECT DISTINCT b.* FROM Banquet b " +
+            "JOIN Reserve r ON b.BIN = r.BanquetBIN " +
+            "WHERE r.AttendeeEmail = ?");
+        
+        List<Object> params = new ArrayList<>();
+        params.add(attendeeEmail);
+
+        if (criteria.getBanquetName() != null && !criteria.getBanquetName().trim().isEmpty()) {
+            sql.append(" AND LOWER(b.Name) LIKE LOWER(?)");
+            params.add("%" + criteria.getBanquetName() + "%");
+        }
+
+        if (criteria.getStartDate() != null) {
+            sql.append(" AND b.DateTime >= ?");
+            params.add(criteria.getStartDate());
+        }
+
+        if (criteria.getEndDate() != null) {
+            sql.append(" AND b.DateTime <= ?");
+            params.add(criteria.getEndDate());
+        }
+
+        sql.append(" ORDER BY b.DateTime");
+
+        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(
+            sql.toString(), 
+            params.toArray()
+        );
 
         List<Banquet> banquets = new ArrayList<>();
-        for(Map<String, Object> row : results) {
-            banquets.add(new Banquet(row));
+        for (Map<String, Object> result : results) {
+            banquets.add(new Banquet(result));
         }
         return banquets;
     }

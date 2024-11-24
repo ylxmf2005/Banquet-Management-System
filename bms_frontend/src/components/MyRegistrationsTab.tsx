@@ -1,6 +1,6 @@
 // src/components/MyRegistrationsTab.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -45,8 +45,9 @@ interface User {
 
 const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, user }) => {
     const [searchCriteria, setSearchCriteria] = useState({
-        date: '',
         banquetName: '',
+        startDate: '',
+        endDate: ''
     });
     const [registrations, setRegistrations] = useState<Registration[]>([]);
     const [loading, setLoading] = useState(false);
@@ -70,10 +71,16 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
     const handleSearch = async () => {
         setLoading(true);
         try {
+            const criteria = {
+                banquetName: searchCriteria.banquetName,
+                startDate: searchCriteria.startDate ? new Date(searchCriteria.startDate).getTime() : null,
+                endDate: searchCriteria.endDate ? new Date(searchCriteria.endDate).getTime() : null
+            };
+
             const response = await api.get('/searchRegisteredBanquets', {
                 params: {
                     attendeeEmail: user.email,
-                    ...searchCriteria,
+                    ...criteria,
                 },
             });
 
@@ -167,24 +174,59 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
         }
     };
 
+    const formatDateTime = (date: Date) => {
+        return date.toISOString().slice(0, 16); 
+    };
+
+    useEffect(() => {
+        const now = new Date();
+        const thirtyDaysLater = new Date();
+        thirtyDaysLater.setDate(now.getDate() + 30);
+        
+        setSearchCriteria({
+            banquetName: '',
+            startDate: formatDateTime(now),
+            endDate: formatDateTime(thirtyDaysLater)
+        });
+    }, []);
+
     return (
         <Box sx={{ mt: 3 }}>
             <Box sx={{ mb: 2 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4}>
                         <TextField
-                            name="date"
-                            label="Date"
-                            type="date"
-                            value={searchCriteria.date}
+                            name="startDate"
+                            label="Start Date & Time"
+                            type="datetime-local"
+                            value={searchCriteria.startDate}
                             onChange={handleSearchCriteriaChange}
                             fullWidth
                             InputLabelProps={{
                                 shrink: true,
                             }}
+                            inputProps={{
+                                step: 60
+                            }}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            name="endDate"
+                            label="End Date & Time"
+                            type="datetime-local"
+                            value={searchCriteria.endDate}
+                            onChange={handleSearchCriteriaChange}
+                            fullWidth
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            inputProps={{
+                                step: 60
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
                         <TextField
                             name="banquetName"
                             label="Banquet Name"
@@ -194,8 +236,13 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
                         />
                     </Grid>
                 </Grid>
-                <Button variant="contained" sx={{ mt: 2 }} onClick={handleSearch}>
-                    Search
+                <Button 
+                    variant="contained" 
+                    sx={{ mt: 2 }} 
+                    onClick={handleSearch}
+                    disabled={loading}
+                >
+                    {loading ? 'Searching...' : 'Search'}
                 </Button>
             </Box>
 

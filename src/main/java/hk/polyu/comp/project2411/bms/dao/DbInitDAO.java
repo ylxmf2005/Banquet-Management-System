@@ -49,7 +49,7 @@ public class DbInitDAO {
 
             if (!tableExists("Reserve")) {
                 createReserveTable();
-                createTestReserve();
+                createTestReserves();
             }
 
             createTrigger();
@@ -117,12 +117,22 @@ public class DbInitDAO {
     private void createTestAttendeeAccount() throws SQLException {
         String passwd = "2411project";
         passwd = Utils.encoding(passwd);
-        String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
-                     "VALUES ('test@polyu.hk', 'user', 'San', 'Zhang', '11451134', '" +
-                passwd + "', 'PolyU HJ202', 'PolyU HJ202', 'Student', 'PolyU')";
+        String[] sqls = {
+            "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
+            "VALUES ('test@polyu.hk', 'user', 'San', 'Zhang', '11451134', '" + passwd + "', 'PolyU HJ202', 'PolyU HJ202', 'Student', 'PolyU')",
+            
+            "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
+            "VALUES ('guest1@example.com', 'user', 'Guest', 'One', '12345678', '" + passwd + "', 'PolyU', 'PolyU', 'Guest', 'Example Org')",
+            
+            "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
+            "VALUES ('student1@polyu.hk', 'user', 'Student', 'One', '87654321', '" + passwd + "', 'PolyU', 'PolyU', 'Student', 'PolyU')"
+            
+        };
 
-        sqlConnection.executeUpdate(sql);
-        System.out.println("Test attendee account created.");
+        for (String sql : sqls) {
+            sqlConnection.executeUpdate(sql);
+        }
+        System.out.println("Test attendee accounts created.");
     }
 
     /**
@@ -148,24 +158,66 @@ public class DbInitDAO {
     }
 
     private void createTestBanquet() throws SQLException {
-        String sql = "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
-                     "VALUES (1, 'Test Banquet', TO_DATE('2024-12-31 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), '15 Fat Kwong Street', 'Hall of HMT', 'San', 'Zhang', 'Y', 100)";
-        sqlConnection.executeUpdate(sql);
-        System.out.println("Test banquet created.");
+        String[] sqls = {
+            "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
+            "VALUES (1, 'Annual Graduation Dinner', TO_DATE('2024-12-31 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), '15 Fat Kwong Street', 'Hall of HMT', 'San', 'Zhang', 'Y', 100)",
+            
+            "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
+            "VALUES (2, 'New Year Celebration', TO_DATE('2024-12-25 19:30:00', 'YYYY-MM-DD HH24:MI:SS'), 'Core A, PolyU', 'Jockey Club Auditorium', 'John', 'Smith', 'Y', 200)",
+            
+            "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
+            "VALUES (3, 'Research Award Ceremony', TO_DATE('2024-11-15 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Core P, PolyU', 'Chung Sze Yuen Building', 'Mary', 'Johnson', 'N', 50)",
+            
+            "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
+            "VALUES (4, 'Alumni Gathering', TO_DATE('2025-01-15 18:30:00', 'YYYY-MM-DD HH24:MI:SS'), 'Hotel ICON', 'Ballroom', 'David', 'Lee', 'Y', 150)",
+            
+            "INSERT INTO Banquet (BIN, Name, DateTime, Address, Location, ContactFirstName, ContactLastName, Available, Quota) " +
+            "VALUES (5, 'Department Dinner', TO_DATE('2024-10-01 19:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'Core Y, PolyU', 'COMP Department', 'Wei', 'Wang', 'Y', 80)"
+        };
+
+        for (String sql : sqls) {
+            sqlConnection.executeUpdate(sql);
+        }
+        System.out.println("Test banquets created.");
     }
 
     private void createTestMealsForBanquet() throws SQLException {
         String[] sqls = {
-            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Grilled Salmon with Lemon Sauce', 'Fish', 150.00, 'French Cuisine')",
-            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Roasted Chicken with Garlic', 'Chicken', 120.00, 'Mediterranean Cuisine')",
-            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Braised Short Ribs', 'Beef', 180.00, 'American Cuisine')",
-            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Kung Pao Tofu', 'Vegetarian', 100.00, 'Chinese Cuisine')"
+            // Meals for Banquet 1 (Annual Graduation Dinner)
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Grilled Salmon', 'Fish', 150.00, 'French Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Beef Tenderloin', 'Beef', 180.00, 'Western Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Vegetarian Lasagna', 'Vegetarian', 120.00, 'Italian Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (1, 'Roasted Chicken', 'Poultry', 130.00, 'American Cuisine')",
+            
+            // Meals for Banquet 2 (New Year Celebration)
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (2, 'Peking Duck', 'Poultry', 180.00, 'Chinese Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (2, 'Steamed Fish', 'Fish', 160.00, 'Cantonese Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (2, 'Buddha Delight', 'Vegetarian', 120.00, 'Chinese Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (2, 'BBQ Pork', 'Pork', 140.00, 'Cantonese Cuisine')",
+            
+            // Meals for Banquet 3 (Research Award Ceremony)
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (3, 'Sushi Platter', 'Fish', 160.00, 'Japanese Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (3, 'Wagyu Beef', 'Beef', 200.00, 'Japanese Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (3, 'Tempura Set', 'Mixed', 150.00, 'Japanese Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (3, 'Tofu Steak', 'Vegetarian', 130.00, 'Japanese Fusion')",
+            
+            // Meals for Banquet 4 (Alumni Gathering)
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (4, 'Lamb Curry', 'Lamb', 170.00, 'Indian Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (4, 'Butter Chicken', 'Poultry', 150.00, 'Indian Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (4, 'Palak Paneer', 'Vegetarian', 130.00, 'Indian Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (4, 'Fish Tikka', 'Fish', 160.00, 'Indian Cuisine')",
+            
+            // Meals for Banquet 5 (Department Dinner)
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (5, 'Seafood Paella', 'Seafood', 190.00, 'Spanish Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (5, 'Grilled Chicken', 'Poultry', 150.00, 'Mediterranean')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (5, 'Vegetable Risotto', 'Vegetarian', 140.00, 'Italian Cuisine')",
+            "INSERT INTO Meal (BanquetBIN, DishName, Type, Price, SpecialCuisine) VALUES (5, 'Beef Tapas', 'Beef', 160.00, 'Spanish Cuisine')"
         };
-    
+
         for (String sql : sqls) {
             sqlConnection.executeUpdate(sql);
         }
-        System.out.println("Test meals for banquet created.");
+        System.out.println("Test meals created.");
     }
 
     /**
@@ -213,11 +265,23 @@ public class DbInitDAO {
         System.out.println("Table Reserve created.");
     }
 
-    private void createTestReserve() throws SQLException {
-        String sql = "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
-                     "VALUES ('test@polyu.hk', 1, 1, CURRENT_TIMESTAMP, 'Cold Lemon Tea', 'Chicken and rice', 'Test')";
-        sqlConnection.executeUpdate(sql);
-        System.out.println("Test reserve created.");
+    private void createTestReserves() throws SQLException {
+        String[] sqls = {
+            "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+            "VALUES ('test@polyu.hk', 1, 1, CURRENT_TIMESTAMP, 'Cold Lemon Tea', 'Chicken and rice', 'Test')",
+            
+            
+            "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+            "VALUES ('guest1@example.com', 1, 4, TIMESTAMP '2024-01-21 10:45:00', 'Iced Tea', 'Roasted Chicken', 'Prefer crispy skin')",
+            
+            "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+            "VALUES ('student1@polyu.hk', 5, 3, TIMESTAMP '2024-01-21 16:30:00', 'Sprite', 'Vegetable Risotto', 'Extra cheese please')"
+        };
+
+        for (String sql : sqls) {
+            sqlConnection.executeUpdate(sql);
+        }
+        System.out.println("Test reserves created.");
     }
 
     private void createTrigger() throws SQLException {
