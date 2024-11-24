@@ -6,8 +6,6 @@ This project is in the early stages of development. The functionality is incompl
 
 ## To Do List
 - Update README
-- Encrypted password storage
-
 
 ## How to Setup
 

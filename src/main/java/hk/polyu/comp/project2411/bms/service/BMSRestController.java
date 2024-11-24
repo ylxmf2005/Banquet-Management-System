@@ -16,6 +16,7 @@ import hk.polyu.comp.project2411.bms.model.AttendeeAccount;
 import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.RegistrationResult;
 import hk.polyu.comp.project2411.bms.model.Reserve;
+import hk.polyu.comp.project2411.bms.model.SearchCriteria;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -451,4 +452,39 @@ public class BMSRestController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
         }
     }
+
+    @POST
+    @Path("/searchRegisteredBanquets")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchRegisteredBanquets(String searchData) {
+        System.out.println("Received request at /searchRegisteredBanquets: " + searchData);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            JsonObject jsonObject = gson.fromJson(searchData, JsonObject.class);
+            String attendeeEmail = jsonObject.get("attendeeEmail").getAsString();
+            SearchCriteria criteria = gson.fromJson(jsonObject.get("criteria"), SearchCriteria.class);
+            
+            if (attendeeEmail == null || attendeeEmail.trim().isEmpty()) {
+                response.put("status", "error");
+                response.put("message", "Attendee email is required");
+                String jsonResponse = gson.toJson(response);
+                return Response.status(Response.Status.BAD_REQUEST).entity(jsonResponse).build();
+            }
+            
+            List<Banquet> banquets = bmsMain.searchRegisteredBanquets(attendeeEmail, criteria);
+            response.put("status", "success");
+            response.put("banquets", banquets);
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
+    
 }

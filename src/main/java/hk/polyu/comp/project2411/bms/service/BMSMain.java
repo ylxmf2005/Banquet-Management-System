@@ -19,6 +19,7 @@ import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.Meal;
 import hk.polyu.comp.project2411.bms.model.RegistrationResult;
 import hk.polyu.comp.project2411.bms.model.Reserve;
+import hk.polyu.comp.project2411.bms.model.SearchCriteria;
 
 public class BMSMain {
     private SQLConnection sqlConnection;
@@ -108,6 +109,10 @@ public class BMSMain {
 
     public RegistrationResult registerForBanquet(Reserve registrationData) throws RegistrationException, SQLException {
         return reserveDao.registerForBanquet(registrationData);
+    }
+
+    public List<Banquet> searchRegisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
+        return attendeeAccountDao.searchRegisteredBanquets(attendeeEmail, criteria);
     }
 
 }

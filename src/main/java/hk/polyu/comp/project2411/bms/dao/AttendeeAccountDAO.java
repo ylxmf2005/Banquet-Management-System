@@ -98,8 +98,9 @@ public class AttendeeAccountDAO {
                 attendeeEmail,
                 criteria.getBanquetNamePart(),
                 criteria.getBanquetNamePart(),
-                criteria.getDate(),
-                criteria.getDate(),
+                // criteria.getDate(),
+                // criteria.getDate(),
+                // startDate, endDate
         };
         List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
 
