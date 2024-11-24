@@ -222,6 +222,32 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
         }
     };
 
+    const handleUnregisterClick = (registration: Registration) => {
+        setRegistrationToUnregister(registration);
+        setOpenUnregisterDialog(true);
+    };
+
+    const handleUnregister = async () => {
+        try {
+            const response = await api.post('/deleteReserve', {
+                attendeeEmail: user.email,
+                banquetBIN: registrationToUnregister!.banquetBIN
+            });
+
+            handleApiResponse(
+                response,
+                () => {
+                    showMessage('Successfully unregistered from the banquet', 'success');
+                    setOpenUnregisterDialog(false);
+                    handleSearch();
+                },
+                'unregistering from banquet'
+            );
+        } catch (error: any) {
+            handleApiError(error, 'unregistering from banquet');
+        }
+    };
+
     const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
         setUpdateData((prevData) => ({
