@@ -431,12 +431,14 @@ public class BMSRestController {
             return Response.status(Response.Status.BAD_REQUEST).entity(jsonResponse).build();
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
+            e.printStackTrace();
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
             response.put("status", "error");
             response.put("message", e.getMessage());
             String jsonResponse = gson.toJson(response);

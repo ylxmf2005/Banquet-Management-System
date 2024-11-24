@@ -21,7 +21,7 @@ import {
     SelectChangeEvent,
 } from '@mui/material';
 import * as yup from 'yup';
-import { registrationSchemaForUser } from '../utils/validationSchemas'
+import { registrationSchemaForUser } from '../utils/validationSchemas';
 import { AlertColor } from '@mui/material';
 import api from '../service/api';
 import { Meal, Banquet, User } from '../utils/types';
@@ -38,7 +38,6 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
     const [selectedBanquet, setSelectedBanquet] = useState<Banquet | null>(null);
     const [openRegistrationDialog, setOpenRegistrationDialog] = useState(false);
     const [registrationData, setRegistrationData] = useState({
-        // seatNo: '',  // 移除 seatNo 字段
         drinkChoice: '',
         mealChoice: '',
         remarks: '',
@@ -85,7 +84,7 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
                     setBanquets(banquets);
                     setLoading(false);
                 },
-                'fetching available banquets',
+                'fetching available banquets'
             );
         } catch (error: any) {
             handleApiError(error, 'fetching available banquets');
@@ -96,7 +95,6 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
     const handleRegisterClick = (banquet: Banquet) => {
         setSelectedBanquet(banquet);
         setRegistrationData({
-            // seatNo: '',  // 移除 seatNo 字段
             drinkChoice: '',
             mealChoice: '',
             remarks: '',
@@ -140,11 +138,17 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
 
                 handleApiResponse(
                     response,
-                    () => {
-                        setOpenRegistrationDialog(false);
-                        fetchBanquets(); // Refresh the list of banquets
+                    (data: any) => {
+                        const registrationResult = data.registrationResult;
+                        if (registrationResult.success) {
+                            setOpenRegistrationDialog(false);
+                            fetchBanquets(); // Refresh the list of banquets
+                            showMessage(registrationResult.message, 'success');
+                        } else {
+                            showMessage(registrationResult.message || 'Registration failed', 'error');
+                        }
                     },
-                    'registering for banquet',
+                    'registering for banquet'
                 );
             } catch (error) {
                 handleApiError(error, 'registering for banquet');
