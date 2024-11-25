@@ -508,4 +508,31 @@ public class BMSRestController {
         }
     }
 
+    @GET
+    @Path("/getReservationsByBIN")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getReservationsByBIN(@QueryParam("banquetBIN") int banquetBIN) {
+        System.out.println("Received request at /getReservationsByBIN: " + banquetBIN);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Reserve> reserves = bmsMain.getReservationsByBIN(banquetBIN);
+            // 打印调试信息
+            System.out.println("Found reservations: " + reserves);
+            
+            response.put("status", "success");
+            response.put("registrations", reserves); // Gson 会自动将对象转换为 JSON
+            String jsonResponse = gson.toJson(response);
+            System.out.println("Sending response: " + jsonResponse); // 打印发送的响应
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                          .entity(jsonResponse)
+                          .build();
+        }
+    }
+
 }

@@ -23,8 +23,8 @@ import {
 } from '@mui/material';
 import * as yup from 'yup';
 import { AlertColor } from '@mui/material';
-import api from '../service/api';
-import { Meal, Banquet, User } from '../utils/types';
+import api from '../../service/api';
+import { Meal, Banquet, User } from '../../utils/types';
 
 interface MyRegistrationsTabProps {
     showMessage: (message: string, severity?: AlertColor) => void;

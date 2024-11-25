@@ -268,14 +268,28 @@ public class DbInitDAO {
     private void createTestReserves() throws SQLException {
         String[] sqls = {
             "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
-            "VALUES ('test@polyu.hk', 1, 1, CURRENT_TIMESTAMP, 'Cold Lemon Tea', 'Chicken and rice', 'Test')",
+            "VALUES ('test@polyu.hk', 1, 1, CURRENT_TIMESTAMP, 'Cold Lemon Tea', 'Grilled Salmon', 'Test')",
             
+            "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+            "VALUES ('test@polyu.hk', 2, 5, TIMESTAMP '2024-01-20 14:30:00', 'Orange Juice', 'Peking Duck', 'No spicy')",
+            
+            "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+            "VALUES ('test@polyu.hk', 4, 8, TIMESTAMP '2024-01-22 09:15:00', 'Coca Cola', 'Lamb Curry', 'Medium spicy')",
             
             "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
             "VALUES ('guest1@example.com', 1, 4, TIMESTAMP '2024-01-21 10:45:00', 'Iced Tea', 'Roasted Chicken', 'Prefer crispy skin')",
             
             "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
-            "VALUES ('student1@polyu.hk', 5, 3, TIMESTAMP '2024-01-21 16:30:00', 'Sprite', 'Vegetable Risotto', 'Extra cheese please')"
+            "VALUES ('guest1@example.com', 5, 12, TIMESTAMP '2024-01-21 11:20:00', 'Sprite', 'Seafood Paella', 'Extra seafood')",
+            
+            "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+            "VALUES ('student1@polyu.hk', 5, 3, TIMESTAMP '2024-01-21 16:30:00', 'Sprite', 'Vegetable Risotto', 'Extra cheese please')",
+            
+            "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+            "VALUES ('student1@polyu.hk', 2, 15, TIMESTAMP '2024-01-21 17:45:00', 'Green Tea', 'Buddha Delight', 'No mushrooms')",
+            
+            "INSERT INTO Reserve (AttendeeEmail, BanquetBIN, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+            "VALUES ('student1@polyu.hk', 4, 20, TIMESTAMP '2024-01-22 10:00:00', 'Mango Juice', 'Butter Chicken', 'Extra naan bread')"
         };
 
         for (String sql : sqls) {

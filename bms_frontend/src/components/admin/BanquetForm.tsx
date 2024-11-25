@@ -17,7 +17,7 @@ import {
     Button,
     Typography,
 } from '@mui/material';
-import { Banquet, Meal } from '../utils/types';
+import { Banquet, Meal } from '../../utils/types';
 
 // Props interface for BanquetForm
 interface BanquetFormProps {

@@ -33,14 +33,33 @@ export const attendeeSchema = Yup.object().shape({
 // Registration validation schema
 export const registrationSchemaForAdmin = Yup.object().shape({
     seatNo: Yup.number()
-        .required('Seat number is required.')
-        .positive('Seat number must be a positive integer.')
-        .integer('Seat number must be a positive integer.'),
+        .required('Seat number is required')
+        .typeError('Seat number must be a number')
+        .positive('Seat number must be a positive integer')
+        .integer('Seat number must be a positive integer'),
     drinkChoice: Yup.string()
-        .required('This field is required.'),
+        .required('Drink choice is required')
+        .nullable()
+        .transform((value) => (value === '' ? null : value))
+        .test('drink-choice', 'Invalid drink choice', function(value) {
+            return value !== null;
+        }),
     mealChoice: Yup.string()
-        .required('This field is required.'),
-    remarks: Yup.string(),
+        .required('Meal choice is required')
+        .nullable()
+        .transform((value) => (value === '' ? null : value))
+        .test('meal-choice', 'Invalid meal choice', function(value) {
+            return value !== null;
+        }),
+    remarks: Yup.string()
+        .nullable()
+        .transform((value) => (value === '' ? null : value)),
+    banquetBIN: Yup.number()
+        .required('Banquet BIN is required')
+        .positive('Invalid banquet BIN'),
+    attendeeEmail: Yup.string()
+        .required('Attendee email is required')
+        .email('Invalid email format'),
 });
 
 export const registrationSchemaForUser = Yup.object().shape({

@@ -1,27 +1,56 @@
 // src/components/BanquetManagement.tsx
 'use client';
 
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { Box, Button } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
-import { Banquet } from '../utils/types'; 
-import { SnackbarContext } from '../context/SnackbarContext'; 
-import BanquetList from './BanquetList';
-import BanquetForm from './BanquetForm';
-import { formatDateTimeForInput } from '../utils/utils'; 
-import { banquetSchema } from '../utils/validationSchemas'; 
-import * as Yup from 'yup'; 
-import api from '../service/api'; 
+import { Banquet } from '../../utils/types';
+import { SnackbarContext } from '../../context/SnackbarContext';
+import BanquetList from '../admin/BanquetList';
+import BanquetForm from '../admin/BanquetForm';
+import { formatDateTimeForInput } from '../../utils/utils';
+import { banquetSchema } from '../../utils/validationSchemas';
+import * as Yup from 'yup';
+import api from '../../service/api';
+import { debounce } from 'lodash';
 
 // BanquetManagement Component
 export default function BanquetManagement() {
-    // State to hold the list of banquets
     const [banquets, setBanquets] = useState<Banquet[]>([]);
-    const [loading, setLoading] = useState(true); // Loading state for data fetch
+    const [loading, setLoading] = useState(true);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [columns, setColumns] = useState<GridColDef[]>([]);
+    const [errors, setErrors] = useState<{ [key: string]: any }>({});
+    const { showMessage } = useContext(SnackbarContext);
+    
+    const debouncedFetchBanquets = useCallback(
+        debounce(async () => {
+            setLoading(true);
+            try {
+                const response = await api.get('/getAllBanquets');
+                const data = response.data.banquets || [];
 
-    // Dialog control states
-    const [openDialog, setOpenDialog] = useState(false); // Controls whether the banquet form dialog is open
-    const [isEditing, setIsEditing] = useState(false); // Determines if the form is in editing mode
+                const fetchedBanquets = data.map((banquet: Banquet) => ({
+                    ...banquet,
+                    meals: banquet.meals?.length > 0
+                        ? banquet.meals
+                        : Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }),
+                }));
+
+                setBanquets(fetchedBanquets);
+                calculateColumnWidths(fetchedBanquets);
+            } catch (error: any) {
+                handleApiError(error, 'fetching banquets');
+            }
+            setLoading(false);
+        }, 500),
+        []
+    );
+
+    useEffect(() => {
+        debouncedFetchBanquets();
+    }, [debouncedFetchBanquets]);
 
     // Selected banquet for editing or creating
     const [selectedBanquet, setSelectedBanquet] = useState<Banquet>({
@@ -36,42 +65,6 @@ export default function BanquetManagement() {
         quota: 0,
         meals: Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }), // Initialize meals with 4 empty meal objects
     });
-
-    // State to hold validation errors, including errors for meals
-    const [errors, setErrors] = useState<{ [key: string]: any }>({});
-
-    // Get showMessage function from SnackbarContext for displaying notifications
-    const { showMessage } = useContext(SnackbarContext);
-
-    // Fetch banquets when the component mounts
-    useEffect(() => {
-        fetchBanquets();
-    }, []);
-
-    // Function to fetch banquets from the backend
-    const fetchBanquets = async () => {
-        setLoading(true);
-        try {
-            const response = await api.get('/getAllBanquets');
-            const data = response.data.banquets || [];
-
-            const fetchedBanquets = data.map((banquet: Banquet) => ({
-                ...banquet,
-                meals: banquet.meals?.length > 0 
-                    ? banquet.meals 
-                    : Array(4).fill({ type: '', dishName: '', price: NaN, specialCuisine: '' }),
-            }));
-
-            setBanquets(fetchedBanquets);
-            calculateColumnWidths(fetchedBanquets);
-        } catch (error: any) {
-            handleApiError(error, 'fetching banquets');
-        }
-        setLoading(false);
-    };
-
-    // State to hold column definitions for the DataGrid
-    const [columns, setColumns] = useState<GridColDef[]>([]);
 
     // Function to calculate column widths based on content
     const calculateColumnWidths = (data: Banquet[]) => {
@@ -160,7 +153,7 @@ export default function BanquetManagement() {
     const handleDeleteBanquet = async (banquetBIN: number) => {
         try {
             const response = await api.post('/deleteBanquet', { banquetBIN });
-            handleApiResponse(response.data, 'Banquet deleted successfully!', 'delete banquet', fetchBanquets);
+            handleApiResponse(response.data, 'Banquet deleted successfully!', 'delete banquet', debouncedFetchBanquets);
         } catch (error: any) {
             handleApiError(error, 'deleting banquet');
         }
@@ -234,7 +227,7 @@ export default function BanquetManagement() {
                     'Banquet updated successfully!',
                     'update banquet',
                     () => {
-                        fetchBanquets();
+                        debouncedFetchBanquets();
                         handleDialogClose();
                     }
                 );
@@ -249,7 +242,7 @@ export default function BanquetManagement() {
                     'Banquet created successfully!',
                     'create banquet',
                     () => {
-                        fetchBanquets();
+                        debouncedFetchBanquets();
                         handleDialogClose();
                     }
                 );
@@ -285,12 +278,21 @@ export default function BanquetManagement() {
         successCallback?: Function
     ) => {
         if (response.status === 'success') {
-            if (successCallback) successCallback(); // Execute any provided success callback
-            handleApiSuccess(successMessage); // Display success message
+            if (action === 'create banquet' || action === 'delete banquet') {
+                debouncedFetchBanquets();
+            } else if (action === 'update banquet') {
+                setBanquets(prevBanquets =>
+                    prevBanquets.map(b =>
+                        b.BIN === response.data.banquet.BIN ? response.data.banquet : b
+                    )
+                );
+            }
+            if (successCallback) successCallback();
+            handleApiSuccess(successMessage);
         } else {
             console.log(`Failed to ${action}:`, response.message);
             const message = `Failed to ${action}: ${response.message}`;
-            showMessage(message, 'error'); // Display error message
+            showMessage(message, 'error');
         }
     };
 

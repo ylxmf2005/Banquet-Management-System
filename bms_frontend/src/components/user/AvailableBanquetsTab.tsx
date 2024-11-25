@@ -21,10 +21,10 @@ import {
     SelectChangeEvent,
 } from '@mui/material';
 import * as yup from 'yup';
-import { registrationSchemaForUser } from '../utils/validationSchemas';
+import { registrationSchemaForUser } from '../../utils/validationSchemas';
 import { AlertColor } from '@mui/material';
-import api from '../service/api';
-import { Meal, Banquet, User } from '../utils/types';
+import api from '../../service/api';
+import { Meal, Banquet, User } from '../../utils/types';
 
 interface AvailableBanquetsTabProps {
     showMessage: (message: string, severity?: AlertColor) => void;

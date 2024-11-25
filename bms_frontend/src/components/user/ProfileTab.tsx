@@ -13,11 +13,11 @@ import {
     InputLabel,
     SelectChangeEvent,
 } from '@mui/material';
-import api from '../service/api';
+import api from '../../service/api';
 import * as yup from 'yup';
 import { AlertColor } from '@mui/material';
-import { attendeeSchema } from '../utils/validationSchemas';
-import { Attendee } from '../utils/types';
+import { attendeeSchema } from '../../utils/validationSchemas';
+import { Attendee } from '../../utils/types';
 
 interface User {
     email: string;

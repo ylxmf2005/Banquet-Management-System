@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Box, Typography, TextField, Button, Stack } from '@mui/material';
-import { Attendee } from '../utils/types';
+import { Attendee } from '../../utils/types';
 
 interface AttendeeFormProps {
     attendee: Attendee;

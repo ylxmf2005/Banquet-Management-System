@@ -119,4 +119,8 @@ public class BMSMain {
         return banquetDao.getBanquetByBIN(BIN);
     }
 
+    public List<Reserve> getReservationsByBIN(int banquetBIN) throws SQLException {
+        return reserveDao.getReservationsByBIN(banquetBIN);
+    }
+
 }

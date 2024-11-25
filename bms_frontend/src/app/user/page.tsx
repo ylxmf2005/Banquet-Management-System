@@ -12,9 +12,9 @@ import {
     Tab,
     Container,
 } from '@mui/material';
-import ProfileTab from '../../components/ProfileTab';
-import AvailableBanquetsTab from '../../components/AvailableBanquetsTab';
-import MyRegistrationsTab from '../../components/MyRegistrationsTab';
+import ProfileTab from '../../components/user/ProfileTab';
+import AvailableBanquetsTab from '../../components/user/AvailableBanquetsTab';
+import MyRegistrationsTab from '../../components/user/MyRegistrationsTab';
 
 const UserPage: React.FC = () => {
     const { user } = useContext(AuthContext)!;

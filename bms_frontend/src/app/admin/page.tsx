@@ -10,8 +10,9 @@ import {
     Tab,
     Container,
 } from '@mui/material';
-import BanquetManagement from '../../components/BanquetManagement';
-import AttendeeManagement from '../../components/AttendeeManagement';
+import BanquetManagement from '../../components/admin/BanquetManagement';
+import AttendeeManagement from '../../components/admin/AttendeeManagement';
+import RegistrationManagement from '../../components/admin/RegistrationManagement';
 
 export default function AdminPage() {
     const auth = useContext(AuthContext);
@@ -44,11 +45,13 @@ export default function AdminPage() {
                 >
                     <Tab label="Banquet Management" />
                     <Tab label="Attendee Management" />
+                    <Tab label="Registration Management" />
                 </Tabs>
             </AppBar>
             {/* Render components based on the selected tab */}
             {tabIndex === 0 && <BanquetManagement />}
             {tabIndex === 1 && <AttendeeManagement />}
+            {tabIndex === 2 && <RegistrationManagement />}
         </Container>
     );
 }

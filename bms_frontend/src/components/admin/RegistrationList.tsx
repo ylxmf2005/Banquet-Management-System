@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { Registration } from '../utils/types';
+import { Registration } from '../../utils/types';
 import RegistrationItem from './RegistrationItem';
 
 interface RegistrationListProps {
@@ -13,6 +13,7 @@ interface RegistrationListProps {
     onRegistrationChange: (index: number, field: string, value: any) => void;
     onUpdateRegistration: (index: number) => void;
     onDeleteRegistration: (index: number) => void;
+    showEmail?: boolean;
 }
 
 const RegistrationList: React.FC<RegistrationListProps> = ({
@@ -22,6 +23,7 @@ const RegistrationList: React.FC<RegistrationListProps> = ({
     onRegistrationChange,
     onUpdateRegistration,
     onDeleteRegistration,
+    showEmail,
 }) => {
     return (
         <Box sx={{ mt: 4 }}>

@@ -112,4 +112,15 @@ public class ReserveDAO {
         else return new RegistrationResult(false, "You have not successfully registered the banquet.");
     }
 
+    public List<Reserve> getReservationsByBIN(int banquetBIN) throws SQLException {
+        String sql = "SELECT * FROM Reserve WHERE BanquetBIN=? ORDER BY SeatNo ASC";
+        Object[] params = {banquetBIN};
+        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
+        List<Reserve> reserves = new ArrayList<>();
+        for (Map<String, Object> result : results) {
+            reserves.add(new Reserve(result));
+        }
+        return reserves;
+    }
+
 }

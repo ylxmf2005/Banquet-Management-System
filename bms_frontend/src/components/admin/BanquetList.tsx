@@ -4,7 +4,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { Banquet } from '../utils/types';
+import { Banquet } from '../../utils/types';
 
 // Props interface for BanquetList
 interface BanquetListProps {
