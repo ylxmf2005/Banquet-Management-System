@@ -123,5 +123,13 @@ public class AttendeeAccountDAO {
         }
         return reservations;
     }
+
+    public boolean deleteAttendee(String email) throws SQLException {
+        String sql = "DELETE FROM Account WHERE Email = ? AND Role = 'user'";
+        Object[] params = new Object[] { email };
+        
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
+        return rowsAffected > 0;
+    }
 }
 

@@ -10,6 +10,7 @@ interface AttendeeFormProps {
     errors: { [key: string]: string };
     successMessage: string;
     onUpdate: () => void;
+    onDelete: () => void;
     onChange: (field: string, value: any) => void;
 }
 
@@ -18,6 +19,7 @@ const AttendeeForm: React.FC<AttendeeFormProps> = ({
     errors,
     successMessage,
     onUpdate,
+    onDelete,
     onChange,
 }) => {
     return (
@@ -141,15 +143,23 @@ const AttendeeForm: React.FC<AttendeeFormProps> = ({
                 <Typography sx={{ mt: 2, color: 'green' }}>{successMessage}</Typography>
             )}
 
-            {/* Button to update attendee information */}
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={onUpdate}
-                sx={{ mt: 2 }}
-            >
-                Update Attendee
-            </Button>
+            {/* Buttons for update and delete */}
+            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={onUpdate}
+                >
+                    Update Attendee
+                </Button>
+                <Button
+                    variant="contained"
+                    color="error"
+                    onClick={onDelete}
+                >
+                    Delete Attendee
+                </Button>
+            </Stack>
         </Box>
     );
 };

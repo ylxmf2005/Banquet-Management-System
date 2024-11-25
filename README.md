@@ -212,5 +212,5 @@ When the number of banquets exceeds the maximum display limit per page, you can 
 
 #### 1. Search Attendee By Email
 
-![image-20241125221349338](https://s2.loli.net/2024/11/25/dcGspH6aqvReIho.png)
+<img src=https://s2.loli.net/2024/11/25/5Swa2p9yCJbZ3oB.png width="80%" />
 

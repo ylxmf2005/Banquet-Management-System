@@ -44,7 +44,8 @@ public class BMSMain {
         this.reportDAO = new ReportDAO(sqlConnection);
         
         // Create the tables if not exists
-        initDatabase(false);
+        initDatabase(true);
+        // initDatabase(false);
     }
 
     // Close the SQLConnection when done
@@ -130,6 +131,10 @@ public class BMSMain {
 
     public File generateReport() throws Exception {
         return reportDAO.generateReport();
+    }
+
+    public boolean deleteAttendee(String email) throws SQLException {
+        return attendeeAccountDao.deleteAttendee(email);
     }
 
 }

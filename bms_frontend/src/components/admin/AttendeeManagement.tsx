@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useContext } from 'react';
-import { Box } from '@mui/material';
+import { Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
 import { Attendee, Registration } from '../../utils/types';
 import AttendeeSearch from './AttendeeSearch';
 import AttendeeForm from './AttendeeForm';
@@ -35,6 +35,12 @@ export default function AttendeeManagement() {
     }>({});
 
     const [searchError, setSearchError] = useState<string>('');
+
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+    // Add states for registration deletion dialog
+    const [openDeleteRegistrationDialog, setOpenDeleteRegistrationDialog] = useState(false);
+    const [registrationIndexToDelete, setRegistrationIndexToDelete] = useState<number | null>(null);
 
     const handleApiResponse = (
         response: any,
@@ -139,6 +145,36 @@ export default function AttendeeManagement() {
         }
     };
 
+    // Handle delete confirmation
+    const handleDeleteClick = () => {
+        setOpenDeleteDialog(true);
+    };
+
+    // Handle actual deletion
+    const handleDelete = async () => {
+        if (!attendee) return;
+
+        try {
+            const response = await api.post('/deleteAttendee', {
+                email: attendee.email
+            });
+            
+            handleApiResponse(
+                response,
+                () => {
+                    showMessage('Attendee deleted successfully.', 'success');
+                    setAttendee(null);
+                    setRegistrations([]);
+                    setOpenDeleteDialog(false);
+                },
+                'deleting attendee'
+            );
+        } catch (error) {
+            handleApiError(error, 'deleting attendee');
+            setOpenDeleteDialog(false);
+        }
+    };
+
     // Handle attendee field change
     const handleAttendeeChange = (field: string, value: any) => {
         if (attendee) {
@@ -203,14 +239,20 @@ export default function AttendeeManagement() {
         }
     };
 
-    // Handle deletion of a registration
-    const handleDeleteRegistration = async (index: number) => {
-        const registration = registrations[index];
+    const handleDeleteRegistrationClick = (index: number) => {
+        setRegistrationIndexToDelete(index);
+        setOpenDeleteRegistrationDialog(true);
+    };
+
+    const handleDeleteRegistrationConfirm = async () => {
+        if (registrationIndexToDelete === null) return;
+
+        const registration = registrations[registrationIndexToDelete];
         if (!registration) return;
 
         setRegistrationErrors((prev) => {
             const newErrors = { ...prev };
-            delete newErrors[index];
+            delete newErrors[registrationIndexToDelete];
             return newErrors;
         });
 
@@ -223,14 +265,18 @@ export default function AttendeeManagement() {
                 response,
                 () => {
                     const updatedRegistrations = [...registrations];
-                    updatedRegistrations.splice(index, 1);
+                    updatedRegistrations.splice(registrationIndexToDelete, 1);
                     setRegistrations(updatedRegistrations);
                     showMessage('Registration deleted successfully.', 'success');
+                    setOpenDeleteRegistrationDialog(false);
+                    setRegistrationIndexToDelete(null);
                 },
                 'deleting registration'
             );
         } catch (error) {
             handleApiError(error, 'deleting registration');
+            setOpenDeleteRegistrationDialog(false);
+            setRegistrationIndexToDelete(null);
         }
     };
 
@@ -250,6 +296,7 @@ export default function AttendeeManagement() {
                         attendee={attendee}
                         errors={errors}
                         onUpdate={handleUpdateAttendee}
+                        onDelete={handleDeleteClick}
                         onChange={handleAttendeeChange}
                         successMessage=""
                     />
@@ -262,11 +309,63 @@ export default function AttendeeManagement() {
                             registrationSuccessMessages={registrationSuccessMessages}
                             onRegistrationChange={handleRegistrationChange}
                             onUpdateRegistration={handleUpdateRegistration}
-                            onDeleteRegistration={handleDeleteRegistration}
+                            onDeleteRegistration={handleDeleteRegistrationClick}
                         />
                     )}
                 </>
             )}
+
+            {/* Delete confirmation dialog */}
+            <Dialog
+                open={openDeleteDialog}
+                onClose={() => setOpenDeleteDialog(false)}
+            >
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete the attendee {attendee?.email}? 
+                        This action cannot be undone and will delete all associated registrations.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+                    <Button 
+                        onClick={handleDelete} 
+                        color="error" 
+                        variant="contained"
+                    >
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Registration delete confirmation dialog */}
+            <Dialog
+                open={openDeleteRegistrationDialog}
+                onClose={() => setOpenDeleteRegistrationDialog(false)}
+            >
+                <DialogTitle>Confirm Registration Deletion</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this registration for banquet{' '}
+                        {registrationIndexToDelete !== null && 
+                            registrations[registrationIndexToDelete]?.banquetBIN}?
+                        This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteRegistrationDialog(false)}>
+                        Cancel
+                    </Button>
+                    <Button 
+                        onClick={handleDeleteRegistrationConfirm}
+                        color="error" 
+                        variant="contained"
+                    >
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

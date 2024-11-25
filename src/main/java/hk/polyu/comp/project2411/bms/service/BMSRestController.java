@@ -517,7 +517,6 @@ public class BMSRestController {
         Map<String, Object> response = new HashMap<>();
         try {
             List<Reserve> reserves = bmsMain.getReservationsByBIN(banquetBIN);
-            // 打印调试信息
             System.out.println("Found reservations: " + reserves);
             
             response.put("status", "success");
@@ -559,5 +558,34 @@ public class BMSRestController {
                           .build();
         }
     }
-    
+
+    @POST
+    @Path("/deleteAttendee")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteAttendee(String requestData) {
+        System.out.println("Received request at /deleteAttendee: " + requestData);
+        Map<String, Object> response = new HashMap<>();
+        try {
+            JsonObject jsonObject = gson.fromJson(requestData, JsonObject.class);
+            String email = jsonObject.get("email").getAsString();
+            boolean result = bmsMain.deleteAttendee(email);
+            response.put("status", result ? "success" : "failure");
+            String jsonResponse = gson.toJson(response);
+            return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonResponse).build();
+        }
+    }
+
 }
