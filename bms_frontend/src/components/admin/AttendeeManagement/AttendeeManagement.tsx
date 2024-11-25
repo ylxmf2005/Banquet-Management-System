@@ -3,14 +3,14 @@
 
 import React, { useState, useContext } from 'react';
 import { Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
-import { Attendee, Registration } from '../../utils/types';
+import { Attendee, Registration } from '../../../utils/types';
 import AttendeeSearch from './AttendeeSearch';
 import AttendeeForm from './AttendeeForm';
 import RegistrationList from './RegistrationList';
-import { attendeeSchema, registrationSchemaForAdmin } from '../../utils/validationSchemas';
+import { attendeeSchema, registrationSchemaForAdmin } from '../../../utils/validationSchemas';
 import * as Yup from 'yup';
-import { SnackbarContext } from '../../context/SnackbarContext'; 
-import api from '../../service/api';
+import { SnackbarContext } from '../../../context/SnackbarContext'; 
+import api from '../../../service/api';
 
 
 export default function AttendeeManagement() {

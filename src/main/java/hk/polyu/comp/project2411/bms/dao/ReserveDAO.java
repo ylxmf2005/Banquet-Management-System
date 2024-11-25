@@ -86,30 +86,75 @@ public class ReserveDAO {
     }
 
     public int getAvailableSeatNo(Banquet banquet) throws SQLException {
-        String sql = "SELECT SeatNo FROM Reserve WHERE BanquetBIN=? ORDER BY SeatNo ASC";
+        // Lock and get all seat numbers for this banquet
+        String sql = "SELECT SeatNo FROM Reserve WHERE BanquetBIN=? ORDER BY SeatNo ASC FOR UPDATE";
         Object[] params = new Object[] { banquet.getBIN() };
         List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
+        
         if(results.isEmpty()) return 1;
+        
+        // Find the first available seat number
         int cur = 1;
         for(Map<String, Object> result : results) {
-            if(cur == ((Number) result.get("SEATNO")).intValue()) cur ++;
-            else break;
+            int seatNo = ((Number) result.get("SEATNO")).intValue();
+            if(cur < seatNo) {
+                break;
+            }
+            cur = seatNo + 1;
         }
         return cur;
     }
 
     public RegistrationResult registerForBanquet(Reserve registrationData) throws RegistrationException, SQLException {
-        
-        Banquet curBan = getBanquet(registrationData.getBanquetBIN());
-        if(curBan == null) throw new RegistrationException("Banquet not found");
-        if(getRegisteredNumberForBanquet(registrationData.getBanquetBIN()) >= curBan.getQuota())
-            throw new RegistrationException("The quota of the banquet is not enough");
-        int curSeatNo = getAvailableSeatNo(curBan);
-        registrationData.setSeatNo(curSeatNo);
-        if(insertAttendeeRegistrationData(registrationData)) {
-            return new RegistrationResult(true, "You have successfully registered the banquet.");
+        try {
+            sqlConnection.beginTransaction();
+            
+            String lockSql = "SELECT * FROM Banquet WHERE BIN=? FOR UPDATE";
+            Object[] lockParams = new Object[]{ registrationData.getBanquetBIN() };
+            List<Map<String, Object>> result = sqlConnection.executePreparedQuery(lockSql, lockParams);
+            
+            if(result.isEmpty()) {
+                throw new RegistrationException("Banquet not found");
+            }
+            
+            Banquet curBan = new Banquet(result.get(0));
+            
+            String countSql = "SELECT COUNT(*) AS cnt FROM Reserve WHERE BanquetBIN=? FOR UPDATE";
+            Object[] countParams = {registrationData.getBanquetBIN()};
+            List<Map<String, Object>> countResult = sqlConnection.executePreparedQuery(countSql, countParams);
+            int currentRegistrations = ((Number) countResult.get(0).get("CNT")).intValue();
+            
+            if(currentRegistrations >= curBan.getQuota()) {
+                throw new RegistrationException("The quota of the banquet is not enough");
+            }
+            
+            String checkDupSql = "SELECT COUNT(*) AS cnt FROM Reserve WHERE BanquetBIN=? AND AttendeeEmail=? FOR UPDATE";
+            Object[] checkDupParams = {registrationData.getBanquetBIN(), registrationData.getAttendeeEmail()};
+            List<Map<String, Object>> dupResult = sqlConnection.executePreparedQuery(checkDupSql, checkDupParams);
+            if (((Number) dupResult.get(0).get("CNT")).intValue() > 0) {
+                throw new RegistrationException("You have already registered for this banquet");
+            }
+            
+            int curSeatNo = getAvailableSeatNo(curBan);
+            registrationData.setSeatNo(curSeatNo);
+            
+            boolean success = insertAttendeeRegistrationData(registrationData);
+            
+            if(success) {
+                sqlConnection.commitTransaction();
+                return new RegistrationResult(true, "You have successfully registered the banquet.");
+            } else {
+                sqlConnection.rollbackTransaction();
+                return new RegistrationResult(false, "Registration failed due to system error.");
+            }
+            
+        } catch (SQLException e) {
+            sqlConnection.rollbackTransaction();
+            throw e;
+        } catch (RegistrationException e) {
+            sqlConnection.rollbackTransaction();
+            throw e;
         }
-        else return new RegistrationResult(false, "You have not successfully registered the banquet.");
     }
 
     public List<Reserve> getReservationsByBIN(int banquetBIN) throws SQLException {

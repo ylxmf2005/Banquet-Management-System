@@ -137,7 +137,13 @@ npm run build
 
 
 
-## Admin Console
+## Registration
+
+
+
+
+
+## Admin Page
 
 ### Banquet Management
 
@@ -157,7 +163,7 @@ Common errors:
 
 - Input format error:
 
-  <img src="https://s2.loli.net/2024/11/25/wSDsolBb54aPtNj.png" width="50%" />
+  <img src="https://s2.loli.net/2024/11/25/wSDsolBb54aPtNj.png" width="30%" />
 
 - Input length is too long:
 
@@ -165,7 +171,9 @@ Common errors:
 
 - There are two identical dish names:
 
-  ![](https://s2.loli.net/2024/11/25/w9HEBMJ4rq2LtWy.png)
+  <img src="https://s2.loli.net/2024/11/25/w9HEBMJ4rq2LtWy.png" width="90%" />
+
+If an error occurs during the creation of a meal, the already created banquet and its associated meals will also be rolled back to maintain consistency.
 
 #### 2. Menu
 
@@ -187,20 +195,20 @@ This button allows you to:
 
 <img src="https://s2.loli.net/2024/11/25/4yujtnpNc7ob8x5.png" width="80%" />
 
-It's similar to [create new banquet](#create-new-banquet).
+It's similar to [Create New Banquet](#1-create-new-banquet).
 
 Additional Note:
 
 - If you change a banquet's status from available to unavailable, any existing registrations for that banquet will remain unaffected. Attendees already registered will not be automatically removed.
 - It is not recommended to modify a dish name that attendees have already selected in their registrations. If you need to make such changes, ensure you notify the attendees to reselect their meal or update the registrations manually via the Registration Management Tab.
 
-#### 4. DELETE
+#### 4. Delete
 
 <img src="https://s2.loli.net/2024/11/25/E2KHOtQnhiD9Mec.png" width="80%" />
 
 Before deletion, confirmation is required. 
 
-Note that registrations related to the banquet will also be deleted.
+Note that meals and registrations related to the banquet will also be deleted.
 
 #### 5. Previous/Next Page
 
@@ -210,7 +218,74 @@ When the number of banquets exceeds the maximum display limit per page, you can 
 
 ### Attendee Management
 
+<img src="https://s2.loli.net/2024/11/25/y8QK34fasPmDwtM.png" width="80%"/>
+
 #### 1. Search Attendee By Email
 
-<img src=https://s2.loli.net/2024/11/25/5Swa2p9yCJbZ3oB.png width="80%" />
+When an attendee cannot be found, the system will display the following message:
 
+<img src="https://s2.loli.net/2024/11/25/C1FLVwHQA2gWqvO.png" width = "30%" />
+
+#### 2. Update Attendee
+
+- Updating attendee information follows the same constraints as when registering a new attendee.
+
+- The password cannot be viewed (Because the database encrypted storage password) but can be reset to a new one.
+
+#### 3. Delete Attendee
+
+- Deleting an attendee will also delete all banquet registrations associated with them.
+
+- The seat assigned to the attendee will be automatically released for reuse.
+
+#### 4. Update Attendee's Registration
+
+<img src="https://s2.loli.net/2024/11/25/DKfasCnQHzqrO63.png" width="80%"/>
+
+- The registration time cannot be modified.
+
+- Only one of the four pre-configured meal options for the banquet can be selected.
+
+- When updating an attendee's seat number:
+
+  - Ensure the new seat number does not conflict with any already assigned seat numbers for the same banquet.
+
+  - If a conflict occurs, the update will fail and an error meessage will be displayed
+
+    ![image-20241125234823316](https://s2.loli.net/2024/11/25/2R4F7odBUbqH5W3.png)
+
+#### 5. Delete Attendee's Registration
+
+When deleting an attendee's registration, the seat assigned to the attendee for that registration will be automatically released for reuse.
+
+
+
+### Registration Management
+
+![](https://s2.loli.net/2024/11/26/fYWxKl1gUDqTt2v.png)
+
+The system generates visual statistics for drink choice and meal choice. These bar charts provide an overview of attendee preferences.
+
+#### 1. Search Registrations By BIN
+
+Use this feature to manage registrations for a specific banquet.
+
+#### 2. Edit Registration
+
+It's similar to [Update Attendee's Registration](#4-update-attendees-registration)
+
+#### 3. Delete Registration
+
+It's similar to [Delete Attendee's Registration](#5-delete-attendees-registration).
+
+
+
+### Report Generation
+
+![](https://s2.loli.net/2024/11/26/aHnfNJL1he9Vu8z.png)
+
+Press the `DOWNLOAD REPORT` button, and the report PDF will be generated and downloaded automatically.
+
+
+
+## User Page

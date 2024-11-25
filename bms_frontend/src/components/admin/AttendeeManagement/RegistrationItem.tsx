@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Box, Typography, TextField, Button, Stack, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
-import { Registration, Meal } from '../../utils/types';
+import { Registration, Meal } from '../../../utils/types';
 
 interface RegistrationItemProps {
     registration: Registration & { meals?: Meal[] };

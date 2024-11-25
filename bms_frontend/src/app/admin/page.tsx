@@ -10,9 +10,9 @@ import {
     Tab,
     Container,
 } from '@mui/material';
-import BanquetManagement from '../../components/admin/BanquetManagement';
-import AttendeeManagement from '../../components/admin/AttendeeManagement';
-import RegistrationManagement from '../../components/admin/RegistrationManagement';
+import BanquetManagement from '../../components/admin/BanquetManagement/BanquetManagement';
+import AttendeeManagement from '../../components/admin/AttendeeManagement/AttendeeManagement';
+import RegistrationManagement from '../../components/admin/RegistrationManagement/RegistrationManagement';
 import ReportGeneration from '../../components/admin/ReportGeneration';
 
 export default function AdminPage() {

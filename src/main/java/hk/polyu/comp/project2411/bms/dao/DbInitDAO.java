@@ -83,17 +83,23 @@ public class DbInitDAO {
      */
     private void createAccountTable() throws SQLException {
         String sql = "CREATE TABLE Account (" +
-                "Email VARCHAR2(255) NOT NULL CHECK(Email LIKE '%@%'), " +
+                "Email VARCHAR2(255) NOT NULL, " +
                 "Role VARCHAR2(50) NOT NULL, " +
-                "FirstName VARCHAR2(255) CHECK (FirstName NOT LIKE '%[^A-Z|a-z]%'), " +
-                "LastName VARCHAR2(255) CHECK (LastName NOT LIKE '%[^A-Z|a-z]%'), " +
-                "MobileNo VARCHAR2(20) CHECK (MobileNo NOT LIKE '%[^0-9]%' AND LENGTH(MobileNo) = 8), " +
-                "Password VARCHAR2(255), " +
-                "Location VARCHAR2(255), " +
-                "Address VARCHAR2(255), " +
-                "Type VARCHAR2(50), " +
-                "Organization VARCHAR2(255), " +
-                "PRIMARY KEY (Email) " +
+                "FirstName VARCHAR2(255) NOT NULL, " +
+                "LastName VARCHAR2(255) NOT NULL, " +
+                "MobileNo VARCHAR2(20) NOT NULL, " +
+                "Password VARCHAR2(255) NOT NULL, " +
+                "Location VARCHAR2(255) NOT NULL, " +
+                "Address VARCHAR2(255) NOT NULL, " +
+                "Type VARCHAR2(50) NOT NULL, " +
+                "Organization VARCHAR2(255) NOT NULL, " +
+                "PRIMARY KEY (Email), " +
+
+                "CONSTRAINT chk_email_format CHECK (Email LIKE '%@%.%'), " +
+                "CONSTRAINT chk_role CHECK (Role IN ('admin', 'user')), " +
+                "CONSTRAINT chk_mobile_format CHECK (REGEXP_LIKE(MobileNo, '^[0-9]{8}$')), " +
+                "CONSTRAINT chk_firstname CHECK (REGEXP_LIKE(FirstName, '^[a-zA-Z]+$')), " +
+                "CONSTRAINT chk_lastname CHECK (REGEXP_LIKE(LastName, '^[a-zA-Z]+$'))" +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Account created.");
@@ -108,8 +114,9 @@ public class DbInitDAO {
     private void createDefaultAdminAccount() throws SQLException {
         String passwd = "2411project";
         passwd = Utils.encoding(passwd);
-        String sql = "INSERT INTO Account (Email, Role, Password) VALUES ('bmsadmin@polyu.hk', 'admin', '" +
-                passwd + "')";
+        String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
+                "VALUES ('bmsadmin@polyu.hk', 'admin', 'Admin', 'User', '88888888', '" + 
+                passwd + "', 'PolyU', 'PolyU', 'Staff', 'PolyU')";
         sqlConnection.executeUpdate(sql);
         System.out.println("Default admin account created.");
     }
@@ -147,11 +154,16 @@ public class DbInitDAO {
                 "DateTime DATE NOT NULL, " +
                 "Address VARCHAR2(255) NOT NULL, " +
                 "Location VARCHAR2(255) NOT NULL, " +
-                "ContactFirstName VARCHAR2(255) NOT NULL CHECK (ContactFirstName NOT LIKE '%[^A-Z|a-z]%'), " +
-                "ContactLastName VARCHAR2(255) NOT NULL CHECK (ContactLastName NOT LIKE '%[^A-Z|a-z]%'), " +
+                "ContactFirstName VARCHAR2(255) NOT NULL, " +
+                "ContactLastName VARCHAR2(255) NOT NULL, " +
                 "Available VARCHAR2(1) NOT NULL, " +
-                "Quota NUMBER NOT NULL," +
-                "PRIMARY KEY(BIN)" +
+                "Quota NUMBER NOT NULL, " +
+                "PRIMARY KEY(BIN), " +
+
+                "CONSTRAINT chk_banquet_available CHECK (Available IN ('Y', 'N')), " +
+                "CONSTRAINT chk_banquet_quota CHECK (Quota >= 0), " +
+                "CONSTRAINT chk_contact_firstname CHECK (REGEXP_LIKE(ContactFirstName, '^[a-zA-Z]+$')), " +
+                "CONSTRAINT chk_contact_lastname CHECK (REGEXP_LIKE(ContactLastName, '^[a-zA-Z]+$'))" +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Banquet created.");
@@ -231,10 +243,10 @@ public class DbInitDAO {
                 "DishName VARCHAR2(255) NOT NULL, " +
                 "Type VARCHAR2(50) NOT NULL, " +
                 "Price NUMBER(10, 2) NOT NULL, " +
-                "SpecialCuisine VARCHAR2(255), " +
+                "SpecialCuisine VARCHAR2(255) NOT NULL, " +
                 "PRIMARY KEY (BanquetBIN, DishName), " +
-                "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN)" +
-                "ON DELETE CASCADE" +
+                "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN) ON DELETE CASCADE, " +
+                "CONSTRAINT chk_meal_price CHECK (Price >= 0)" +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Meal created.");
@@ -256,10 +268,11 @@ public class DbInitDAO {
                 "MealChoice VARCHAR2(255) NOT NULL, " +
                 "Remarks VARCHAR2(255), " +
                 "PRIMARY KEY (AttendeeEmail, BanquetBIN), " +
-                "FOREIGN KEY (AttendeeEmail) REFERENCES Account(Email) " +
-                "ON DELETE CASCADE, " +
-                "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN)" +
-                "ON DELETE CASCADE" +
+                "FOREIGN KEY (AttendeeEmail) REFERENCES Account(Email) ON DELETE CASCADE, " +
+                "FOREIGN KEY (BanquetBIN) REFERENCES Banquet(BIN) ON DELETE CASCADE, " +
+                "FOREIGN KEY (BanquetBIN, MealChoice) REFERENCES Meal(BanquetBIN, DishName), " +
+                "CONSTRAINT unique_seat_per_banquet UNIQUE (BanquetBIN, SeatNo), " +
+                "CONSTRAINT chk_seat_no CHECK (SeatNo > 0)" +
                 ")";
         sqlConnection.executeUpdate(sql);
         System.out.println("Table Reserve created.");

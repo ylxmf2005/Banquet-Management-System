@@ -21,7 +21,7 @@ const BanquetSearch: React.FC<BanquetSearchProps> = ({ onSearch, loading, errorM
 
     return (
         <Box sx={{ mt: 2 }}>
-            <Typography variant="h6">Search Registrations By Banquet BIN</Typography>
+            <Typography variant="h6">Search Registrations By BIN</Typography>
             <Box sx={{ display: 'flex', mt: 2 }}>
                 <TextField
                     label="Banquet BIN"

@@ -4,14 +4,14 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { Box, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
-import { Banquet } from '../../utils/types';
-import { SnackbarContext } from '../../context/SnackbarContext';
-import BanquetList from '../admin/BanquetList';
-import BanquetForm from '../admin/BanquetForm';
-import { formatDateTimeForInput } from '../../utils/utils';
-import { banquetSchema } from '../../utils/validationSchemas';
+import { Banquet } from '../../../utils/types';
+import { SnackbarContext } from '../../../context/SnackbarContext';
+import BanquetList from './BanquetList';
+import BanquetForm from './BanquetForm';
+import { formatDateTimeForInput } from '../../../utils/utils';
+import { banquetSchema } from '../../../utils/validationSchemas';
 import * as Yup from 'yup';
-import api from '../../service/api';
+import api from '../../../service/api';
 import { debounce } from 'lodash';
 
 // BanquetManagement Component

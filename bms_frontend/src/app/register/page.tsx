@@ -24,11 +24,25 @@ export default function RegisterPage() {
         register,
         handleSubmit,
         formState: { errors },
+        setValue,
     } = useForm<RegisterFormInputs>({
         resolver: yupResolver(registerFormSchema),
     });
     const router = useRouter();
     const { showMessage } = useContext(SnackbarContext);
+
+    const handleNameInput = (
+        event: React.ChangeEvent<HTMLInputElement>,
+        field: 'firstName' | 'lastName'
+    ) => {
+        const filteredValue = event.target.value.replace(/[^a-zA-Z]/g, '');
+        setValue(field, filteredValue);
+    };
+
+    const handleMobileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const filteredValue = event.target.value.replace(/[^0-9]/g, '').slice(0, 8);
+        setValue('mobileNo', filteredValue);
+    };
 
     const onSubmit = async (data: RegisterFormInputs) => {
         try {
@@ -72,6 +86,7 @@ export default function RegisterPage() {
                                 autoComplete="given-name"
                                 error={!!errors.firstName}
                                 helperText={errors.firstName?.message}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNameInput(e, 'firstName')}
                             />
                             <TextField
                                 {...register('lastName')}
@@ -81,6 +96,7 @@ export default function RegisterPage() {
                                 autoComplete="family-name"
                                 error={!!errors.lastName}
                                 helperText={errors.lastName?.message}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleNameInput(e, 'lastName')}
                             />
                         </Stack>
                         
@@ -131,6 +147,8 @@ export default function RegisterPage() {
                             label="Mobile Number"
                             error={!!errors.mobileNo}
                             helperText={errors.mobileNo?.message}
+                            onChange={handleMobileInput}
+                            inputProps={{ maxLength: 8 }}
                         />
                         
                         <TextField

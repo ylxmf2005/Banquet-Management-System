@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { Registration } from '../../utils/types';
+import { Registration } from '../../../utils/types';
 import RegistrationItem from './RegistrationItem';
 
 interface RegistrationListProps {

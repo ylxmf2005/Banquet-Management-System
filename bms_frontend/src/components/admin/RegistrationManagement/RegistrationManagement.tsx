@@ -3,13 +3,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Button, 
     Stack, SelectChangeEvent, FormControl, InputLabel, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText, FormHelperText} from '@mui/material';
-import { Registration, Banquet, Meal } from '../../utils/types';
+import { Registration, Banquet, Meal } from '../../../utils/types';
 import BanquetSearch from './BanquetSearch';
 import * as Yup from 'yup';
-import { SnackbarContext } from '../../context/SnackbarContext';
-import api from '../../service/api';
+import { SnackbarContext } from '../../../context/SnackbarContext';
+import api from '../../../service/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { registrationSchemaForAdmin } from '../../utils/validationSchemas';
+import { registrationSchemaForAdmin } from '../../../utils/validationSchemas';
 
 
 // Extend Registration interface with meals
