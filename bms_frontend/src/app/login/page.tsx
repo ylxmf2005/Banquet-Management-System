@@ -31,8 +31,13 @@ export default function LoginPage() {
         try {
             await auth?.login(data.email, data.password);
             showMessage('Login successful', 'success');
-        } catch (error) {
-            showMessage('Invalid email or password', 'error');
+        } catch (error: any) {
+            if (error.response?.status === 401) {
+                showMessage('Invalid email or password', 'error');
+            }
+            else {
+                showMessage('Network error. The API endpoint is ' + process.env.NEXT_PUBLIC_API_URL, 'error');
+            }
         }
     };
 
