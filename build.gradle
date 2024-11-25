@@ -38,8 +38,8 @@ dependencies {
     implementation 'org.ow2.asm:asm:9.5'
 
     // JUnit 5
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
     // Jakarta Activation API
     implementation 'jakarta.activation:jakarta.activation-api:2.0.1'
@@ -68,3 +68,5 @@ jar {
     exclude 'META-INF/*.SF'
     exclude 'META-INF/*.DSA'
 }
+
+test { useJUnitPlatform() }

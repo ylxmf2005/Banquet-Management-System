@@ -69,4 +69,7 @@ public class AttendeeAccount implements  Account {
     public String getOriginalEmail() {
         return originalEmail;
     }
+    public void setOriginalEmail(String originalEmail) {
+        this.originalEmail = originalEmail;
+    }
 }
