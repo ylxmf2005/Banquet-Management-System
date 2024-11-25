@@ -1,5 +1,6 @@
 package hk.polyu.comp.project2411.bms.service;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import hk.polyu.comp.project2411.bms.dao.AttendeeAccountDAO;
 import hk.polyu.comp.project2411.bms.dao.BanquetDAO;
 import hk.polyu.comp.project2411.bms.dao.DbInitDAO;
 import hk.polyu.comp.project2411.bms.dao.MealDAO;
+import hk.polyu.comp.project2411.bms.dao.ReportDAO;
 import hk.polyu.comp.project2411.bms.dao.ReserveDAO;
 import hk.polyu.comp.project2411.bms.exceptions.AuthenticationException;
 import hk.polyu.comp.project2411.bms.exceptions.RegistrationException;
@@ -29,6 +31,7 @@ public class BMSMain {
     private AccountDAO accountDao;
     private ReserveDAO reserveDao;
     private MealDAO mealDao;
+    private ReportDAO reportDAO;
 
     public BMSMain() throws SQLException {
         this.sqlConnection = new SQLConnection();
@@ -37,6 +40,8 @@ public class BMSMain {
         this.attendeeAccountDao = new AttendeeAccountDAO(sqlConnection);
         this.accountDao = new AccountDAO(sqlConnection);
         this.reserveDao = new ReserveDAO(sqlConnection);
+        this.mealDao = new MealDAO(sqlConnection);
+        this.reportDAO = new ReportDAO(sqlConnection);
         
         // Create the tables if not exists
         initDatabase(true); // set to true for test because our database structure is not finalized
@@ -121,6 +126,10 @@ public class BMSMain {
 
     public List<Reserve> getReservationsByBIN(int banquetBIN) throws SQLException {
         return reserveDao.getReservationsByBIN(banquetBIN);
+    }
+
+    public File generateReport() throws Exception {
+        return reportDAO.generateReport();
     }
 
 }

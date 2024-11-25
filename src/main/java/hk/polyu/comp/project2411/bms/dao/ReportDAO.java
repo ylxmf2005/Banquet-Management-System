@@ -1,16 +1,25 @@
 package hk.polyu.comp.project2411.bms.dao;
 
-import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.*;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.*;
-import com.itextpdf.layout.property.*;
-import hk.polyu.comp.project2411.bms.connection.SQLConnection;
-
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.AreaBreak;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.AreaBreakType;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
+
+import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 
 public class ReportDAO {
     private SQLConnection sqlConnection;
@@ -24,8 +33,17 @@ public class ReportDAO {
         this.chartGenerator = new ChartGenerator();
     }
 
-    public void generateReport() throws Exception {
-        String dest = "RegistrationStatusReport.pdf";
+    public File generateReport() throws Exception {
+        String outputPath = "output/reports/";
+        String fileName = "BMSReport_" + System.currentTimeMillis() + ".pdf";
+        String dest = outputPath + fileName;
+        
+        File outputDir = new File(outputPath);
+        if (!outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+        
+        File pdfFile = new File(dest);
         PdfWriter writer = new PdfWriter(dest);
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc, PageSize.A4);
@@ -45,7 +63,9 @@ public class ReportDAO {
         addAttendanceBehaviorSection(document);
 
         document.close();
-        System.out.println("PDF Report generated successfully.");
+        System.out.println("PDF Report generated successfully at: " + pdfFile.getAbsolutePath());
+        
+        return pdfFile;
     }
 
     private void addCoverPage(Document document) {

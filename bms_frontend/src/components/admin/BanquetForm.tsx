@@ -120,7 +120,7 @@ const BanquetForm: React.FC<BanquetFormProps> = ({
                     </Stack>
                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                         <FormControl fullWidth error={!!errors.available} required>
-                            <InputLabel>Available *</InputLabel>
+                            <InputLabel>Available</InputLabel>
                             <Select
                                 value={banquet.available}
                                 onChange={(e) => setBanquet({ ...banquet, available: e.target.value as string })}

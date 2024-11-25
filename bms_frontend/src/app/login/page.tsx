@@ -36,7 +36,8 @@ export default function LoginPage() {
                 showMessage('Invalid email or password', 'error');
             }
             else {
-                showMessage('Network error. The API endpoint is ' + process.env.NEXT_PUBLIC_API_URL, 'error');
+                showMessage('Network error.', 'error');
+                // process.env.NEXT_PUBLIC_API_URL
             }
         }
     };

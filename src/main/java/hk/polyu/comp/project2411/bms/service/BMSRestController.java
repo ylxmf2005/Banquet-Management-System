@@ -1,5 +1,6 @@
 package hk.polyu.comp.project2411.bms.service;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -520,9 +521,9 @@ public class BMSRestController {
             System.out.println("Found reservations: " + reserves);
             
             response.put("status", "success");
-            response.put("registrations", reserves); // Gson 会自动将对象转换为 JSON
+            response.put("registrations", reserves); 
             String jsonResponse = gson.toJson(response);
-            System.out.println("Sending response: " + jsonResponse); // 打印发送的响应
+            System.out.println("Sending response: " + jsonResponse);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -535,4 +536,28 @@ public class BMSRestController {
         }
     }
 
+    @GET
+    @Path("/generateReport")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response generateReport() {
+        try {
+            File reportFile = (File) bmsMain.generateReport();
+            
+            return Response.ok(reportFile)
+                .header("Content-Disposition", "attachment; filename=\"" + reportFile.getName() + "\"")
+                .header("Content-Type", "application/pdf")
+                .build();
+                
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            String jsonResponse = gson.toJson(response);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                          .entity(jsonResponse)
+                          .build();
+        }
+    }
+    
 }
