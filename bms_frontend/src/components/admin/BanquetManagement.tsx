@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState, useContext, useCallback } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 import { Banquet } from '../../utils/types';
 import { SnackbarContext } from '../../context/SnackbarContext';
@@ -23,6 +23,8 @@ export default function BanquetManagement() {
     const [columns, setColumns] = useState<GridColDef[]>([]);
     const [errors, setErrors] = useState<{ [key: string]: any }>({});
     const { showMessage } = useContext(SnackbarContext);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [banquetToDelete, setBanquetToDelete] = useState<number | null>(null);
     
     const debouncedFetchBanquets = useCallback(
         debounce(async () => {
@@ -149,13 +151,24 @@ export default function BanquetManagement() {
         setOpenDialog(true); // Open the dialog
     };
 
-    // Delete a banquet
+    // Modified delete handler to show confirmation dialog
     const handleDeleteBanquet = async (banquetBIN: number) => {
+        setBanquetToDelete(banquetBIN);
+        setOpenDeleteDialog(true);
+    };
+
+    // Handle the confirmed deletion
+    const handleConfirmDelete = async () => {
+        if (!banquetToDelete) return;
+
         try {
-            const response = await api.post('/deleteBanquet', { banquetBIN });
+            const response = await api.post('/deleteBanquet', { banquetBIN: banquetToDelete });
             handleApiResponse(response.data, 'Banquet deleted successfully!', 'delete banquet', debouncedFetchBanquets);
         } catch (error: any) {
             handleApiError(error, 'deleting banquet');
+        } finally {
+            setOpenDeleteDialog(false);
+            setBanquetToDelete(null);
         }
     };
 
@@ -281,11 +294,15 @@ export default function BanquetManagement() {
             if (action === 'create banquet' || action === 'delete banquet') {
                 debouncedFetchBanquets();
             } else if (action === 'update banquet') {
-                setBanquets(prevBanquets =>
-                    prevBanquets.map(b =>
-                        b.BIN === response.data.banquet.BIN ? response.data.banquet : b
-                    )
-                );
+                if (response.data?.banquet) {
+                    setBanquets(prevBanquets =>
+                        prevBanquets.map(b =>
+                            b.BIN === response.data.banquet.BIN ? response.data.banquet : b
+                        )
+                    );
+                } else {
+                    debouncedFetchBanquets();
+                }
             }
             if (successCallback) successCallback();
             handleApiSuccess(successMessage);
@@ -321,6 +338,28 @@ export default function BanquetManagement() {
                 setBanquet={setSelectedBanquet}
                 setErrors={setErrors}
             />
+            {/* Delete confirmation dialog */}
+            <Dialog
+                open={openDeleteDialog}
+                onClose={() => setOpenDeleteDialog(false)}
+            >
+                <DialogTitle>Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this banquet? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+                    <Button 
+                        onClick={handleConfirmDelete} 
+                        color="error" 
+                        variant="contained"
+                    >
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
