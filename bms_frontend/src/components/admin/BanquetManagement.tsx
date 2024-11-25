@@ -281,11 +281,15 @@ export default function BanquetManagement() {
             if (action === 'create banquet' || action === 'delete banquet') {
                 debouncedFetchBanquets();
             } else if (action === 'update banquet') {
-                setBanquets(prevBanquets =>
-                    prevBanquets.map(b =>
-                        b.BIN === response.data.banquet.BIN ? response.data.banquet : b
-                    )
-                );
+                if (response.data?.banquet) {
+                    setBanquets(prevBanquets =>
+                        prevBanquets.map(b =>
+                            b.BIN === response.data.banquet.BIN ? response.data.banquet : b
+                        )
+                    );
+                } else {
+                    debouncedFetchBanquets();
+                }
             }
             if (successCallback) successCallback();
             handleApiSuccess(successMessage);
