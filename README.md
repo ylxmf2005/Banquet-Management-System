@@ -24,10 +24,32 @@ This is a full-stack application with separated frontend and backend, which can 
 
 Make sure you have Gradle installed, recommended version: 8.11
 
+#### Port Configuration
+
 The backend server will run on port 2411 by default. To change the port:
 
 - Navigate to `src/main/java/hk/polyu/comp/project2411/bms/service/RestAPIServer.java`
 - Modify the port number in line: `Server server = new Server(2411);`
+
+#### Database Configuration
+
+The `SQLConnection` class at `src/main/java/hk/polyu/comp/project2411/bms/connection/SQLConnection.java` provides a ready-to-use Oracle database connection. By default, it connects to a pre-configured Oracle database server.
+
+To use your own database server, modify these fields in the `SQLConnection` class:
+
+```java:src/main/java/hk/polyu/comp/project2411/bms/connection/SQLConnection.java
+private String url = "jdbc:oracle:thin:@your_host:your_port:your_sid";
+private String username = "your_username";
+private String password = "your_password";
+```
+
+- For Oracle: `jdbc:oracle:thin:@hostname:port:SID`
+- For MySQL: `jdbc:mysql://hostname:port/database`
+- For PostgreSQL: `jdbc:postgresql://hostname:port/database`
+
+#### Start Server
+
+**Start server**
 
 Run in development mode:
 
@@ -41,7 +63,27 @@ gradle build
 java -jar build/libs/BMS.jar
 ```
 
+#### Database Initialization/Reset
+
+By default:
+
+- The system automatically creates necessary database tables if they don't exist
+- Existing database tables are preserved
+
+To reset the database:
+
+- Navigate to `src/main/java/hk/polyu/comp/project2411/bms/service/BMSMain.java`
+
+- Set clearIfExists to true: `initDatabase(true);`
+- Restart the server.
+
+Note: Use `clearIfExists=true` with caution as it will delete all existing data.
+
+
+
 ### Frontend
+
+#### API Endpoint Configuration
 
 Make sure you have Node.js installed, recommended version: v23.3.0
 
@@ -77,6 +119,8 @@ The frontend needs to know where to find the backend API. There are two ways to 
      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:2411'
      ```
 
+#### Start Server
+
 Start development server:
 
 ```bash
@@ -111,15 +155,15 @@ Restrictions:
 
 Common errors:
 
-- Input format error
+- Input format error:
 
   <img src="https://s2.loli.net/2024/11/25/wSDsolBb54aPtNj.png" width="50%" />
 
-- Input length is too long.
+- Input length is too long:
 
   ![](https://s2.loli.net/2024/11/25/7erLFX8qOuyVzYQ.png)
 
-- There are two identical dish names.
+- There are two identical dish names:
 
   ![](https://s2.loli.net/2024/11/25/w9HEBMJ4rq2LtWy.png)
 
@@ -145,6 +189,11 @@ This button allows you to:
 
 It's similar to [create new banquet](#create-new-banquet).
 
+Additional Note:
+
+- If you change a banquet's status from available to unavailable, any existing registrations for that banquet will remain unaffected. Attendees already registered will not be automatically removed.
+- It is not recommended to modify a dish name that attendees have already selected in their registrations. If you need to make such changes, ensure you notify the attendees to reselect their meal or update the registrations manually via the Registration Management Tab.
+
 #### 4. DELETE
 
 <img src="https://s2.loli.net/2024/11/25/E2KHOtQnhiD9Mec.png" width="80%" />
@@ -160,4 +209,8 @@ When the number of banquets exceeds the maximum display limit per page, you can 
 
 
 ### Attendee Management
+
+#### 1. Search Attendee By Email
+
+![image-20241125221349338](https://s2.loli.net/2024/11/25/dcGspH6aqvReIho.png)
 

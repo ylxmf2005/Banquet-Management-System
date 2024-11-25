@@ -2,11 +2,11 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography, TextField, Button, Stack } from '@mui/material';
-import { Registration } from '../../utils/types';
+import { Box, Typography, TextField, Button, Stack, FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
+import { Registration, Meal } from '../../utils/types';
 
 interface RegistrationItemProps {
-    registration: Registration;
+    registration: Registration & { meals?: Meal[] };
     errors: { [key: string]: string };
     successMessage: string;
     onChange: (field: string, value: any) => void;
@@ -64,15 +64,32 @@ const RegistrationItem: React.FC<RegistrationItemProps> = ({
                     helperText={errors.drinkChoice}
                     onChange={(e) => onChange('drinkChoice', e.target.value)}
                 />
-                <TextField
-                    label="Meal Choice"
+                <FormControl
                     fullWidth
                     required
-                    value={registration.mealChoice}
                     error={!!errors.mealChoice}
-                    helperText={errors.mealChoice}
-                    onChange={(e) => onChange('mealChoice', e.target.value)}
-                />
+                >
+                    <InputLabel id={`meal-choice-label-${registration.banquetBIN}`}>
+                        Meal Choice
+                    </InputLabel>
+                    <Select
+                        labelId={`meal-choice-label-${registration.banquetBIN}`}
+                        value={registration.mealChoice || ''}
+                        label="Meal Choice"
+                        onChange={(e) => onChange('mealChoice', e.target.value)}
+                    >
+                        {registration.meals?.map((meal, index) => (
+                            <MenuItem key={index} value={meal.dishName}>
+                                {meal.dishName} ({meal.type}) - ${meal.price}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    {errors.mealChoice && (
+                        <FormHelperText error>
+                            {errors.mealChoice}
+                        </FormHelperText>
+                    )}
+                </FormControl>
             </Stack>
 
             {/* Remarks */}

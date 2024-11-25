@@ -75,14 +75,29 @@ export default function AttendeeManagement() {
             }
             handleApiResponse(
                 response,
-                (data) => {
+                async (data) => {
                     const fetchedAttendee = data.attendee;
                     setAttendee({
                         ...fetchedAttendee,
                         password: '',
                         originalEmail: fetchedAttendee.email,
                     });
-                    fetchRegistrations(fetchedAttendee.email);
+                    
+                    const registrationsResponse = await api.get('/getReservesByAttendeeEmail', { params: { email } });
+                    if (registrationsResponse.data.status === 'success') {
+                        const registrationsWithMeals = await Promise.all(
+                            registrationsResponse.data.registrations.map(async (registration: Registration) => {
+                                const banquetResponse = await api.get('/getBanquetByBIN', {
+                                    params: { banquetBIN: registration.banquetBIN }
+                                });
+                                return {
+                                    ...registration,
+                                    meals: banquetResponse.data.banquet.meals
+                                };
+                            })
+                        );
+                        setRegistrations(registrationsWithMeals);
+                    }
                 },
                 'fetching attendee'
             );
@@ -90,22 +105,6 @@ export default function AttendeeManagement() {
             handleApiError(error, 'fetching attendee');
         }
         setLoading(false);
-    };
-
-    // Fetch attendee's registrations
-    const fetchRegistrations = async (email: string) => {
-        try {
-            const response = await api.get('/getReservesByAttendeeEmail', { params: { email } });
-            handleApiResponse(
-                response,
-                (data) => {
-                    setRegistrations(data.registrations);
-                },
-                'fetching registrations'
-            );
-        } catch (error) {
-            handleApiError(error, 'fetching registrations');
-        }
     };
 
     // Handle attendee information update

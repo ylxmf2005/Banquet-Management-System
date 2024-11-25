@@ -44,7 +44,7 @@ public class BMSMain {
         this.reportDAO = new ReportDAO(sqlConnection);
         
         // Create the tables if not exists
-        initDatabase(true); // set to true for test because our database structure is not finalized
+        initDatabase(false);
     }
 
     // Close the SQLConnection when done
