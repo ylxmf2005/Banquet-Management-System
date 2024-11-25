@@ -1,9 +1,7 @@
 package hk.polyu.comp.project2411.bms.dao;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.model.Banquet;
@@ -152,6 +150,71 @@ public class BanquetDAO {
         return banquets;
     }
 
+    public List<Map<String, Object>> getAllBanquetsWithReservationStats() throws SQLException {
+        String sql = "SELECT b.BIN, b.Name, b.DateTime, b.Location, b.Quota, " +
+                "(SELECT COUNT(*) FROM Reserve r WHERE r.BanquetBIN = b.BIN) AS SeatsReserved " +
+                "FROM Banquet b";
+        List<Map<String, Object>> results = sqlConnection.executeQuery(sql);
+        return results;
+    }
+
+    // Method to get attendee details for a banquet
+    public List<Map<String, Object>> getAttendees(int banquetBIN) throws SQLException {
+        String sql = "SELECT r.SeatNo, r.AttendeeEmail, a.FirstName, a.LastName, r.MealChoice, r.DrinkChoice, r.Remarks " +
+                "FROM Reserve r " +
+                "JOIN Account a ON r.AttendeeEmail = a.Email " +
+                "WHERE r.BanquetBIN = ? " +
+                "ORDER BY r.SeatNo";
+        Object[] params = new Object[]{banquetBIN};
+        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
+        return results;
+    }
+
+    public Map<String, Integer> getMealChoiceCounts(int banquetBIN) throws SQLException {
+        String sql = "SELECT MealChoice, COUNT(*) as Count FROM Reserve WHERE BanquetBIN = ? GROUP BY MealChoice";
+        Object[] params = new Object[]{banquetBIN};
+        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
+
+        Map<String, Integer> mealChoiceCounts = new HashMap<>();
+        for (Map<String, Object> row : results) {
+            String mealChoice = (String) row.get("MEALCHOICE");
+            int count = ((Number) row.get("COUNT")).intValue();
+            mealChoiceCounts.put(mealChoice, count);
+        }
+        return mealChoiceCounts;
+    }
+
+    // Method to get drink choice counts for a specific banquet
+    public Map<String, Integer> getDrinkChoiceCounts(int banquetBIN) throws SQLException {
+        String sql = "SELECT DrinkChoice, COUNT(*) as Count FROM Reserve WHERE BanquetBIN = ? GROUP BY DrinkChoice";
+        Object[] params = new Object[]{banquetBIN};
+        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
+
+        Map<String, Integer> drinkChoiceCounts = new HashMap<>();
+        for (Map<String, Object> row : results) {
+            String drinkChoice = (String) row.get("DRINKCHOICE");
+            int count = ((Number) row.get("COUNT")).intValue();
+            drinkChoiceCounts.put(drinkChoice, count);
+        }
+        return drinkChoiceCounts;
+    }
+
+    public Map<String, Integer> getOverallPopularDrinks() throws SQLException {
+        String sql = "SELECT DrinkChoice, COUNT(*) AS SelectionCount " +
+                "FROM Reserve " +
+                "GROUP BY DrinkChoice " +
+                "ORDER BY SelectionCount DESC";
+        List<Map<String, Object>> results = sqlConnection.executeQuery(sql);
+
+        Map<String, Integer> drinkChoiceCounts = new LinkedHashMap<>();
+        for (Map<String, Object> row : results) {
+            String drinkChoice = (String) row.get("DRINKCHOICE");
+            int count = ((Number) row.get("SELECTIONCOUNT")).intValue();
+            drinkChoiceCounts.put(drinkChoice, count);
+        }
+        return drinkChoiceCounts;
+    }
+
     public List<Banquet> getAvailableUnregisteredBanquets(String attendeeEmail) throws SQLException {
         String sql = "SELECT * FROM Banquet b WHERE b.Available = 'Y' " +
                     "AND NOT EXISTS (SELECT 1 FROM Reserve r " +
@@ -185,5 +248,56 @@ public class BanquetDAO {
             return banquet;
         }
         return null;
+    }
+
+
+    // Method to get registration counts per day
+    public Map<String, Integer> getRegistrationTrends() throws SQLException {
+        String sql = "SELECT TO_CHAR(RegTime, 'YYYY-MM-DD') AS RegistrationDate, COUNT(*) AS RegistrationCount " +
+                "FROM Reserve " +
+                "GROUP BY TO_CHAR(RegTime, 'YYYY-MM-DD') " +
+                "ORDER BY RegistrationDate";
+        List<Map<String, Object>> results = sqlConnection.executeQuery(sql);
+
+        Map<String, Integer> registrationTrends = new LinkedHashMap<>();
+        for (Map<String, Object> row : results) {
+            String date = (String) row.get("REGISTRATIONDATE");
+            int count = ((Number) row.get("REGISTRATIONCOUNT")).intValue();
+            registrationTrends.put(date, count);
+        }
+        return registrationTrends;
+    }
+
+    // Method to get registration counts per hour
+    public Map<Integer, Integer> getPeakRegistrationTimes() throws SQLException {
+        String sql = "SELECT EXTRACT(HOUR FROM RegTime) AS RegistrationHour, COUNT(*) AS RegistrationCount " +
+                "FROM Reserve " +
+                "GROUP BY EXTRACT(HOUR FROM RegTime) " +
+                "ORDER BY RegistrationHour";
+        List<Map<String, Object>> results = sqlConnection.executeQuery(sql);
+
+        Map<Integer, Integer> peakTimes = new LinkedHashMap<>();
+        for (Map<String, Object> row : results) {
+            int hour = ((Number) row.get("REGISTRATIONHOUR")).intValue();
+            int count = ((Number) row.get("REGISTRATIONCOUNT")).intValue();
+            peakTimes.put(hour, count);
+        }
+        return peakTimes;
+    }
+
+    public Map<String, Integer> getOverallPopularMeals() throws SQLException {
+        String sql = "SELECT MealChoice, COUNT(*) AS SelectionCount " +
+                "FROM Reserve " +
+                "GROUP BY MealChoice " +
+                "ORDER BY SelectionCount DESC";
+        List<Map<String, Object>> results = sqlConnection.executeQuery(sql);
+
+        Map<String, Integer> mealChoiceCounts = new LinkedHashMap<>();
+        for (Map<String, Object> row : results) {
+            String mealChoice = (String) row.get("MEALCHOICE");
+            int count = ((Number) row.get("SELECTIONCOUNT")).intValue();
+            mealChoiceCounts.put(mealChoice, count);
+        }
+        return mealChoiceCounts;
     }
 }
