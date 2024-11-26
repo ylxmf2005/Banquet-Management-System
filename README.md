@@ -219,9 +219,12 @@ This button allows you to:
 It's similar to [Create New Banquet](#1-create-new-banquet).
 
 Additional Note:
-
+- BIN cannot be modified.
 - If you change a banquet's status from available to unavailable, any existing registrations for that banquet will remain unaffected. Attendees already registered will not be automatically removed.
-- It is not recommended to modify a dish name that attendees have already selected in their registrations. If you need to make such changes, ensure you notify the attendees to reselect their meal or update the registrations manually via the Registration Management Tab.
+- You can still modify the banquet information even if there are existing registrations, but
+  - it is not recommended to modify a dish name that attendees have already selected in their registrations (the participant's originally selected dish will be overwritten by the new one.). If you need to make such changes, you'd better to notify the attendees to reselect their meal or update the registrations manually via the Registration Management Tab.
+  - it is not recommended to adjust the quota to a number smaller than the current number of registrations. The database does not restrict this action, as administrators may manually delete registrations under unavoidable circumstances.
+
 
 #### 4. Delete
 
@@ -253,6 +256,12 @@ When an attendee cannot be found, the system will display the following message:
 
 - The password cannot be viewed (Because the database encrypted storage password) but can be reset to a new one.
 
+- If the attendee's email address is updated, the email address of his registration records will also be updated accordingly.
+
+- Ensure that the updated email address does not conflict with any other attendee's email address; otherwise, an error will occur:
+
+  ![image-20241126173426310](https://s2.loli.net/2024/11/26/SQnFJoTYBx3iwsD.png)
+
 #### 3. Delete Attendee
 
 - Deleting an attendee will also delete all banquet registrations associated with them.
@@ -266,10 +275,6 @@ When an attendee cannot be found, the system will display the following message:
 - The registration time cannot be modified.
 
 - Only one of the four pre-configured meal options for the banquet can be selected.
-
-- If the attendee's email address is updated, the email address of his registration records will also be updated accordingly.
-
-- Ensure that the updated email address does not conflict with any other attendee's email address; otherwise, an error will occur:![image-20241126173426310](https://s2.loli.net/2024/11/26/SQnFJoTYBx3iwsD.png)
 
 - When updating an attendee's seat number:
 
@@ -364,3 +369,5 @@ If your registration fails, the system will notify you:
 ![](https://s2.loli.net/2024/11/26/KFSMVLZEzPqyu49.png)
 
 ### 1. Search your registration
+
+It's similar to [1. Search Available Banquets](#1-search-available-banquets).
