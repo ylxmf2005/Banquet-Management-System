@@ -219,7 +219,8 @@ This button allows you to:
 It's similar to [Create New Banquet](#1-create-new-banquet).
 
 Additional Note:
-- BIN cannot be modified.
+- BIN cannot be modified. 
+- Meal cannot be deleted.
 - If you change a banquet's status from available to unavailable, any existing registrations for that banquet will remain unaffected. Attendees already registered will not be automatically removed.
 - You can still modify the banquet information even if there are existing registrations, but
   - it is not recommended to modify a dish name that attendees have already selected in their registrations (the participant's originally selected dish will be overwritten by the new one.). If you need to make such changes, you'd better to notify the attendees to reselect their meal or update the registrations manually via the Registration Management Tab.
@@ -362,7 +363,7 @@ If your registration is successful (quota is enough), the system will notify you
 
 If your registration fails, the system will notify you:
 
-
+<img src="https://s2.loli.net/2024/11/26/cqrDPvlx5nbEfTe.png" style="zoom:33%;" />
 
 ### My Registrations Tab
 

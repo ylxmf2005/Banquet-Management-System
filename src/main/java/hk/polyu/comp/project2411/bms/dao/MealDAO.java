@@ -36,6 +36,7 @@ public class MealDAO {
         return rowsAffected > 0;
     }
 
+    // Deprecated
     // Deletes multiple meals from a banquet
     public boolean deleteMealsFromBanquet(int banquetBIN, List<Meal> meals) throws SQLException {
         for (Meal meal : meals) {
@@ -47,6 +48,7 @@ public class MealDAO {
         return true;
     }
 
+    // Deprecated
     // Deletes a single meal from a banquet
     public boolean deleteMealFromBanquet(int banquetBIN, Meal meal) throws SQLException {
         String sql = "DELETE FROM Meal WHERE BanquetBIN=? AND DishName=?";
@@ -66,5 +68,35 @@ public class MealDAO {
             meals.add(new Meal(row));
         }
         return meals;
+    }
+
+    public boolean updateMeal(int banquetBIN, String oldDishName, Meal newMeal) throws SQLException {
+        String sql = "UPDATE Meal SET DishName=?, Type=?, Price=?, SpecialCuisine=? " +
+                    "WHERE BanquetBIN=? AND DishName=?";
+        Object[] params = new Object[] { 
+            newMeal.getDishName(), 
+            newMeal.getType(), 
+            newMeal.getPrice(),
+            newMeal.getSpecialCuisine(),
+            banquetBIN,
+            oldDishName
+        };
+        int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
+        return rowsAffected > 0;
+    }
+
+    public boolean updateMealsForBanquet(int banquetBIN, List<Meal> newMeals) throws SQLException {
+        List<Meal> oldMeals = getMealsForBanquet(banquetBIN);
+        
+        if (oldMeals.size() != newMeals.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < oldMeals.size(); i++) {
+            if (!updateMeal(banquetBIN, oldMeals.get(i).getDishName(), newMeals.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

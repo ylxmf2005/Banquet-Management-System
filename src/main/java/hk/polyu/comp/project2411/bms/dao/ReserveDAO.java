@@ -105,7 +105,8 @@ public class ReserveDAO {
         return cur;
     }
 
-    public RegistrationResult registerForBanquet(Reserve registrationData) throws RegistrationException, SQLException {
+    public RegistrationResult registerForBanquet(Reserve registrationData) throws RegistrationException, SQLException 
+        {
         try {
             sqlConnection.beginTransaction();
             
@@ -135,8 +136,17 @@ public class ReserveDAO {
                 throw new RegistrationException("You have already registered for this banquet");
             }
             
-            int curSeatNo = getAvailableSeatNo(curBan);
-            registrationData.setSeatNo(curSeatNo);
+            String checkSeatSql = "SELECT COUNT(*) AS cnt FROM Reserve WHERE BanquetBIN=? AND SeatNo=? FOR UPDATE";
+            while (true) {
+                int curSeatNo = getAvailableSeatNo(curBan);
+                registrationData.setSeatNo(curSeatNo);
+                
+                Object[] checkSeatParams = {registrationData.getBanquetBIN(), curSeatNo};
+                List<Map<String, Object>> seatResult = sqlConnection.executePreparedQuery(checkSeatSql, checkSeatParams);
+                if (((Number) seatResult.get(0).get("CNT")).intValue() == 0) {
+                    break;
+                }
+            }
             
             boolean success = insertAttendeeRegistrationData(registrationData);
             

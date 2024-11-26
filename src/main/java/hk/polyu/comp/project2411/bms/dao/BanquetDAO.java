@@ -9,7 +9,6 @@ import java.util.Map;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.model.Banquet;
-import hk.polyu.comp.project2411.bms.model.Meal;
 import hk.polyu.comp.project2411.bms.model.SearchCriteria;
 
 public class BanquetDAO {
@@ -86,30 +85,26 @@ public class BanquetDAO {
             sqlConnection.beginTransaction();
 
             String sql = "UPDATE Banquet SET Name=?, DateTime=?, Address=?, Location=?, ContactFirstName=?, ContactLastName=?, Available=?, Quota=? WHERE BIN=?";
-            Object[] params = new Object[] { banquet.getName(), banquet.getDateTime(), banquet.getAddress(),
-                    banquet.getLocation(), banquet.getContactFirstName(), banquet.getContactLastName(),
-                    banquet.getAvailable(), banquet.getQuota(), banquet.getBIN() };
+            Object[] params = new Object[] { 
+                banquet.getName(), 
+                banquet.getDateTime(), 
+                banquet.getAddress(),
+                banquet.getLocation(), 
+                banquet.getContactFirstName(), 
+                banquet.getContactLastName(),
+                banquet.getAvailable(), 
+                banquet.getQuota(), 
+                banquet.getBIN() 
+            };
 
             int rowsAffected = sqlConnection.executePreparedUpdate(sql, params);
             if (rowsAffected <= 0) {
-                // Update failed; roll back transaction
                 sqlConnection.rollbackTransaction();
                 return false;
             }
 
-            // Delete existing meals for the banquet
-            List<Meal> existingMeals = mealDAO.getMealsForBanquet(banquet.getBIN());
-            boolean mealsDeleted = mealDAO.deleteMealsFromBanquet(banquet.getBIN(), existingMeals);
-            if (!mealsDeleted) {
-                // Deleting meals failed; roll back transaction
-                sqlConnection.rollbackTransaction();
-                return false;
-            }
-
-            // Add new meals for the banquet
-            boolean mealsAdded = mealDAO.addMealsToBanquet(banquet.getBIN(), banquet.getMeals());
-            if (!mealsAdded) {
-                // Adding meals failed; roll back transaction
+            boolean mealsUpdated = mealDAO.updateMealsForBanquet(banquet.getBIN(), banquet.getMeals());
+            if (!mealsUpdated) {
                 sqlConnection.rollbackTransaction();
                 return false;
             }
