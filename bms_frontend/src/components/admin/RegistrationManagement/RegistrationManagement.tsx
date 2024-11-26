@@ -256,6 +256,15 @@ export default function RegistrationManagement() {
 
             {registrations && registrations.length > 0 && (
                 <>
+                    {/* Add Total Registrations Count */}
+                    <Box sx={{ mt: 4, mb: 2 }}>
+                        <Paper sx={{ p: 2 }}>
+                            <Typography variant="h6" align="center">
+                                Current Total Registrations: {registrations.length}
+                            </Typography>
+                        </Paper>
+                    </Box>
+
                     {/* Statistics Charts */}
                     <Box sx={{ mt: 4, mb: 4, display: 'flex', gap: 4 }}>
                         <Paper sx={{ p: 2, flex: 1, height: 300 }}>

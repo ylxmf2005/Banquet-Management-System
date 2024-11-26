@@ -44,7 +44,7 @@ public class BMSMain {
         this.reportDAO = new ReportDAO(sqlConnection);
         
         // Create the tables if not exists
-        initDatabase(true);
+        initDatabase(true, true);
         // initDatabase(false);
     }
 
@@ -53,8 +53,8 @@ public class BMSMain {
         sqlConnection.closeConnection();
     }
 
-    public boolean initDatabase(boolean clearIfExists) {
-        return dbInitDao.initDb(clearIfExists);
+    public boolean initDatabase(boolean clearIfExists, boolean createSampleData) {
+        return dbInitDao.initDb(clearIfExists, createSampleData);
     }
 
     // Login Functions

@@ -53,7 +53,7 @@ public class BMSRestController {
         try {
             JsonObject jsonObject = gson.fromJson(clearIfExists, JsonObject.class);
             boolean clearIfExist = jsonObject.get("clearIfExist").getAsBoolean();
-            boolean initResult = bmsMain.initDatabase(clearIfExist);
+            boolean initResult = bmsMain.initDatabase(clearIfExist, false);
             response.put("status", initResult ? "success" : "failure");
             String jsonResponse = gson.toJson(response);
             return Response.ok(jsonResponse, MediaType.APPLICATION_JSON).build();
