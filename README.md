@@ -351,11 +351,11 @@ Click the Register button for your desired banquet.
 - Use the dropdown menu to select your preferred meal option (Required).
 - Use the remark field (optional) to add any additional comments or special requests.
 
-如果注册成功（名额足够），系统会通知你并给你分配一个座位号，你可以在 My Registrations Tab 中查看你被分配到的座位：
+If your registration is successful (quota is enough), the system will notify you and assign you a seat number. You can view your assigned seat in the My Registrations tab.
 
 <img src="https://s2.loli.net/2024/11/26/KELDfiH8NIdWc6Q.png" width="40%" />
 
-否则，系统会通知失败
+If your registration fails, the system will notify you:
 
 
 
