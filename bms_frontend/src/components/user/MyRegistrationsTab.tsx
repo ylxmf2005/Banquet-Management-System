@@ -287,9 +287,23 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
         }
     };
 
+    const handleClearSearch = () => {
+        setSearchCriteria({
+            banquetName: '',
+            startDate: '',
+            endDate: ''
+        });
+    };
+
     useEffect(() => {
         handleSearch();
     }, []);
+
+    useEffect(() => {
+        if (!searchCriteria.banquetName && !searchCriteria.startDate && !searchCriteria.endDate) {
+            handleSearch();
+        }
+    }, [searchCriteria]);
 
     return (
         <Box sx={{ mt: 3 }}>
@@ -337,14 +351,22 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
                         />
                     </Grid>
                 </Grid>
-                <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={handleSearch}
-                    disabled={loading}
-                >
-                    {loading ? 'Searching...' : 'Search'}
-                </Button>
+                <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        onClick={handleSearch}
+                        disabled={loading}
+                    >
+                        {loading ? 'Searching...' : 'Search'}
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        onClick={handleClearSearch}
+                        disabled={loading}
+                    >
+                        Clear Search
+                    </Button>
+                </Box>
             </Box>
 
             <Grid container spacing={2}>

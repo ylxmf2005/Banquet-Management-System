@@ -23,7 +23,7 @@ This is a full-stack application with separated frontend and backend, which can 
 
 This project not only implements data validation at the front end, but also applies constraints at the database level. These measures ensure that operations such as  direct calls to backend method or direct execution of SQL commands do not compromise the integrity of the database.
 
-To reflect the raw database errors for troubleshooting purposes, the front end does not handle `SQLException` errors with additional custom processing. Instead, the exact `SQLException` error messages from the backend are displayed directly to the user.
+To reflect the raw database errors, the front end does not handle `SQLException` errors with additional custom processing. Instead, the exact `SQLException` error messages from the backend are displayed directly to the user.
 
 ### Backend
 
@@ -321,10 +321,14 @@ Press the `DOWNLOAD REPORT` button, and the report PDF will be generated and dow
 
 It's similar to [Update Attendee's Registration](#4-update-attendees-registration)
 
-### Banquet Registration Tab![Google Chrome 2024-11-26 18.12.34](https://s2.loli.net/2024/11/26/Nmg5sPWje1kYy9n.png)
+### Banquet Registration Tab
+
+![](https://s2.loli.net/2024/11/26/AHmT8pBF91IGlz2.png)
 
 Only banquets with a status of available can be viewed and registered by attendee.
 
 #### 1. Search Available Banquets
 
-#### 2. Register Available Banquets
+#### 2. Clear Search
+
+#### 3. Register Available Banquets
