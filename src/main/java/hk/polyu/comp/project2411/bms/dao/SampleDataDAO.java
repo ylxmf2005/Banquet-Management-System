@@ -34,47 +34,47 @@ public class SampleDataDAO {
 
     public void createTestAttendeeAccount() throws SQLException {
         String passwd = Utils.encoding("2411project");
-        String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Address, Type, Organization) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Object[][] params = {
             // Students
-            {"student1@polyu.hk", "user", "John", "Wong", "12345678", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student2@polyu.hk", "user", "Mary", "Chan", "23456789", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student3@polyu.hk", "user", "Peter", "Lam", "34567890", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student4@polyu.hk", "user", "Sarah", "Lee", "45678901", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student5@polyu.hk", "user", "David", "Yip", "56789012", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student6@polyu.hk", "user", "Alice", "Lau", "67890123", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student7@polyu.hk", "user", "Brian", "Ho", "78901234", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student8@polyu.hk", "user", "Cindy", "Tang", "89012345", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student9@polyu.hk", "user", "Derek", "Cheung", "90123456", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student10@polyu.hk", "user", "Emily", "Choi", "01234567", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student11@polyu.hk", "user", "Frank", "Kwok", "11223344", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student12@polyu.hk", "user", "Grace", "Mak", "22334455", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student13@polyu.hk", "user", "Henry", "Au", "33445566", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student14@polyu.hk", "user", "Ivy", "Yeung", "44556677", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
-            {"student15@polyu.hk", "user", "Jack", "Tsang", "55667788", passwd, "PolyU", "Hung Hom", "Student", "PolyU"},
+            {"student1@polyu.hk", "user", "John", "Wong", "12345678", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student2@polyu.hk", "user", "Mary", "Chan", "23456789", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student3@polyu.hk", "user", "Peter", "Lam", "34567890", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student4@polyu.hk", "user", "Sarah", "Lee", "45678901", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student5@polyu.hk", "user", "David", "Yip", "56789012", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student6@polyu.hk", "user", "Alice", "Lau", "67890123", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student7@polyu.hk", "user", "Brian", "Ho", "78901234", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student8@polyu.hk", "user", "Cindy", "Tang", "89012345", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student9@polyu.hk", "user", "Derek", "Cheung", "90123456", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student10@polyu.hk", "user", "Emily", "Choi", "01234567", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student11@polyu.hk", "user", "Frank", "Kwok", "11223344", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student12@polyu.hk", "user", "Grace", "Mak", "22334455", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student13@polyu.hk", "user", "Henry", "Au", "33445566", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student14@polyu.hk", "user", "Ivy", "Yeung", "44556677", passwd, "Hung Hom", "Student", "PolyU"},
+            {"student15@polyu.hk", "user", "Jack", "Tsang", "55667788", passwd, "Hung Hom", "Student", "PolyU"},
 
             // Staff
-            {"staff1@polyu.hk", "user", "James", "Chen", "67890123", passwd, "PolyU", "Staff Quarters", "Staff", "PolyU"},
-            {"staff2@polyu.hk", "user", "Linda", "Zhang", "78901234", passwd, "PolyU", "Staff Quarters", "Staff", "PolyU"},
-            {"staff3@polyu.hk", "user", "Robert", "Liu", "89012345", passwd, "PolyU", "Staff Quarters", "Staff", "PolyU"},
-            {"staff4@polyu.hk", "user", "Kelly", "Wong", "12344321", passwd, "PolyU", "Staff Quarters", "Staff", "PolyU"},
-            {"staff5@polyu.hk", "user", "Leo", "Leung", "23455432", passwd, "PolyU", "Staff Quarters", "Staff", "PolyU"},
-            {"staff6@polyu.hk", "user", "Nancy", "Cheng", "34566543", passwd, "PolyU", "Staff Quarters", "Staff", "PolyU"},
-            {"staff7@polyu.hk", "user", "Oscar", "Tam", "45677654", passwd, "PolyU", "Staff Quarters", "Staff", "PolyU"},
-            {"staff8@polyu.hk", "user", "Paul", "Yuen", "56788765", passwd, "PolyU", "Staff Quarters", "Staff", "PolyU"},
+            {"staff1@polyu.hk", "user", "James", "Chen", "67890123", passwd, "Staff Quarters", "Staff", "PolyU"},
+            {"staff2@polyu.hk", "user", "Linda", "Zhang", "78901234", passwd, "Staff Quarters", "Staff", "PolyU"},
+            {"staff3@polyu.hk", "user", "Robert", "Liu", "89012345", passwd, "Staff Quarters", "Staff", "PolyU"},
+            {"staff4@polyu.hk", "user", "Kelly", "Wong", "12344321", passwd, "Staff Quarters", "Staff", "PolyU"},
+            {"staff5@polyu.hk", "user", "Leo", "Leung", "23455432", passwd, "Staff Quarters", "Staff", "PolyU"},
+            {"staff6@polyu.hk", "user", "Nancy", "Cheng", "34566543", passwd, "Staff Quarters", "Staff", "PolyU"},
+            {"staff7@polyu.hk", "user", "Oscar", "Tam", "45677654", passwd, "Staff Quarters", "Staff", "PolyU"},
+            {"staff8@polyu.hk", "user", "Paul", "Yuen", "56788765", passwd, "Staff Quarters", "Staff", "PolyU"},
 
             // Guests
-            {"guest1@example.com", "user", "Michael", "Smith", "90123456", passwd, "PolyU", "Hung Hom", "Guest", "ABC Company"},
-            {"guest2@example.com", "user", "Emma", "Brown", "01234567", passwd, "PolyU", "Hung Hom", "Guest", "XYZ Limited"},
-            {"guest3@example.com", "user", "William", "Taylor", "11223344", passwd, "PolyU", "Hung Hom", "Guest", "DEF Corp"},
-            {"guest4@example.com", "user", "Sophia", "Davis", "22334455", passwd, "PolyU", "Hung Hom", "Guest", "GHI Inc"},
-            {"guest5@example.com", "user", "Daniel", "Wilson", "33445566", passwd, "PolyU", "Hung Hom", "Guest", "JKL LLC"},
-            {"guest6@example.com", "user", "Olivia", "Moore", "44556677", passwd, "PolyU", "Hung Hom", "Guest", "MNO Ltd"},
-            {"guest7@example.com", "user", "Matthew", "Johnson", "55667788", passwd, "PolyU", "Hung Hom", "Guest", "PQR Co"},
-            {"guest8@example.com", "user", "Chloe", "Lee", "66778899", passwd, "PolyU", "Hung Hom", "Guest", "STU Group"},
-            {"guest9@example.com", "user", "Joshua", "Martin", "77889900", passwd, "PolyU", "Hung Hom", "Guest", "VWX Ltd"},
-            {"guest10@example.com", "user", "Lily", "Thomas", "88990011", passwd, "PolyU", "Hung Hom", "Guest", "YZA Corp"}
+            {"guest1@example.com", "user", "Michael", "Smith", "90123456", passwd, "Hung Hom", "Guest", "ABC Company"},
+            {"guest2@example.com", "user", "Emma", "Brown", "01234567", passwd, "Hung Hom", "Guest", "XYZ Limited"},
+            {"guest3@example.com", "user", "William", "Taylor", "11223344", passwd, "Hung Hom", "Guest", "DEF Corp"},
+            {"guest4@example.com", "user", "Sophia", "Davis", "22334455", passwd, "Hung Hom", "Guest", "GHI Inc"},
+            {"guest5@example.com", "user", "Daniel", "Wilson", "33445566", passwd, "Hung Hom", "Guest", "JKL LLC"},
+            {"guest6@example.com", "user", "Olivia", "Moore", "44556677", passwd, "Hung Hom", "Guest", "MNO Ltd"},
+            {"guest7@example.com", "user", "Matthew", "Johnson", "55667788", passwd, "Hung Hom", "Guest", "PQR Co"},
+            {"guest8@example.com", "user", "Chloe", "Lee", "66778899", passwd, "Hung Hom", "Guest", "STU Group"},
+            {"guest9@example.com", "user", "Joshua", "Martin", "77889900", passwd, "Hung Hom", "Guest", "VWX Ltd"},
+            {"guest10@example.com", "user", "Lily", "Thomas", "88990011", passwd, "Hung Hom", "Guest", "YZA Corp"}
         };
 
         for (Object[] param : params) {

@@ -94,7 +94,6 @@ public class DbInitDAO {
                 "LastName VARCHAR2(255) NOT NULL, " +
                 "MobileNo VARCHAR2(20) NOT NULL, " +
                 "Password VARCHAR2(255) NOT NULL, " +
-                "Location VARCHAR2(255) NOT NULL, " +
                 "Address VARCHAR2(255) NOT NULL, " +
                 "Type VARCHAR2(50) NOT NULL, " +
                 "Organization VARCHAR2(255) NOT NULL, " +
@@ -119,9 +118,9 @@ public class DbInitDAO {
     private void createDefaultAdminAccount() throws SQLException {
         String passwd = "2411project";
         passwd = Utils.encoding(passwd);
-        String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Location, Address, Type, Organization) " +
+        String sql = "INSERT INTO Account (Email, Role, FirstName, LastName, MobileNo, Password, Address, Type, Organization) " +
                 "VALUES ('bmsadmin@polyu.hk', 'admin', 'Admin', 'User', '88888888', '" + 
-                passwd + "', 'PolyU', 'PolyU', 'Staff', 'PolyU')";
+                passwd + "', 'PolyU', 'Staff', 'PolyU')";
         sqlConnection.executeUpdate(sql);
         System.out.println("Default admin account created.");
     }

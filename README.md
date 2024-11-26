@@ -11,8 +11,7 @@
 [Website](https://bms-frontend-oohkp5osq-ylxmf2005s-projects.vercel.app/login)
 
 - Admin account: `bmsadmin@polyu.hk`
-- User account: `test@polyu.hk`, `student1@polyu.hk`, `guest1@polyu.hk` (Or you can register one)
-- Password: `2411project`
+- Admin password: `2411project`
 
 
 
@@ -137,9 +136,22 @@ npm run build
 
 
 
-## Registration
 
 
+## Login & Registration
+
+<img src="https://s2.loli.net/2024/11/26/u3Ug5WJMj7bZIoK.png" width="30%;" />
+
+Restrictions:
+
+- All field is required to register an account.
+
+- First name and last name can only contain characters.
+
+- Email address must be valid and have not been registered before, otherwise an error will occur:
+- Password must be at least 6 characters and contain only letters, numbers, and common special characters.
+
+- The Mobile Number must be eight digits.
 
 
 
@@ -206,9 +218,9 @@ Additional Note:
 
 <img src="https://s2.loli.net/2024/11/25/E2KHOtQnhiD9Mec.png" width="80%" />
 
-Before deletion, confirmation is required. 
+Before deletion, confirmation is required (All delete operations have this confirmation）. 
 
-Note that meals and registrations related to the banquet will also be deleted.
+Note: meals and registrations related to the banquet will also be deleted.
 
 #### 5. Previous/Next Page
 
@@ -246,6 +258,10 @@ When an attendee cannot be found, the system will display the following message:
 
 - Only one of the four pre-configured meal options for the banquet can be selected.
 
+- If the attendee's email address is updated, the email address of his registration records will also be updated accordingly.
+
+- Ensure that the updated email address does not conflict with any other attendee's email address; otherwise, an error will occur:![image-20241126173426310](https://s2.loli.net/2024/11/26/SQnFJoTYBx3iwsD.png)
+
 - When updating an attendee's seat number:
 
   - Ensure the new seat number does not conflict with any already assigned seat numbers for the same banquet.
@@ -262,7 +278,7 @@ When deleting an attendee's registration, the seat assigned to the attendee for 
 
 ### Registration Management
 
-![](https://s2.loli.net/2024/11/26/fYWxKl1gUDqTt2v.png)
+![](https://s2.loli.net/2024/11/26/obJ9iXmSBtk1NuT.png)
 
 The system generates visual statistics for drink choice and meal choice. These bar charts provide an overview of attendee preferences.
 
@@ -289,3 +305,9 @@ Press the `DOWNLOAD REPORT` button, and the report PDF will be generated and dow
 
 
 ## User Page
+
+### Profile Tab
+
+<img src="https://s2.loli.net/2024/11/26/EL3psezQW6gNxXt.png" alt="image-20241126173154414" width = "80%"/>
+
+It's similar to [Update Attendee's Registration](#4-update-attendees-registration)
