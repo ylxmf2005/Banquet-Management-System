@@ -137,4 +137,8 @@ public class BMSMain {
         return attendeeAccountDao.deleteAttendee(email);
     }
 
+    public List<Banquet> searchAvailableUnregisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
+        return banquetDao.searchAvailableUnregisteredBanquets(attendeeEmail, criteria);
+    }
+
 }

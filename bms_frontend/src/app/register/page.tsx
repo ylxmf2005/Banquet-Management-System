@@ -46,12 +46,42 @@ export default function RegisterPage() {
 
     const onSubmit = async (data: RegisterFormInputs) => {
         try {
-            await api.post('/registerAttendee', data);
-            showMessage('Registration Successful', 'success');
-            router.push('/login');
+            const response = await api.post('/registerAttendee', data);
+            handleApiResponse(
+                response,
+                () => {
+                    showMessage('Registration Successful', 'success');
+                    router.push('/login');
+                },
+                'registering'
+            );
         } catch (error) {
-            showMessage('Registration failed', 'error');
+            handleApiError(error, 'registering');
         }
+    };
+
+    const handleApiResponse = (
+        response: any,
+        successCallback: (data: any) => void,
+        action: string
+    ) => {
+        const data = response.data;
+        if (data.status === 'success') {
+            successCallback(data);
+        } else {
+            const message = `Failed to ${action}: ${data.message || 'Unknown error'}`;
+            showMessage(message, 'error');
+        }
+    };
+
+    const handleApiError = (error: any, action: string) => {
+        let message = '';
+        if (error.response?.data?.message) {
+            message = `Error ${action}: ${error.response.data.message}`;
+        } else {
+            message = `Error ${action}: ${error.message}`;
+        }
+        showMessage(message, 'error');
     };
 
     return (

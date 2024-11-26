@@ -1,11 +1,16 @@
 package hk.polyu.comp.project2411.bms.dao;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import hk.polyu.comp.project2411.bms.connection.SQLConnection;
 import hk.polyu.comp.project2411.bms.model.Banquet;
 import hk.polyu.comp.project2411.bms.model.Meal;
+import hk.polyu.comp.project2411.bms.model.SearchCriteria;
 
 public class BanquetDAO {
     private SQLConnection sqlConnection;
@@ -299,5 +304,44 @@ public class BanquetDAO {
             mealChoiceCounts.put(mealChoice, count);
         }
         return mealChoiceCounts;
+    }
+
+    public List<Banquet> searchAvailableUnregisteredBanquets(String attendeeEmail, SearchCriteria criteria) throws SQLException {
+        StringBuilder sql = new StringBuilder(
+            "SELECT * FROM Banquet b WHERE b.Available = 'Y' " +
+            "AND NOT EXISTS (SELECT 1 FROM Reserve r " +
+            "WHERE r.BanquetBIN = b.BIN " +
+            "AND r.AttendeeEmail = ?)");
+        
+        List<Object> params = new ArrayList<>();
+        params.add(attendeeEmail);
+
+        if (criteria.getBanquetName() != null && !criteria.getBanquetName().trim().isEmpty()) {
+            sql.append(" AND LOWER(b.Name) LIKE LOWER(?)");
+            params.add("%" + criteria.getBanquetName() + "%");
+        }
+
+        if (criteria.getStartDate() != null) {
+            sql.append(" AND b.DateTime >= TO_TIMESTAMP(?, 'YYYY-MM-DD\"T\"HH24:MI:SS.FF3\"Z\"')");
+            params.add(criteria.getStartDate());
+        }
+
+        if (criteria.getEndDate() != null) {
+            sql.append(" AND b.DateTime <= TO_TIMESTAMP(?, 'YYYY-MM-DD\"T\"HH24:MI:SS.FF3\"Z\"')");
+            params.add(criteria.getEndDate());
+        }
+
+        List<Map<String, Object>> result = sqlConnection.executePreparedQuery(sql.toString(), params.toArray());
+        List<Banquet> banquets = new ArrayList<>();
+        
+        if (!result.isEmpty()) {
+            for (Map<String, Object> row : result) {
+                Banquet banquet = new Banquet(row);
+                banquet.setMeals(mealDAO.getMealsForBanquet(banquet.getBIN()));
+                banquets.add(banquet);
+            }
+            return banquets;
+        }
+        return null;
     }
 }

@@ -44,6 +44,12 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
     });
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+    const [searchCriteria, setSearchCriteria] = useState({
+        banquetName: '',
+        startDate: '',
+        endDate: ''
+    });
+
     useEffect(() => {
         fetchBanquets();
     }, []);
@@ -76,23 +82,31 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
     const fetchBanquets = async () => {
         setLoading(true);
         try {
-            const response = await api.get('/getAvailableUnregisteredBanquets', {
-                params: {
-                    attendeeEmail: user.email
-                }
+            const criteria = {
+                banquetName: searchCriteria.banquetName || null,
+                startDate: searchCriteria.startDate ? new Date(searchCriteria.startDate).toISOString() : null,
+                endDate: searchCriteria.endDate ? new Date(searchCriteria.endDate).toISOString() : null
+            };
+
+            const response = await api.post('/searchAvailableBanquets', {
+                attendeeEmail: user.email,
+                criteria: criteria
             });
 
             handleApiResponse(
                 response,
                 (data: any) => {
-                    setBanquets(data.banquets);
-                    setLoading(false);
+                    setBanquets(data.banquets || []);
+                    if (!data.banquets || data.banquets.length === 0) {
+                        showMessage('No banquets found', 'info');
+                    }
                 },
                 'fetching available banquets'
             );
         } catch (error: any) {
             handleApiError(error, 'fetching available banquets');
             setBanquets([]);
+        } finally {
             setLoading(false);
         }
     };
@@ -174,8 +188,70 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
         }
     };
 
+    const handleSearchCriteriaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setSearchCriteria((prevCriteria) => ({
+            ...prevCriteria,
+            [name]: value,
+        }));
+    };
+
     return (
         <Box sx={{ mt: 3 }}>
+            <Box sx={{ mb: 2 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            name="startDate"
+                            label="Start Date & Time"
+                            type="datetime-local"
+                            value={searchCriteria.startDate}
+                            onChange={handleSearchCriteriaChange}
+                            fullWidth
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            inputProps={{
+                                step: 60
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            name="endDate"
+                            label="End Date & Time"
+                            type="datetime-local"
+                            value={searchCriteria.endDate}
+                            onChange={handleSearchCriteriaChange}
+                            fullWidth
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            inputProps={{
+                                step: 60
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            name="banquetName"
+                            label="Banquet Name"
+                            value={searchCriteria.banquetName}
+                            onChange={handleSearchCriteriaChange}
+                            fullWidth
+                        />
+                    </Grid>
+                </Grid>
+                <Button
+                    variant="contained"
+                    sx={{ mt: 2 }}
+                    onClick={fetchBanquets}
+                    disabled={loading}
+                >
+                    {loading ? 'Searching...' : 'Search'}
+                </Button>
+            </Box>
+
             <Grid container spacing={2}>
                 {loading ? (
                     <Grid item xs={12}>
@@ -188,7 +264,12 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
                 ) : (
                     banquets.map((banquet) => (
                         <Grid item xs={12} md={6} lg={4} key={banquet.BIN}>
-                            <Card>
+                            <Card sx={{ 
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between'
+                            }}>
                                 <CardContent>
                                     <Typography variant="h6">{banquet.name}</Typography>
                                     <Typography variant="body2" color="textSecondary">

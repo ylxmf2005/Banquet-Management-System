@@ -359,7 +359,12 @@ const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ showMessage, us
                 ) : (
                     registrations.map((registration, index) => (
                         <Grid item xs={12} md={6} lg={4} key={index}>
-                            <Card>
+                            <Card sx={{ 
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between'
+                            }}>
                                 <CardContent>
                                     <Typography variant="h6">{registration.banquetName || 'Unknown Banquet'}</Typography>
                                     <Typography variant="body2" color="textSecondary">
