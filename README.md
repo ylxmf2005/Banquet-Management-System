@@ -23,7 +23,7 @@ This is a full-stack application with separated frontend and backend, which can 
 
 This project not only implements data validation at the front end, but also applies constraints at the database level. These measures ensure that operations such as  direct calls to backend method or direct execution of SQL commands do not compromise the integrity of the database.
 
-To reflect the raw database errors for troubleshooting purposes, the front end does not handle `SQLException` errors with additional custom processing. Instead, the exact `SQLException` error messages from the backend are displayed directly to the user.
+To reflect the raw database errors, the front end does not handle `SQLException` errors with additional custom processing. Instead, the exact `SQLException` error messages from the backend are displayed directly to the user.
 
 ### Backend
 
@@ -321,10 +321,46 @@ Press the `DOWNLOAD REPORT` button, and the report PDF will be generated and dow
 
 It's similar to [Update Attendee's Registration](#4-update-attendees-registration)
 
-### Banquet Registration Tab![Google Chrome 2024-11-26 18.12.34](https://s2.loli.net/2024/11/26/Nmg5sPWje1kYy9n.png)
+
+
+### Banquet Registration Tab
+
+![](https://s2.loli.net/2024/11/26/AHmT8pBF91IGlz2.png)
 
 Only banquets with a status of available can be viewed and registered by attendee.
 
 #### 1. Search Available Banquets
 
-#### 2. Register Available Banquets
+![](https://s2.loli.net/2024/11/26/TUsxNyV3qZv4cde.png)
+
+Choose a date and time range in the Start Date & Time and End Date & Time fields or search by any part of a banquet name (contain). 
+
+If any of these fields are left blank, it will consider the condition as "any," meaning no restriction is applied. (All blank by default)
+
+#### 2. Clear Search
+
+Click the Clear Search button to reset all search filters and show all available banquets.
+
+#### 3. Register Available Banquets
+
+![](https://s2.loli.net/2024/11/26/2mEYt1fjSsoTL78.png)
+
+Click the Register button for your desired banquet. 
+
+- Enter your preferred drink in the provided text field (Required).
+- Use the dropdown menu to select your preferred meal option (Required).
+- Use the remark field (optional) to add any additional comments or special requests.
+
+如果注册成功（名额足够），系统会通知你并给你分配一个座位号，你可以在 My Registrations Tab 中查看你被分配到的座位：
+
+<img src="https://s2.loli.net/2024/11/26/KELDfiH8NIdWc6Q.png" width="40%" />
+
+否则，系统会通知失败
+
+
+
+### My Registrations Tab
+
+![](https://s2.loli.net/2024/11/26/KFSMVLZEzPqyu49.png)
+
+### 1. Search your registration

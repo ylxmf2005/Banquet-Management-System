@@ -54,6 +54,12 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
         fetchBanquets();
     }, []);
 
+    useEffect(() => {
+        if (!searchCriteria.banquetName && !searchCriteria.startDate && !searchCriteria.endDate) {
+            fetchBanquets();
+        }
+    }, [searchCriteria]);
+
     const handleApiResponse = (
         response: any,
         successCallback: (data: any) => void,
@@ -196,6 +202,14 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
         }));
     };
 
+    const handleClearSearch = () => {
+        setSearchCriteria({
+            banquetName: '',
+            startDate: '',
+            endDate: ''
+        });
+    };
+
     return (
         <Box sx={{ mt: 3 }}>
             <Box sx={{ mb: 2 }}>
@@ -242,14 +256,22 @@ const AvailableBanquetsTab: React.FC<AvailableBanquetsTabProps> = ({ showMessage
                         />
                     </Grid>
                 </Grid>
-                <Button
-                    variant="contained"
-                    sx={{ mt: 2 }}
-                    onClick={fetchBanquets}
-                    disabled={loading}
-                >
-                    {loading ? 'Searching...' : 'Search'}
-                </Button>
+                <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        onClick={fetchBanquets}
+                        disabled={loading}
+                    >
+                        {loading ? 'Searching...' : 'Search'}
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        onClick={handleClearSearch}
+                        disabled={loading}
+                    >
+                        Clear Search
+                    </Button>
+                </Box>
             </Box>
 
             <Grid container spacing={2}>
