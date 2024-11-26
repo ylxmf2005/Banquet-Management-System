@@ -321,6 +321,8 @@ Press the `DOWNLOAD REPORT` button, and the report PDF will be generated and dow
 
 It's similar to [Update Attendee's Registration](#4-update-attendees-registration)
 
+
+
 ### Banquet Registration Tab
 
 ![](https://s2.loli.net/2024/11/26/AHmT8pBF91IGlz2.png)
@@ -329,6 +331,36 @@ Only banquets with a status of available can be viewed and registered by attende
 
 #### 1. Search Available Banquets
 
+![](https://s2.loli.net/2024/11/26/TUsxNyV3qZv4cde.png)
+
+Choose a date and time range in the Start Date & Time and End Date & Time fields or search by any part of a banquet name (contain). 
+
+If any of these fields are left blank, it will consider the condition as "any," meaning no restriction is applied. (All blank by default)
+
 #### 2. Clear Search
 
+Click the Clear Search button to reset all search filters and show all available banquets.
+
 #### 3. Register Available Banquets
+
+![](https://s2.loli.net/2024/11/26/2mEYt1fjSsoTL78.png)
+
+Click the Register button for your desired banquet. 
+
+- Enter your preferred drink in the provided text field (Required).
+- Use the dropdown menu to select your preferred meal option (Required).
+- Use the remark field (optional) to add any additional comments or special requests.
+
+If your registration is successful (quota is enough), the system will notify you and assign you a seat number. You can view your assigned seat in the My Registrations tab.
+
+<img src="https://s2.loli.net/2024/11/26/KELDfiH8NIdWc6Q.png" width="40%" />
+
+If your registration fails, the system will notify you:
+
+
+
+### My Registrations Tab
+
+![](https://s2.loli.net/2024/11/26/KFSMVLZEzPqyu49.png)
+
+### 1. Search your registration

@@ -109,7 +109,7 @@ public class ReserveDAO {
         try {
             sqlConnection.beginTransaction();
             
-            String lockSql = "SELECT * FROM Banquet WHERE BIN=? FOR UPDATE";
+            String lockSql = "SELECT * FROM Banquet WHERE BIN=?";
             Object[] lockParams = new Object[]{ registrationData.getBanquetBIN() };
             List<Map<String, Object>> result = sqlConnection.executePreparedQuery(lockSql, lockParams);
             
@@ -119,7 +119,7 @@ public class ReserveDAO {
             
             Banquet curBan = new Banquet(result.get(0));
             
-            String countSql = "SELECT COUNT(*) AS cnt FROM Reserve WHERE BanquetBIN=? FOR UPDATE";
+            String countSql = "SELECT COUNT(*) AS cnt FROM Reserve WHERE BanquetBIN=?";
             Object[] countParams = {registrationData.getBanquetBIN()};
             List<Map<String, Object>> countResult = sqlConnection.executePreparedQuery(countSql, countParams);
             int currentRegistrations = ((Number) countResult.get(0).get("CNT")).intValue();
@@ -128,7 +128,7 @@ public class ReserveDAO {
                 throw new RegistrationException("The quota of the banquet is not enough");
             }
             
-            String checkDupSql = "SELECT COUNT(*) AS cnt FROM Reserve WHERE BanquetBIN=? AND AttendeeEmail=? FOR UPDATE";
+            String checkDupSql = "SELECT COUNT(*) AS cnt FROM Reserve WHERE BanquetBIN=? AND AttendeeEmail=?";
             Object[] checkDupParams = {registrationData.getBanquetBIN(), registrationData.getAttendeeEmail()};
             List<Map<String, Object>> dupResult = sqlConnection.executePreparedQuery(checkDupSql, checkDupParams);
             if (((Number) dupResult.get(0).get("CNT")).intValue() > 0) {
