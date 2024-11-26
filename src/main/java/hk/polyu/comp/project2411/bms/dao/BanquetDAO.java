@@ -79,6 +79,74 @@ public class BanquetDAO {
         }
     }
 
+    public Map<String, Integer> getAttendeeTypeCounts(int banquetBIN) throws SQLException {
+        String sql = "SELECT a.Type AS AttendeeType, COUNT(*) AS Count " +
+                "FROM Reserve r " +
+                "JOIN Account a ON r.AttendeeEmail = a.Email " +
+                "WHERE r.BanquetBIN = ? " +
+                "GROUP BY a.Type";
+        Object[] params = new Object[]{banquetBIN};
+        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
+
+        Map<String, Integer> attendeeTypeCounts = new HashMap<>();
+        for (Map<String, Object> row : results) {
+            String attendeeType = (String) row.get("ATTENDEETYPE");
+            int count = ((Number) row.get("COUNT")).intValue();
+            attendeeTypeCounts.put(attendeeType, count);
+        }
+        return attendeeTypeCounts;
+    }
+
+    public Map<String, Integer> getOrganizationCounts(int banquetBIN) throws SQLException {
+        String sql = "SELECT a.Organization AS Organization, COUNT(*) AS Count " +
+                "FROM Reserve r " +
+                "JOIN Account a ON r.AttendeeEmail = a.Email " +
+                "WHERE r.BanquetBIN = ? " +
+                "GROUP BY a.Organization";
+        Object[] params = new Object[]{banquetBIN};
+        List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
+
+        Map<String, Integer> organizationCounts = new HashMap<>();
+        for (Map<String, Object> row : results) {
+            String organization = (String) row.get("ORGANIZATION");
+            int count = ((Number) row.get("COUNT")).intValue();
+            organizationCounts.put(organization, count);
+        }
+        return organizationCounts;
+    }
+
+    public Map<String, Integer> getOverallAttendeeTypeCounts() throws SQLException {
+        String sql = "SELECT a.Type AS AttendeeType, COUNT(*) AS Count " +
+                "FROM Reserve r " +
+                "JOIN Account a ON r.AttendeeEmail = a.Email " +
+                "GROUP BY a.Type";
+        List<Map<String, Object>> results = sqlConnection.executeQuery(sql);
+
+        Map<String, Integer> attendeeTypeCounts = new HashMap<>();
+        for (Map<String, Object> row : results) {
+            String attendeeType = (String) row.get("ATTENDEETYPE");
+            int count = ((Number) row.get("COUNT")).intValue();
+            attendeeTypeCounts.put(attendeeType, count);
+        }
+        return attendeeTypeCounts;
+    }
+
+    public Map<String, Integer> getOverallOrganizationCounts() throws SQLException {
+        String sql = "SELECT a.Organization AS Organization, COUNT(*) AS Count " +
+                "FROM Reserve r " +
+                "JOIN Account a ON r.AttendeeEmail = a.Email " +
+                "GROUP BY a.Organization";
+        List<Map<String, Object>> results = sqlConnection.executeQuery(sql);
+
+        Map<String, Integer> organizationCounts = new HashMap<>();
+        for (Map<String, Object> row : results) {
+            String organization = (String) row.get("ORGANIZATION");
+            int count = ((Number) row.get("COUNT")).intValue();
+            organizationCounts.put(organization, count);
+        }
+        return organizationCounts;
+    }
+
     public boolean updateBanquet(Banquet banquet) throws SQLException {
         try {
             // Begin transaction

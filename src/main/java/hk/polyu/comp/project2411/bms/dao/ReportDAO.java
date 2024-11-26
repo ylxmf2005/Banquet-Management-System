@@ -57,6 +57,8 @@ public class ReportDAO {
 
         addDetailedBanquetReports(document);
 
+        addOverallAttendeeTypesAndOrganizations(document);
+
         addOverallPopularMealsAndDrinks(document); // Add this line
 
         // Add attendance behavior analysis
@@ -155,6 +157,31 @@ public class ReportDAO {
             document.add(new Paragraph("Quota: " + quota));
             document.add(new Paragraph("Seats Reserved: " + seatsReserved));
             document.add(new Paragraph(String.format("Reservation Rate: %.2f%%", reservationRate)));
+
+            Map<String, Integer> attendeeTypeCounts = banquetDAO.getAttendeeTypeCounts(banquetBIN);
+            if (!attendeeTypeCounts.isEmpty()) {
+                document.add(new Paragraph("Attendee Types Distribution:").setBold());
+                Image attendeeTypePieChart = chartGenerator.createPieChart(attendeeTypeCounts, "Attendee Types for " + name);
+                document.add(attendeeTypePieChart);
+
+                // Start a new page after the pie chart
+                document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+            } else {
+                document.add(new Paragraph("No attendee type data available."));
+            }
+
+            // Add statistics of organizations
+            Map<String, Integer> organizationCounts = banquetDAO.getOrganizationCounts(banquetBIN);
+            if (!organizationCounts.isEmpty()) {
+                document.add(new Paragraph("Organization Distribution:").setBold());
+                Image organizationPieChart = chartGenerator.createPieChart(organizationCounts, "Organizations for " + name);
+                document.add(organizationPieChart);
+
+                // Start a new page after the pie chart
+                document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+            } else {
+                document.add(new Paragraph("No organization data available."));
+            }
 
             // Generate and add meal choice pie chart
             Map<String, Integer> mealChoiceData = banquetDAO.getMealChoiceCounts(banquetBIN);
@@ -300,6 +327,37 @@ public class ReportDAO {
 
         // Start a new page after the peak registration times table
         document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+    }
+
+    private void addOverallAttendeeTypesAndOrganizations(Document document) throws SQLException, IOException {
+        // Add Section Title
+        String sectionTitle = "Overall Attendee Types and Organizations";
+
+        document.add(new Paragraph(sectionTitle).setFontSize(18).setBold());
+
+        // Fetch and display overall attendee types
+        Map<String, Integer> attendeeTypeCounts = banquetDAO.getOverallAttendeeTypeCounts();
+        if (!attendeeTypeCounts.isEmpty()) {
+            document.add(new Paragraph("Overall Attendee Types:").setBold());
+            Image attendeeTypePieChart = chartGenerator.createPieChart(attendeeTypeCounts, "Overall Attendee Types");
+            document.add(attendeeTypePieChart);
+
+            document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+        } else {
+            document.add(new Paragraph("No overall attendee type data available."));
+        }
+
+        // Fetch and display overall organizations
+        Map<String, Integer> organizationCounts = banquetDAO.getOverallOrganizationCounts();
+        if (!organizationCounts.isEmpty()) {
+            document.add(new Paragraph("Overall Organizations:").setBold());
+            Image organizationPieChart = chartGenerator.createPieChart(organizationCounts, "Overall Organizations");
+            document.add(organizationPieChart);
+
+            document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+        } else {
+            document.add(new Paragraph("No overall organization data available."));
+        }
     }
 
     public static void main(String[] args) {
