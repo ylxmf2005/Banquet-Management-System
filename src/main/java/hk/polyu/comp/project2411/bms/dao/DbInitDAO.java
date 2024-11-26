@@ -208,6 +208,15 @@ public class DbInitDAO {
                 "WHERE AttendeeEmail = :OLD.email; " +
                 "END;";
         sqlConnection.executeUpdate(sql);
+        sql = "CREATE OR REPLACE TRIGGER meal_update_cascade_trigger " +
+                "AFTER UPDATE OF DishName ON Meal " +
+                "FOR EACH ROW " +
+                "BEGIN " +
+                "UPDATE Reserve " +
+                "SET MealChoice = :NEW.DishName " +
+                "WHERE BanquetBIN = :OLD.BanquetBIN AND MealChoice = :OLD.DishName; " +
+                "END;";
+        sqlConnection.executeUpdate(sql);
         System.out.println("Trigger created");
     }
 
