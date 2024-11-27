@@ -85,9 +85,9 @@ public class ReserveDAO {
         return new Banquet(result.get(0));
     }
 
+    // Deprecated
     public int getAvailableSeatNo(Banquet banquet) throws SQLException {
-        // Lock and get all seat numbers for this banquet
-        String sql = "SELECT SeatNo FROM Reserve WHERE BanquetBIN=? ORDER BY SeatNo ASC FOR UPDATE";
+        String sql = "SELECT SeatNo FROM Reserve WHERE BanquetBIN=? ORDER BY SeatNo ASC";
         Object[] params = new Object[] { banquet.getBIN() };
         List<Map<String, Object>> results = sqlConnection.executePreparedQuery(sql, params);
         
@@ -105,8 +105,7 @@ public class ReserveDAO {
         return cur;
     }
 
-    public RegistrationResult registerForBanquet(Reserve registrationData) throws RegistrationException, SQLException 
-        {
+    public RegistrationResult registerForBanquet(Reserve registrationData) throws RegistrationException, SQLException {
         try {
             sqlConnection.beginTransaction();
             
@@ -136,32 +135,51 @@ public class ReserveDAO {
                 throw new RegistrationException("You have already registered for this banquet");
             }
             
-            String checkSeatSql = "SELECT COUNT(*) AS cnt FROM Reserve WHERE BanquetBIN=? AND SeatNo=? FOR UPDATE";
-            while (true) {
-                int curSeatNo = getAvailableSeatNo(curBan);
-                registrationData.setSeatNo(curSeatNo);
-                
-                Object[] checkSeatParams = {registrationData.getBanquetBIN(), curSeatNo};
-                List<Map<String, Object>> seatResult = sqlConnection.executePreparedQuery(checkSeatSql, checkSeatParams);
-                if (((Number) seatResult.get(0).get("CNT")).intValue() == 0) {
-                    break;
-                }
+            String insertSql = "INSERT INTO Reserve (BanquetBIN, AttendeeEmail, SeatNo, RegTime, DrinkChoice, MealChoice, Remarks) " +
+                              "SELECT ?, ?, NVL( " +
+                              "  (SELECT MIN(t.seat + 1) " +
+                              "   FROM (SELECT SeatNo as seat FROM Reserve WHERE BanquetBIN = ?) t " +
+                              "   WHERE NOT EXISTS ( " +
+                              "     SELECT 1 FROM Reserve " +
+                              "     WHERE BanquetBIN = ? AND SeatNo = t.seat + 1) " +
+                              "  ), 1), " +
+                              "CURRENT_TIMESTAMP, ?, ?, ? " +
+                              "FROM DUAL " +
+                              "WHERE NOT EXISTS ( " +
+                              "  SELECT 1 FROM Reserve " +
+                              "  WHERE BanquetBIN = ? AND AttendeeEmail = ?)";
+            
+            Object[] params = new Object[] { 
+                registrationData.getBanquetBIN(), 
+                registrationData.getAttendeeEmail(),
+                registrationData.getBanquetBIN(),
+                registrationData.getBanquetBIN(),
+                registrationData.getDrinkChoice(),
+                registrationData.getMealChoice(),
+                registrationData.getRemarks(),
+                registrationData.getBanquetBIN(),
+                registrationData.getAttendeeEmail()
+            };
+            
+            int rowsAffected = sqlConnection.executePreparedUpdate(insertSql, params);
+            
+            if (rowsAffected == 0) {
+                throw new RegistrationException("座位分配失败，请重试");
             }
             
-            boolean success = insertAttendeeRegistrationData(registrationData);
+            String getSeatSql = "SELECT SeatNo FROM Reserve WHERE BanquetBIN = ? AND AttendeeEmail = ?";
+            Object[] getSeatParams = new Object[] { 
+                registrationData.getBanquetBIN(), 
+                registrationData.getAttendeeEmail() 
+            };
+            List<Map<String, Object>> seatResult = sqlConnection.executePreparedQuery(getSeatSql, getSeatParams);
             
-            if(success) {
-                sqlConnection.commitTransaction();
-                return new RegistrationResult(true, "You have successfully registered the banquet.");
-            } else {
-                sqlConnection.rollbackTransaction();
-                return new RegistrationResult(false, "Registration failed due to system error.");
-            }
+            int assignedSeat = ((Number) seatResult.get(0).get("SEATNO")).intValue();
+            registrationData.setSeatNo(assignedSeat);
             
-        } catch (SQLException e) {
-            sqlConnection.rollbackTransaction();
-            throw e;
-        } catch (RegistrationException e) {
+            sqlConnection.commitTransaction();
+            return new RegistrationResult(true, "成功注册宴会，座位号: " + assignedSeat);
+        } catch (Exception e) {
             sqlConnection.rollbackTransaction();
             throw e;
         }
