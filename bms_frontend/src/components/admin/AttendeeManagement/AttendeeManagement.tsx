@@ -221,7 +221,10 @@ export default function AttendeeManagement() {
 
         try {
             const response = await api.post('/updateAttendeeRegistrationData', {
-                registrationData: registrations[index],
+                registrationData: {
+                    ...registrations[index],
+                    attendeeEmail: attendee?.originalEmail
+                },
             });
             handleApiResponse(
                 response,
