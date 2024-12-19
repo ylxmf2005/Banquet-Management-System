@@ -164,7 +164,7 @@ public class ReserveDAO {
             int rowsAffected = sqlConnection.executePreparedUpdate(insertSql, params);
             
             if (rowsAffected == 0) {
-                throw new RegistrationException("座位分配失败，请重试");
+                throw new RegistrationException("Failed to assign seat, p");
             }
             
             String getSeatSql = "SELECT SeatNo FROM Reserve WHERE BanquetBIN = ? AND AttendeeEmail = ?";
@@ -178,7 +178,7 @@ public class ReserveDAO {
             registrationData.setSeatNo(assignedSeat);
             
             sqlConnection.commitTransaction();
-            return new RegistrationResult(true, "成功注册宴会，座位号: " + assignedSeat);
+            return new RegistrationResult(true, "Successfuly assign seat: " + assignedSeat);
         } catch (Exception e) {
             sqlConnection.rollbackTransaction();
             throw e;
